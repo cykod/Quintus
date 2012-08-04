@@ -1,0 +1,8 @@
+{
+    "name": "Quintus Engine",
+  , "version": "0.0.1"
+  , "dependencies": {
+      "grunt": ">0",
+      "optimist": ">0"
+  }
+}
