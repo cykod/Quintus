@@ -9,7 +9,7 @@ Quintus.Sprites = function(Q) {
   //  sx    - start x
   //  sy    - start y
   //  cols  - number of columns per row
-  Q.SpriteSheet = Class.extend({
+  Q.Class.extend("SpriteSheet",{
     init: function(name, asset,options) {
       _.extend(this,{
         name: name,
@@ -69,7 +69,7 @@ Quintus.Sprites = function(Q) {
   //    z - sort order
   //    sheet or asset
   //    frame
-  Q.Sprite = Q.GameObject.extend({
+  Q.GameObject.extend("Sprite",{
     init: function(props) {
       this.p = _({ 
         x: 0,
@@ -139,26 +139,7 @@ Quintus.Sprites = function(Q) {
     }
   });
 
-
-  // Master list of sprites classes
-  Q.spriteClasses = {};
-
-  // Method to register or return a sprite class,
-  // needed instead of just extending Q.Sprite so that the 
-  // name of the sprite can be recorded into the class
-  // and used to generate selectors.
-  Q.spriteClass = function(name,properties,classMethods) {
-    if(!properties) { return Q[name]; }
-
-    // Save the class name so that sprites no their classes
-    // and can add and remove themselves as necessary
-    properties.classNames = [ name ];
-    Q.spriteClasses[name] = Q[name] = Q.Sprite.extend(properties,classMethods);
-    Q[name].classNames = [ name ];
-    return Q[name];
-  }
-
-  Q.MovingSprite = Q.Sprite.extend({
+  Q.Sprite.extend("MovingSprite",{
     init: function(props) {
       this._super(_({
         vx: 0,

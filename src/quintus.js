@@ -181,7 +181,7 @@ var Quintus = function Quintus(opts) {
       Q.lastGameLoopFrame = new Date().getTime();
       Q.loop = requestAnimationFrame(Q.gameLoopCallbackWrapper);
     }
-  } 
+  };
 
 
   // The base Class object
@@ -210,17 +210,17 @@ var Quintus = function Quintus(opts) {
   // By convention, classes should be added onto to the `Q` object and capitalized, so if 
   // you wanted to create a new class for your game, you'd write:
   //
-  //     Q.MyClass = Q.Class.extend({ ... });
+  //     Q.Class.extend("MyClass",{ ... });
   //
   // Examples:
   //
-  //     Q.Bird = Q.Class.extend({ 
+  //     Q.Class.extend("Bird",{ 
   //       init: function(name) { this.name = name; },
   //       speak: function() { console.log(this.name); },
   //       fly: function()   { console.log("Flying"); }
   //     });
   //
-  //     Q.Penguin = Q.Bird.extend({
+  //     Q.Bird.extend("Penguin",{
   //       speak: function() { console.log(this.name + " the penguin"); },
   //       fly: function()   { console.log("Can't fly, sorry..."); }
   //     });
@@ -253,7 +253,7 @@ var Quintus = function Quintus(opts) {
     Q.Class = function(){};
     
     /* Create a new Class that inherits from this class */
-    Q.Class.extend = function(prop, classMethods) {
+    Q.Class.extend = function(className, prop, classMethods) {
       var _super = this.prototype;
       
       /* Instantiate a base class (but only create the instance, */
@@ -261,7 +261,7 @@ var Quintus = function Quintus(opts) {
       initializing = true;
       var prototype = new this();
       initializing = false;
-      
+
       /* Copy the properties over onto the new prototype */
       for (var name in prop) {
         /* Check if we're overwriting an existing function */
@@ -306,6 +306,14 @@ var Quintus = function Quintus(opts) {
       if(classMethods) {
         _(Class).extend(classMethods);
       }
+
+      /* Save the class onto Q */
+      Q[className] = Class;
+      
+
+      /* Let the class know its name */
+      Class.prototype.className = className;
+      Class.className = className;
       
       return Class;
     };
@@ -318,7 +326,7 @@ var Quintus = function Quintus(opts) {
   // The `Q.Evented` class adds event handling onto the base `Q.Class` 
   // class. Evented objects can trigger events and other objects can
   // bind to those events.
-  Q.Evented = Q.Class.extend({
+  Q.Class.extend("Evented",{
 
     // Binds a callback to an event on this object. If you provide a
     // `target` object, that object will add this event to it's list of
@@ -439,7 +447,7 @@ var Quintus = function Quintus(opts) {
   // Many components also define an `added` method, which is called automatically by the
   // `init` constructor after a component has been added to an object. This is a good time
   // to add event listeners on the object.
-  Q.Component = Q.Evented.extend({
+  Q.Evented.extend("Component",{
 
     // Components are created when they are added onto a `Q.GameObject` entity. The entity
     // is directly extended with any methods inside of an `extend` property and then the 
@@ -480,7 +488,7 @@ var Quintus = function Quintus(opts) {
   // be added and removed from an object. It also defines a destroyed method
   // which will debind the object, remove it from it's parent (usually a scene)
   // if it has one, and trigger a destroyed event.
-  Q.GameObject = Q.Evented.extend({
+  Q.Evented.extend("GameObject",{
 
     // Simple check to see if a component already exists
     // on an object by searching for a property of the same name.
@@ -547,7 +555,7 @@ var Quintus = function Quintus(opts) {
   Q.component = function(name,methods) {
     if(!methods) { return Q.components[name] }
     methods.name = name;
-    Q.components[name] = Q.Component.extend(methods);
+    Q.components[name] = Q.Component.extend(name + "Component",methods);
   };
 
 
@@ -903,7 +911,7 @@ var Quintus = function Quintus(opts) {
   //
   // Return the `Q` object from the `Quintus()` factory method. Create awesome games. Repeat.
   return Q;
-}
+};
 
 // Lastly, add in the `requestAnimationFrame` shim, if necessary. Does nothing 
 // if `requestAnimationFrame` is already on the `window` object.
@@ -930,6 +938,6 @@ var Quintus = function Quintus(opts) {
         window.cancelAnimationFrame = function(id) {
             clearTimeout(id);
         };
-}());
+})();
 
 
