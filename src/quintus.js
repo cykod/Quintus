@@ -106,13 +106,6 @@ var Quintus = function Quintus(opts) {
     return arg;
   };
 
-  // Shortcut to extend Quintus with new functionality
-  // binding the methods to `Q`
-  Q.extend = function(obj) {
-    _(Q).extend(obj);
-    return Q;
-  };
-
   // Syntax for including other modules into quintus, can accept a comma-separated
   // list of strings, an array of strings, or an array of actual objects. Example:
   //
@@ -555,7 +548,7 @@ var Quintus = function Quintus(opts) {
   Q.component = function(name,methods) {
     if(!methods) { return Q.components[name] }
     methods.name = name;
-    Q.components[name] = Q.Component.extend(name + "Component",methods);
+    return (Q.components[name] = Q.Component.extend(name + "Component",methods));
   };
 
 
