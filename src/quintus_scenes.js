@@ -3,7 +3,7 @@ Quintus.Scenes = function(Q) {
   Q.scenes = {};
   Q.stages = [];
 
-  Q.Scene = Class.extend({
+  Q.Scene = Q.Class.extend({
     init: function(sceneFunc,opts) {
       this.opts = opts || {};
       this.sceneFunc = sceneFunc;
@@ -20,6 +20,102 @@ Quintus.Scenes = function(Q) {
     }
   };
 
+  Q.generatePoints = function(obj) {
+    var p = obj.p,
+        halfW = p.w/2,
+        halfH = p.h/2;
+
+    p.points = [ 
+      [ -halfW, -halfH ],
+      [  halfW, -halfH ],
+      [  halfW,  halfH ],
+      [ -halfW,  halfH ]
+      ]
+  };
+
+  // Default to SAT collision between two objects
+  // TODO: handle angles
+  Q.collision = (function() { 
+    var normalX, normalY,
+        offset = [ 0,0 ];
+
+    function calculateNormal(points,idx) {
+      var pt1 = points[idx],
+          pt2 = points[idx+1] || points[0];
+
+      normalX = -(pt2[1] - pt1.y[1]);
+      normalY = pt2[0] - pt1[0];
+
+      var dist = Math.sqrt(normalX*normalX + normalY*normalY);
+      if(dist > 0) {
+        normalX /= dist;
+        normalY /= dist;
+      }
+    }
+
+    function collide(o1,o2) {
+      var min1,max1,
+          min2,max2,
+          d1, d2,
+          offsetLength,
+          tmp, i, j;
+      o1 = o1.p;
+      o2 = o2.p;
+
+      offset[0] = o1.x + o1.cx - o2.x - o2.cx;
+      offset[1] = o1.y + o1.cx - o2.y - o2.cy;
+
+      for(i = 0;i<o1.points.length;i++) {
+        calculateNormal(o1.points,i);
+
+        min1 = dotProductAgainstNormal(o1.points[0]);
+        max1 = min1;
+
+        for(j = 1; j<o1.points.length;j++) {
+          tmp = dotProductAgainstNormal(o1.points[j]);
+          if(tmp < min1) min1 = tmp;
+          if(tmp > max1) max1 = tmp;
+        }
+
+        min2 = dotProductAgainstNormal(o2.points[0]);
+        max2 = min2;
+
+        for(j = 1;j<o2.points.length;j++) {
+          tmp = dotProductAgainstNormal(o2.points[j]);
+          if(tmp < min2) min2 = tmp;
+          if(tmp > max2) max2 = tmp;
+        }
+
+        offsetLength = dotProductAgainstNormal(offset);
+
+        d1 = min1 - max2;
+        d2 = min2 - max1
+
+        if(d1 > 0 || d2 > 0) { return null; }
+      }
+
+      // Do do return the actual collision
+      return true; 
+    }
+
+    function satCollision(o1,o2) {
+      var result;
+
+      if(!o1.p.points) { Q.generatePoints(o1); }
+      if(!o2.p.points) { Q.generatePoints(o2); }
+
+      result = collide(o1,o2);
+      if(!result) return false;
+
+      result = collide(o2,o1);
+      if(!result) return false;
+
+      return result;
+    }
+
+    return satCollision;
+  })();
+
 
   Q.overlap = function(o1,o2) {
     return !((o1.p.y+o1.p.h-1<o2.p.y) || (o1.p.y>o2.p.y+o2.p.h-1) ||
@@ -35,11 +131,12 @@ Quintus.Scenes = function(Q) {
     init: function(scene) {
       this.scene = scene;
       this.items = [];
+      this.lists = {};
       this.index = {};
       this.removeList = [];
       if(scene)  { 
         this.options = _(this.defaults).clone();
-        _(this.options).extend(scene.opts);
+        Q._extend(this.options,scene.opts);
         scene.sceneFunc(this);
       }
       if(this.options.sort && !_.isFunction(this.options.sort)) {
@@ -53,7 +150,7 @@ Quintus.Scenes = function(Q) {
       }
     },
 
-    eachInvoke: function(funcName) {
+    invoke: function(funcName) {
       for(var i=0,len=this.items.length;i<len;i++) {              
         this.items[i][funcName].call(
           this.items[i],arguments[1],arguments[2]
@@ -70,9 +167,30 @@ Quintus.Scenes = function(Q) {
       return false;
     },
 
+    addToLists: function(lists,object) {
+      for(var i=0;i<lists.length;i++) {
+        this.addToList(lists[i],object);
+      }
+    },
+
+    addToList: function(list, itm) {
+      if(!this.lists[list]) { this.lists[list] = []; }
+      this.lists[list].push(itm);
+    },
+
+    removeFromList: function(list, itm) {
+      var listIndex = _.indexOf(this.lists[list],itm);
+      if(listIndex != -1) { 
+        this.lists[list].splice(idx,1);
+      }
+    },
+
     insert: function(itm) {
       this.items.push(itm);
       itm.parent = this;
+      if(itm.className) { this.addToList(itm.className, itm); }
+      if(itm.activeComponents) { this.addToLists(itm.activeComponents, itm) }
+
       if(itm.p) {
         this.index[itm.p.id] = itm;
       }
@@ -86,9 +204,13 @@ Quintus.Scenes = function(Q) {
     },
 
     forceRemove: function(itm) {
-      var idx = _(this.items).indexOf(itm);
+      var idx = _.indexOf(this.items,itm);
       if(idx != -1) { 
         this.items.splice(idx,1);
+
+        if(itm.className) { this.removeFromList(itm.className,itm); }
+        if(itm.activeComponents) { this.removeFromLists(itm.activeComponents,itm); }
+
         if(itm.destroy) itm.destroy();
         if(itm.p.id) {
           delete this.index[itm.p.id];
@@ -107,7 +229,7 @@ Quintus.Scenes = function(Q) {
 
     _hitTest: function(obj,type) {
       if(obj != this) {
-        var col = (!type || this.p.type & type) && Q.overlap(obj,this);
+        var col = (!type || this.p.type & type) && Q.overlap(obj,this) && Q.collision(obj,this);
         return col ? this : false;
       }
     },
@@ -120,7 +242,7 @@ Quintus.Scenes = function(Q) {
       if(this.paused) { return false; }
 
       this.trigger("prestep",dt);
-      this.eachInvoke("step",dt);
+      this.invoke("step",dt);
       this.trigger("step",dt);
 
       if(this.removeList.length > 0) {
@@ -129,6 +251,8 @@ Quintus.Scenes = function(Q) {
         }
         this.removeList.length = 0;
       }
+
+      this.trigger('poststep',dt);
     },
 
     draw: function(ctx) {
@@ -136,7 +260,7 @@ Quintus.Scenes = function(Q) {
         this.items.sort(this.options.sort);
       }
       this.trigger("predraw",ctx);
-      this.eachInvoke("draw",ctx);
+      this.invoke("draw",ctx);
       this.trigger("draw",ctx);
     }
   });
@@ -144,9 +268,62 @@ Quintus.Scenes = function(Q) {
   Q.activeStage = 0;
 
   Q.StageSelector = Q.Class.extend({
+    emptyList: [],
 
     init: function(stage,selector) {
+      this.stage = stage;
+      this.selector = selector;
+
       // Generate an object list from the selector
+      // TODO: handle array selectors
+      this.items = this.stage.lists[this.selector] || this.emptyList;
+    },
+
+    each: function(callback) {
+      for(var i=0,len=this.items.length;i<len;i++) {
+        callback.call(this.items[i],arguments[1],arguments[2]);
+      }
+      return this;
+    },
+
+    invoke: function(funcName) {
+      for(var i=0,len=this.items.length;i<len;i++) {              
+        this.items[funcName].call(
+          this.items[i],arguments[1],arguments[2]
+        );
+      }
+      return this;
+    },
+
+    detect: function(func) {
+      for(var i = 0,val=null, len=this.items.length; i < len; i++) {
+        if(func.call(this.items[i],arguments[1],arguments[2])) {
+          return this.items[i];
+        }
+      }
+      return false;
+    },
+
+    // This hidden utility method extends
+    // and object's properties with a source object.
+    // Used by the p method to set properties.
+    _pObject: function(source) {
+      Q._extend(this.p,source);
+    },
+
+    _pSingle: function(property,value) {
+      this.p[property] = value;
+    },
+
+    p: function(property, value) {
+      // Is value undefined
+      if(value == void 0) {
+        this.each(this._pObject,property);
+      } else {
+        this.each(this._pSingle,property,value);
+      }
+
+      return this;
     }
   });
 
@@ -165,13 +342,13 @@ Quintus.Scenes = function(Q) {
     if(_.isNumber(selector)) {
       scope.index[selector];
     } else {
+      return new Q.StageSelector(scope,selector);
       // check if is array
       // check is has any commas
          // split into arrays
       // find each of the classes
       // find all the instances of a specific class
     }
-    
   };
 
   Q.stage = function(num) {

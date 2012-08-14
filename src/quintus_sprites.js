@@ -26,11 +26,11 @@ Quintus.Sprites = function(Q) {
     },
 
     fx: function(frame) {
-      return (frame % this.cols) * this.tilew + this.sx;
+      return Math.floor((frame % this.cols) * this.tilew + this.sx);
     },
 
     fy: function(frame) {
-      return Math.floor(frame / this.cols) * this.tileh + this.sy;
+      return Math.floor(Math.floor(frame / this.cols) * this.tileh + this.sy);
     },
 
     draw: function(ctx, x, y, frame) {
@@ -111,9 +111,10 @@ Quintus.Sprites = function(Q) {
       if(p.angle) {
         ctx.save();
 
-        ctx.translate(-p.cx,-p.cy)
-        ctx.rotate(angle)
-        ctx.translate(p.cx + p.x, p.cy + p.y);
+        ctx.translate(p.x,p.y);
+        ctx.translate(p.cx,p.cy)
+        ctx.rotate(p.angle * Math.PI / 180)
+        ctx.translate(-p.cx, -p.cy);
 
         if(p.sheet) {
           this.sheet().draw(ctx,0,0,p.frame);

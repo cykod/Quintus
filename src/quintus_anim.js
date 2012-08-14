@@ -9,14 +9,14 @@ Quintus.Anim = function(Q) {
     return Q._animations[sprite] && Q._animations[sprite][name];
   };
 
-  Q.register('animation',{
+  Q.component('animation',{
     added: function() {
       var p = this.entity.p;
       p.animation = null;
       p.animationPriority = -1;
       p.animationFrame = 0;
       p.animationTime = 0;
-      this.entity.bind("step",this,"step");
+      this.entity.on("step",this,"step");
     },
     extend: {
       play: function(name,priority) {
@@ -84,27 +84,30 @@ Quintus.Anim = function(Q) {
   
   });
 
-  Q.register('viewport',{
+  Q.component('viewport',{
     added: function() {
-      this.entity.bind('predraw',this,'predraw');
-      this.entity.bind('draw',this,'postdraw');
+      this.entity.on('predraw',this,'predraw');
+      this.entity.on('draw',this,'postdraw');
       this.x = 0,
       this.y = 0;
+      this.offsetX = 0;
+      this.offsetY = 0;
       this.centerX = Q.width/2;
       this.centerY = Q.height/2;
       this.scale = 1;
     },
 
     extend: {
-      follow: function(sprite) {
-        this.unbind('step',this.viewport);
+      follow: function(sprite,directions) {
+        this.off('step',this.viewport);
+        this.viewport.directions = directions || { x: true, y: true };
         this.viewport.following = sprite;
-        this.bind('step',this.viewport,'follow');
+        this.on('step',this.viewport,'follow');
         this.viewport.follow();
       },
 
       unfollow: function() {
-        this.unbind('step',this.viewport);
+        this.off('step',this.viewport);
       },
 
       centerOn: function(x,y) {
@@ -113,22 +116,37 @@ Quintus.Anim = function(Q) {
     },
 
     follow: function() {
-      this.centerOn(this.following.p.x + this.following.p.w/2,
-                    this.following.p.y + this.following.p.h/2);
+      this.centerOn(
+                    this.directions.x ? 
+                      this.following.p.x + this.following.p.w/2 - this.offsetX :
+                      undefined,
+                    this.directions.y ?
+                     this.following.p.y + this.following.p.h/2 - this.offsetY :
+                     undefined
+                  );
+    },
+
+    offset: function(x,y) {
+      this.offsetX = x;
+      this.offsetY = y;
     },
 
     centerOn: function(x,y) {
-      this.centerX = x;
-      this.centerY = y;
-      this.x = this.centerX - Q.width / 2 / this.scale;
-      this.y = this.centerY - Q.height / 2 / this.scale;
+      if(x !== void 0) {
+        this.centerX = x;
+        this.x = this.centerX - Q.width / 2 / this.scale;
+      }
+      if(y !== void 0) { 
+        this.y = this.centerY - Q.height / 2 / this.scale;
+        this.centerY = y;
+      }
     },
 
     predraw: function() {
       Q.ctx.save();
       Q.ctx.translate(Q.width/2,Q.height/2);
       Q.ctx.scale(this.scale,this.scale);
-      Q.ctx.translate(-this.centerX, -this.centerY);
+      Q.ctx.translate(-Math.floor(this.centerX), -Math.floor(this.centerY));
     },
 
     postdraw: function() {
@@ -136,7 +154,7 @@ Quintus.Anim = function(Q) {
     }
   });
 
-  Q.Repeater = Q.Sprite.extend({
+  Q.Sprite.extend("Repeater",{
     init: function(props) {
       this._super(_(props).defaults({
         speedX: 1,
@@ -175,9 +193,9 @@ Quintus.Anim = function(Q) {
         curX = startX;
         while(curX < Q.width / scale) {
           if(sheet) {
-            sheet.draw(ctx,curX + viewX, curY + viewY,p.frame);
+            sheet.draw(ctx,Math.floor(curX + viewX), Math.floor(curY + viewY),p.frame);
           } else {
-            ctx.drawImage(asset,curX + viewX, curY + viewY);
+            ctx.drawImage(asset,Math.floor(curX + viewX),Math.floor(curY + viewY));
           }
           curX += p.repeatW;
           if(!p.repeatX) { break; }

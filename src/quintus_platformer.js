@@ -172,7 +172,7 @@ Quintus.Platformer = function(Q) {
   Q.gravityX = 0;
   Q.dx = 0.05;
   
-  Q.register('2d',{
+  Q.component('2d',{
     added: function() {
       var entity = this.entity;
       _(entity.p).defaults({

@@ -106,14 +106,27 @@ var Quintus = function Quintus(opts) {
     return arg;
   };
 
+
+  // Internal utility method that extends a destination object
+  // with a source object
+  Q._extend = function(dest,source) {
+    if(!source) return dest;
+    for (var prop in source) {
+      dest[prop] = source[prop];
+    }
+    return dest;
+  }
+
+
   // Syntax for including other modules into quintus, can accept a comma-separated
   // list of strings, an array of strings, or an array of actual objects. Example:
   //
   //     Q.include("Input, Sprites, Scenes")
   //
   Q.include = function(mod) {
-    _.each(Q._normalizeArg(mod),function(m) {
-      m = Quintus[m] || m;
+    _.each(Q._normalizeArg(mod),function(name) {
+      m = Quintus[name] || name;
+      if(!_.isFunction(m)) { throw "Invalid Module:" + name; }
       m(Q);
     });
     return Q;
@@ -247,6 +260,12 @@ var Quintus = function Quintus(opts) {
     
     /* Create a new Class that inherits from this class */
     Q.Class.extend = function(className, prop, classMethods) {
+      /* No name, don't add onto Q */
+      if(!_.isString(className)) {
+        classMethods = prop;
+        prop = className;
+        className = null;
+      }
       var _super = this.prototype;
       
       /* Instantiate a base class (but only create the instance, */
@@ -300,13 +319,14 @@ var Quintus = function Quintus(opts) {
         _(Class).extend(classMethods);
       }
 
-      /* Save the class onto Q */
-      Q[className] = Class;
-      
+      if(className) { 
+        /* Save the class onto Q */
+        Q[className] = Class;
 
-      /* Let the class know its name */
-      Class.prototype.className = className;
-      Class.className = className;
+        /* Let the class know its name */
+        Class.prototype.className = className;
+        Class.className = className;
+      }
       
       return Class;
     };
@@ -447,9 +467,14 @@ var Quintus = function Quintus(opts) {
     // component itself is added onto the entity as well. 
     init: function(entity) {
       this.entity = entity;
-      if(this.extend) _.extend(entity,this.extend);  
+      if(this.extend) Q._extend(entity,this.extend);  
       entity[this.name] = this;
-      entity.activeComponents.push(this.name);
+
+      entity.activeComponents.push(this.componentName);
+
+      if(entity.parent && entity.parent.addToList) {
+        entity.parent.addToList(this.componentName,entity);
+      }
       if(this.added) this.added();       
     },
 
@@ -467,9 +492,13 @@ var Quintus = function Quintus(opts) {
         }
       }
       delete this.entity[this.name];
-      var idx = this.entity.activeComponents.indexOf(this.name);
+      var idx = this.entity.activeComponents.indexOf(this.componentName);
       if(idx != -1) { 
         this.entity.activeComponents.splice(idx,1);
+
+        if(this.entity.parent && this.entity.parent.addToList) {
+          this.entity.parent.addToLists(this.componentName,this.entity);
+        }
       }
       this.debind();
       if(this.destroyed) this.destroyed();
@@ -548,6 +577,7 @@ var Quintus = function Quintus(opts) {
   Q.component = function(name,methods) {
     if(!methods) { return Q.components[name] }
     methods.name = name;
+    methods.componentName = "." + name;
     return (Q.components[name] = Q.Component.extend(name + "Component",methods));
   };
 
@@ -576,21 +606,31 @@ var Quintus = function Quintus(opts) {
   // jQuery.
   Q.setup = function(id, options) {
     var touchDevice = 'ontouchstart' in document;
+    if(_.isObject(id)) {
+      options = id;
+      id = null;
+    }
     options = options || {};
     id = id || "quintus";
     Q.el = $(_.isString(id) ? "#" + id : id);
 
     if(Q.el.length === 0) {
-      Q.el = $("<canvas width='320' height='420'></canvas>")
-              .attr('id',id).appendTo("body");
+      var defaultWidth = options.width || 320,
+          defaultHeight = options.height || 420;
+      
+      Q.el = $("<canvas width='" + defaultWidth + "' height='" + defaultHeight + "'></canvas>")
+              .attr({ id: id })
+              .appendTo("body");
     }
 
     var maxWidth = options.maxWidth || 5000,
         maxHeight = options.maxHeight || 5000,
         resampleWidth = options.resampleWidth,
-        resampleHeight = options.resampleHeight;
+        resampleHeight = options.resampleHeight,
+        upsampleWidth = options.upsampleWidth,
+        upsampleHeight = options.upsampleHeight;
 
-    if(options.maximize) {
+    if(options.maximize == true || (touchDevice && options.maximize == 'touch'))  {
       $("html, body").css({ padding:0, margin: 0 });
       var w = Math.min(window.innerWidth,maxWidth);
       var h = Math.min(window.innerHeight - 5,maxHeight)
@@ -603,7 +643,12 @@ var Quintus = function Quintus(opts) {
         h = Math.min(window.innerHeight - 5,maxHeight);
       }
 
-      if(((resampleWidth && w > resampleWidth) ||
+      if((upsampleWidth && w <= upsampleWidth) ||
+         (upsampleHeight && h <= upsampleHeight)) {
+        Q.el.css({  width:w, height:h })
+            .attr({ width:w*2, height:h*2 });
+      }
+      else if(((resampleWidth && w > resampleWidth) ||
           (resampleHeight && h > resampleHeight)) && 
          touchDevice) { 
         Q.el.css({  width:w, height:h })
@@ -615,13 +660,13 @@ var Quintus = function Quintus(opts) {
     
     }
 
-    Q.wrapper = Q.el
+    /*Q.wrapper = Q.el
                  .wrap("<div id='" + id + "_container'/>")
                  .parent()
                  .css({ width: Q.el.width(),
                         margin: '0 auto' });
-
-    Q.el.css('position','relative');
+                        */
+    //Q.el.css('position','relative');
 
     Q.ctx = Q.el[0].getContext && 
             Q.el[0].getContext("2d");
@@ -807,7 +852,7 @@ var Quintus = function Quintus(opts) {
     if(_.isArray(assets)) { 
       _.each(assets,function(itm) {
         if(_.isObject(itm)) {
-          _.extend(assetObj,itm);
+          Q._extend(assetObj,itm);
         } else {
           assetObj[itm] = itm;
         }
@@ -898,6 +943,153 @@ var Quintus = function Quintus(opts) {
     }
   };
 
+
+  // Math methods, for rotating and scaling points
+
+  // A list of matrices available
+  Q.matrices2d = [];
+
+  Q.matrix2d = function() {
+    return Q.matrices2d.length > 0 ? Q.matrices2d.pop().identity() : new Q.Matrix2D();
+  };
+
+  // A 2D matrix class, optimized for 2D points,
+  // where the last row of the matrix will always be 0,0,1 
+  // Good Docs where: 
+  //    https://github.com/heygrady/transform/wiki/calculating-2d-matrices
+  Q.Matrix2D = Q.Class.extend({
+    init: function(source) {
+
+      if(source) {
+        this.m = [];
+        this.clone(source);
+      } else {
+        this.m = [1,0,0,0,1,0];
+      }
+    },
+
+    // Turn this matrix into the identity
+    identity: function() {
+      var m = this.m;
+      m[0] = 1; m[1] = 0; m[2] = 0;
+      m[3] = 0; m[4] = 1; m[5] = 0;
+      return this;
+    },
+
+    // Clone another matrix into this one
+    clone: function(matrix) {
+      var d = this.m, s = matrix.m;
+      d[0]=s[0]; d[1]=s[1]; d[2] = s[2];
+      d[3]=s[3]; d[4]=s[4]; d[5] = s[5];
+      return this;
+    },
+
+    // a * b = 
+    //   [ [ a11*b11 + a12*b21 ], [ a11*b12 + a12*b22 ], [ a11*b31 + a12*b32 + a13 ] ,
+    //   [ a21*b11 + a22*b21 ], [ a21*b12 + a22*b22 ], [ a21*b31 + a22*b32 + a23 ] ]
+    multiply: function(matrix) {
+      var a = this.m, b = matrix.m;
+
+      var m11 = a[0]*b[0] + a[1]*b[3];
+      var m12 = a[0]*b[1] + a[1]*b[4];
+      var m13 = a[0]*b[2] + a[1]*b[5] + a[2];
+
+      var m21 = a[3]*b[0] + a[4]*b[3];
+      var m22 = a[3]*b[1] + a[4]*b[4];
+      var m23 = a[3]*b[2] + a[4]*b[5] + a[5];
+
+      a[0]=m11; a[1]=m12; a[2] = m13;
+      a[3]=m21; a[4]=m22; a[5] = m23;
+      return this;
+    },
+
+    // Multiply this matrix by a rotation matrix rotated radians radians 
+    rotate: function(radians) {
+      var cos = Math.cos(radians),
+          sin = Math.sin(radians),
+          m = this.m;
+
+      var m11 = m[0]*cos  + m[1]*sin;
+      var m12 = m[0]*-sin + m[1]*cos;
+
+      var m21 = m[3]*cos  + m[4]*sin;
+      var m22 = m[3]*-sin + m[4]*cos;
+
+      m[0] = m11; m[1] = m12; // m[2] == m[2]
+      m[3] = m21; m[4] = m22; // m[5] == m[5]
+      return this;
+    },
+
+    // Helper method to rotate by a set number of degrees
+    rotateDeg: function(degrees) {
+      return this.rotate(Math.PI * degrees / 180);
+    },
+
+    // Multiply this matrix by a scaling matrix scaling sx and sy
+    scale: function(sx,sy) {
+      var m = this.m;
+      if(sy === void 0) { sy = sx; }
+
+      m[0] *= sx;
+      m[1] *= sy;
+      m[3] *= sx;
+      m[4] *= sy;
+      return this;
+    },
+
+
+    // Multiply this matrix by a translation matrix translate by tx and ty
+    translate: function(tx,ty) {
+      var m = this.m;
+
+      m[2] += m[0]*tx + m[1]*ty;
+      m[5] += m[3]*tx + m[4]*ty;
+      return this;
+    },
+
+    // Memory Hoggy version
+    transform: function(x,y) {
+      return [ x * this.m[0] + y * this.m[1] + this.m[2], 
+               x * this.m[3] + y * this.m[4] + this.m[5] ]
+    },
+
+    // Transform an object with an x and y property by this Matrix
+    transformPt: function(obj) {
+      var x = obj.x, y = obj.y;
+
+      obj.x = x * this.m[0] + y * this.m[1] + this.m[2];
+      obj.y = x * this.m[3] + y * this.m[4] + this.m[5];
+
+      return point;
+    },
+
+    // Transform an array with an x and y property by this Matrix
+    transformArr: function(arr) {
+      var x = arr[0], y = arr[1];
+      
+      arr[0] = x * this.m[0] + y * this.m[1] + this.m[2];
+      arr[1] = x * this.m[3] + y * this.m[4] + this.m[5];
+
+      return arr;
+    },
+
+    // Return just the x component by this Matrix
+    transformX: function(x,y) {
+      return x * this.m[0] + y * this.m[1] + this.m[2];
+    },
+
+    // Return just the y component by this Matrix
+    transformY: function(x,y) {
+      return x * this.m[3] + y * this.m[4] + this.m[5];
+    },
+
+    // Release this Matrix to be reused
+    release: function() {
+      Q.matrices2d.push(this);
+      return null;
+    }
+
+  });
 
   // And that's it..
   // ===============

@@ -378,4 +378,86 @@ describe("Quintus Core Engine", function() {
 
   });
 
+  describe("Matrix Functionality",function() {
+    var matrix;
+
+    beforeEach(function() {
+      matrix = new Q.Matrix2D();
+    });
+
+    it("should be able to use and release matrixes",function() {
+
+      matrix.rotateDeg(45);
+      var m2 = Q.matrix2d().translate(20,20).scale(15);
+      expect(Q.matrices2d.length).toBe(0);
+
+      m2.release();
+      expect(Q.matrices2d.length).toBe(1);
+
+      matrix.release();
+      expect(Q.matrices2d.length).toBe(2);
+
+      var m3 = Q.matrix2d();
+      expect(Q.matrices2d.length).toBe(1);
+      expect(m3.m).toEqual([1,0,0,0,1,0]);
+
+      // Make sure we can get one even if there isn't one
+      var m4 = Q.matrix2d();
+      expect(Q.matrices2d.length).toBe(0);
+      expect(m4.m).toEqual([1,0,0,0,1,0]);
+
+      // Make sure we can get one even if there isn't one
+      var m5 = Q.matrix2d();
+      expect(Q.matrices2d.length).toBe(0);
+    });
+
+    it("not modify a point with the default matrix",function() {
+      expect(matrix.transform(10,40)).toEqual([10,40]);
+    });
+
+    it("should be able to translate a point",function() {
+      expect(matrix.translate(20,20).transform(10,40))
+            .toEqual([ 20 + 10, 20 + 40 ])
+    });
+
+    it("should be able to rotate a point by 90 degrees",function() {
+      var result = matrix.rotateDeg(90).transform(10,40);
+
+      expect(result[0]).toBeCloseTo(-40,0.001);
+      expect(result[1]).toBeCloseTo(10,0.001);
+    });
+
+    it("should be able to rotate a point by 45 degrees",function() {
+      var result = matrix.rotateDeg(45).transform(100,0);
+
+      // 'Ol pythagoras
+      expect(result[0]).toBeCloseTo(Math.sqrt(100*100/2),0.001);
+      expect(result[1]).toBeCloseTo(Math.sqrt(100*100/2),0.001);
+    });
+
+    it("should be able to scale up a point",function() {
+      var result = matrix.scale(2,1.75).transform(10,10);
+
+      expect(result[0]).toBeCloseTo(10*2,0.001);
+      expect(result[1]).toBeCloseTo(10*1.75,0.001);
+    });
+
+    it("should be able to multiply two matrices",function() {
+      var m2 = new Q.Matrix2D();
+      m2.translate(10,20).rotateDeg(45);
+
+      matrix.scale(5).translate(30,40).multiply(m2);
+
+      var result = matrix.transform(50,0);
+      // rotated 45 deg:  [ Math.sqrt(50*50/2), Math.sqrt(50*50/2) ]
+      // translated 10,20: [ 10 + Math.sqrt(50*50/2), 20 + Math.sqrt(50*50/2) ]
+      // translated 30,40: [ 30 + 10 + Math.sqrt(50*50/2), 40 + 20 + Math.sqrt(50*50/2) ]
+      // scaled: [ 5 * (30 + 10 + Math.sqrt(50*50/2)), 5 * (40 + 20 + Math.sqrt(50*50/2)) ]
+
+      expect(result[0]).toBeCloseTo( 5 * (30 + 10 + Math.sqrt(50*50/2)),0.0001);
+      expect(result[1]).toBeCloseTo(  5 * (40 + 20 + Math.sqrt(50*50/2)),0.0001);
+    });
+
+  });
+
 });

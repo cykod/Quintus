@@ -164,11 +164,13 @@ Quintus.Physics = function(Q) {
       this._body.CreateFixture(fixtureDef);
       this._body._bbid = p.id;
     },
+
     removed: function() {
       var entity = this.entity,
           stage = entity.parent;
       stage.world.destroyBody(this._body);
     },
+
     step: function() {
       var p = this.entity.p,
           stage = this.entity.parent,
