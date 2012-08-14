@@ -660,13 +660,13 @@ var Quintus = function Quintus(opts) {
     
     }
 
-    /*Q.wrapper = Q.el
+    Q.wrapper = Q.el
                  .wrap("<div id='" + id + "_container'/>")
                  .parent()
                  .css({ width: Q.el.width(),
                         margin: '0 auto' });
-                        */
-    //Q.el.css('position','relative');
+                        
+    Q.el.css('position','relative');
 
     Q.ctx = Q.el[0].getContext && 
             Q.el[0].getContext("2d");

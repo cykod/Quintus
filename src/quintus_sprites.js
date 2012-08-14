@@ -75,6 +75,7 @@ Quintus.Sprites = function(Q) {
         x: 0,
         y: 0,
         z: 0,
+        angle: 0,
         frame: 0,
         type: 0
       }).extend(props||{});
@@ -87,8 +88,8 @@ Quintus.Sprites = function(Q) {
           this.p.h = this.p.h || this.sheet().tileh;
         }
       }
-      this.p.cx = this.p.cx || (this.p.w / 2);
-      this.p.cy = this.p.cy || (this.p.h / 2);
+      this.p.cx = this.p.cx || (this.p.points ? 0 : (this.p.w / 2));
+      this.p.cy = this.p.cy || (this.p.points ? 0 : (this.p.h / 2));
       this.p.id = this.p.id || _.uniqueId();
     },
 
@@ -133,6 +134,36 @@ Quintus.Sprites = function(Q) {
         }
       }
       this.trigger('draw',ctx);
+
+      if(Q.debug) {
+
+        if(this.p.points) {
+          ctx.save();
+          ctx.translate(this.p.x + this.p.cx, this.p.y + this.p.cy);
+          ctx.beginPath();
+          ctx.fillStyle = this.p.hit ? "blue" : "red";
+          ctx.strokeStyle = "black";
+
+          ctx.moveTo(this.p.points[0][0],this.p.points[0][1]);
+          for(var i=0;i<this.p.points.length;i++) {
+            ctx.lineTo(this.p.points[i][0],this.p.points[i][1]);
+          }
+          ctx.lineTo(this.p.points[0][0],this.p.points[0][1]);
+          ctx.stroke();
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        ctx.strokeStyle = "gray";
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(p.x+p.w,p.y);
+        ctx.lineTo(p.x+p.w,p.y+p.h);
+        ctx.lineTo(p.x,p.y+p.h);
+        ctx.lineTo(p.x,p.y);
+        ctx.stroke();
+      }
     },
 
     step: function(dt) {

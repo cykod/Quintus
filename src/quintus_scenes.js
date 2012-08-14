@@ -34,7 +34,8 @@ Quintus.Scenes = function(Q) {
   };
 
   // Default to SAT collision between two objects
-  // TODO: handle angles
+  // Thanks to doc's at: http://www.sevenson.com.au/actionscript/sat/
+  // TODO: handle angles on objects 
   Q.collision = (function() { 
     var normalX, normalY,
         offset = [ 0,0 ];
@@ -43,7 +44,7 @@ Quintus.Scenes = function(Q) {
       var pt1 = points[idx],
           pt2 = points[idx+1] || points[0];
 
-      normalX = -(pt2[1] - pt1.y[1]);
+      normalX = -(pt2[1] - pt1[1]);
       normalY = pt2[0] - pt1[0];
 
       var dist = Math.sqrt(normalX*normalX + normalY*normalY);
@@ -51,6 +52,11 @@ Quintus.Scenes = function(Q) {
         normalX /= dist;
         normalY /= dist;
       }
+    }
+
+    function dotProductAgainstNormal(point) {
+      return (normalX * point[0]) + (normalY * point[1]);
+
     }
 
     function collide(o1,o2) {
@@ -63,7 +69,7 @@ Quintus.Scenes = function(Q) {
       o2 = o2.p;
 
       offset[0] = o1.x + o1.cx - o2.x - o2.cx;
-      offset[1] = o1.y + o1.cx - o2.y - o2.cy;
+      offset[1] = o1.y + o1.cy - o2.y - o2.cy;
 
       for(i = 0;i<o1.points.length;i++) {
         calculateNormal(o1.points,i);
@@ -87,9 +93,11 @@ Quintus.Scenes = function(Q) {
         }
 
         offsetLength = dotProductAgainstNormal(offset);
+        min1 += offsetLength;
+        max1 += offsetLength;
 
         d1 = min1 - max2;
-        d2 = min2 - max1
+        d2 = min2 - max1;
 
         if(d1 > 0 || d2 > 0) { return null; }
       }
@@ -181,7 +189,7 @@ Quintus.Scenes = function(Q) {
     removeFromList: function(list, itm) {
       var listIndex = _.indexOf(this.lists[list],itm);
       if(listIndex != -1) { 
-        this.lists[list].splice(idx,1);
+        this.lists[list].splice(listIndex,1);
       }
     },
 
@@ -229,7 +237,10 @@ Quintus.Scenes = function(Q) {
 
     _hitTest: function(obj,type) {
       if(obj != this) {
-        var col = (!type || this.p.type & type) && Q.overlap(obj,this) && Q.collision(obj,this);
+        var col = (!type || this.p.type & type) && Q.overlap(obj,this);
+        if(col) {
+          col= Q.collision(obj,this);
+        }
         return col ? this : false;
       }
     },
@@ -324,6 +335,10 @@ Quintus.Scenes = function(Q) {
       }
 
       return this;
+    },
+
+    at: function(idx) {
+      return this.items[idx];
     }
   });
 
@@ -377,13 +392,20 @@ Quintus.Scenes = function(Q) {
   };
 
   Q.stageGameLoop = function(dt) {
+    for(var i =0,len=Q.stages.length;i<len;i++) {
+      Q.activeStage = i;
+      var stage = Q.stage();
+      if(stage) {
+        stage.step(dt);
+      }
+    }
+
     if(Q.ctx) { Q.clear(); }
 
     for(var i =0,len=Q.stages.length;i<len;i++) {
       Q.activeStage = i;
       var stage = Q.stage();
       if(stage) {
-        stage.step(dt);
         stage.draw(Q.ctx);
       }
     }
