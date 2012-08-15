@@ -1,0 +1,1 @@
+{"ball":{"sx":0,"sy":0,"cols":1,"tilew":20,"tileh":20,"frames":1},"block":{"sx":0,"sy":20,"cols":1,"tilew":40,"tileh":20,"frames":1},"paddle":{"sx":0,"sy":40,"cols":2,"tilew":60,"tileh":20,"frames":2}}
