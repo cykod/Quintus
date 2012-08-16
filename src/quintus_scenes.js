@@ -109,6 +109,9 @@ Quintus.Scenes = function(Q) {
     function satCollision(o1,o2) {
       var result;
 
+      // Don't compare a square to a square for no reason
+      if(!o1.p.points && !o2.p.points) return true;
+
       if(!o1.p.points) { Q.generatePoints(o1); }
       if(!o2.p.points) { Q.generatePoints(o2); }
 
@@ -142,13 +145,20 @@ Quintus.Scenes = function(Q) {
       this.lists = {};
       this.index = {};
       this.removeList = [];
-      if(scene)  { 
+
+      if(this.scene)  { 
         this.options = _(this.defaults).clone();
         Q._extend(this.options,scene.opts);
-        scene.sceneFunc(this);
       }
       if(this.options.sort && !_.isFunction(this.options.sort)) {
           this.options.sort = function(a,b) { return a.p.z - b.p.z; };
+      }
+    },
+
+    // Needs to be separated out so the current stage can be set
+    loadScene: function() {
+      if(this.scene)  { 
+        this.scene.sceneFunc(this);
       }
     },
 
@@ -184,6 +194,13 @@ Quintus.Scenes = function(Q) {
     addToList: function(list, itm) {
       if(!this.lists[list]) { this.lists[list] = []; }
       this.lists[list].push(itm);
+    },
+
+
+    removeFromLists: function(lists, itm) {
+      for(var i=0;i<lists.length;i++) {
+        this.removeFromList(lists[i],itm);
+      }
     },
 
     removeFromList: function(list, itm) {
@@ -352,7 +369,7 @@ Quintus.Scenes = function(Q) {
   // Q("Enemy").p({ a: "asdfasf"  });
 
   Q.select = function(selector,scope) {
-    scope = scope || Q.activeStage
+    scope = (scope === void 0) ? Q.activeStage : scope;
     scope = Q.stage(scope);
     if(_.isNumber(selector)) {
       scope.index[selector];
@@ -384,7 +401,13 @@ Quintus.Scenes = function(Q) {
       Q.stages[num].destroy();
     }
 
+    Q.activeStage = num;
     Q.stages[num] = new stageClass(scene);
+    if(scene) {
+      Q.stages[num].loadScene();
+    }
+    Q.activeStage = 0;
+
 
     if(!Q.loop) {
       Q.gameLoop(Q.stageGameLoop);
@@ -392,20 +415,14 @@ Quintus.Scenes = function(Q) {
   };
 
   Q.stageGameLoop = function(dt) {
+    if(Q.ctx) { Q.clear(); }
+    //dt = 0.016;
+
     for(var i =0,len=Q.stages.length;i<len;i++) {
       Q.activeStage = i;
       var stage = Q.stage();
       if(stage) {
         stage.step(dt);
-      }
-    }
-
-    if(Q.ctx) { Q.clear(); }
-
-    for(var i =0,len=Q.stages.length;i<len;i++) {
-      Q.activeStage = i;
-      var stage = Q.stage();
-      if(stage) {
         stage.draw(Q.ctx);
       }
     }

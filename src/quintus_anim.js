@@ -99,7 +99,7 @@ Quintus.Anim = function(Q) {
 
     extend: {
       follow: function(sprite,directions) {
-        this.off('step',this.viewport);
+        this.off('step',this.viewport,'follow');
         this.viewport.directions = directions || { x: true, y: true };
         this.viewport.following = sprite;
         this.on('step',this.viewport,'follow');
@@ -107,7 +107,7 @@ Quintus.Anim = function(Q) {
       },
 
       unfollow: function() {
-        this.off('step',this.viewport);
+        this.off('step',this.viewport,'follow');
       },
 
       centerOn: function(x,y) {
@@ -140,11 +140,12 @@ Quintus.Anim = function(Q) {
         this.y = this.centerY - Q.height / 2 / this.scale;
         this.centerY = y;
       }
+
     },
 
     predraw: function() {
       Q.ctx.save();
-      Q.ctx.translate(Q.width/2,Q.height/2);
+      Q.ctx.translate(Math.floor(Q.width/2),Math.floor(Q.height/2));
       Q.ctx.scale(this.scale,this.scale);
       Q.ctx.translate(-Math.floor(this.centerX), -Math.floor(this.centerY));
     },

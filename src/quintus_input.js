@@ -71,7 +71,7 @@ Quintus.Input = function(Q) {
       this.keyboardEnabled = true;
     },
 
-touchLocation: function(touch) {
+    touchLocation: function(touch) {
       var el = Q.el, 
           pageX = touch.pageX,
           pageY = touch.pageY,

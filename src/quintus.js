@@ -563,11 +563,11 @@ var Quintus = function Quintus(opts) {
     // callback.
     destroy: function() {
       if(this.isDestroyed) { return; }
+      this.trigger('destroyed');
       this.debind();
       if(this.parent && this.parent.remove) {
         this.parent.remove(this);
       }
-      this.trigger('destroyed');
       this.isDestroyed = true;
     }
   });
@@ -604,8 +604,10 @@ var Quintus = function Quintus(opts) {
   //
   // TODO: add support for auto-resize w/ engine event notifications, remove
   // jQuery.
+
+  Q.touchDevice = ('ontouchstart' in document);
+
   Q.setup = function(id, options) {
-    var touchDevice = 'ontouchstart' in document;
     if(_.isObject(id)) {
       options = id;
       id = null;
@@ -623,6 +625,9 @@ var Quintus = function Quintus(opts) {
               .appendTo("body");
     }
 
+    var w = Q.el.attr('width'),
+        h = Q.el.attr('height');
+
     var maxWidth = options.maxWidth || 5000,
         maxHeight = options.maxHeight || 5000,
         resampleWidth = options.resampleWidth,
@@ -630,34 +635,33 @@ var Quintus = function Quintus(opts) {
         upsampleWidth = options.upsampleWidth,
         upsampleHeight = options.upsampleHeight;
 
-    if(options.maximize == true || (touchDevice && options.maximize == 'touch'))  {
+    if(options.maximize == true || (Q.touchDevice && options.maximize == 'touch'))  {
       $("html, body").css({ padding:0, margin: 0 });
       var w = Math.min(window.innerWidth,maxWidth);
       var h = Math.min(window.innerHeight - 5,maxHeight)
 
-      if(touchDevice) {
+      if(Q.touchDevice) {
         Q.el.css({height: h * 2});
         window.scrollTo(0,1);
 
         w = Math.min(window.innerWidth,maxWidth);
-        h = Math.min(window.innerHeight - 5,maxHeight);
+        h = Math.min(window.innerHeight,maxHeight);
       }
+    }
 
-      if((upsampleWidth && w <= upsampleWidth) ||
-         (upsampleHeight && h <= upsampleHeight)) {
-        Q.el.css({  width:w, height:h })
-            .attr({ width:w*2, height:h*2 });
-      }
-      else if(((resampleWidth && w > resampleWidth) ||
-          (resampleHeight && h > resampleHeight)) && 
-         touchDevice) { 
-        Q.el.css({  width:w, height:h })
-            .attr({ width:w/2, height:h/2 });
-      } else {
-        Q.el.css({  width:w, height:h })
-            .attr({ width:w, height:h });
-      }
-    
+    if((upsampleWidth && w <= upsampleWidth) ||
+       (upsampleHeight && h <= upsampleHeight)) {
+      Q.el.css({  width:w, height:h })
+          .attr({ width:w*2, height:h*2 });
+    }
+    else if(((resampleWidth && w > resampleWidth) ||
+        (resampleHeight && h > resampleHeight)) && 
+       Q.touchDevice) { 
+      Q.el.css({  width:w, height:h })
+          .attr({ width:w/2, height:h/2 });
+    } else {
+      Q.el.css({  width:w, height:h })
+          .attr({ width:w, height:h });
     }
 
     Q.wrapper = Q.el
