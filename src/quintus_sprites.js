@@ -70,15 +70,18 @@ Quintus.Sprites = function(Q) {
   //    sheet or asset
   //    frame
   Q.GameObject.extend("Sprite",{
-    init: function(props) {
-      this.p = _({ 
+    init: function(props,defaultProps) {
+      this.p = Q._extend({ 
         x: 0,
         y: 0,
         z: 0,
         angle: 0,
         frame: 0,
         type: 0
-      }).extend(props||{});
+      },defaultProps);
+
+      Q._extend(this.p,props); 
+
       if((!this.p.w || !this.p.h)) {
         if(this.asset()) {
           this.p.w = this.p.w || this.asset().width;
@@ -99,6 +102,14 @@ Quintus.Sprites = function(Q) {
 
     sheet: function() {
       return Q.sheet(this.p.sheet);
+    },
+
+    hide: function() {
+      this.p.hidden = true;
+    },
+
+    show: function() {
+      this.p.hidden = false;
     },
 
     draw: function(ctx) {
@@ -172,13 +183,13 @@ Quintus.Sprites = function(Q) {
   });
 
   Q.Sprite.extend("MovingSprite",{
-    init: function(props) {
-      this._super(_({
+    init: function(props,defaultProps) {
+      this._super(Q._extend({
         vx: 0,
         vy: 0,
         ax: 0,
         ay: 0
-      }).extend(props));
+      },props),defaultProps);
    },
 
    step: function(dt) {

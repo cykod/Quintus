@@ -115,7 +115,19 @@ var Quintus = function Quintus(opts) {
       dest[prop] = source[prop];
     }
     return dest;
-  }
+  };
+
+  // Internal utility method that adds default properties onto
+  // an object only if the key is undefined
+  Q._defaults = function(dest,source) {
+    if(!source) return dest;
+    for (var prop in source) {
+      if(dest[prop] == void 0) {
+        dest[prop] = source[prop];
+      }
+    }
+    return dest;
+  };
 
 
   // Syntax for including other modules into quintus, can accept a comma-separated
@@ -676,8 +688,8 @@ var Quintus = function Quintus(opts) {
             Q.el[0].getContext("2d");
 
 
-    Q.width = Q.el.attr('width');
-    Q.height = Q.el.attr('height');
+    Q.width = parseInt(Q.el.attr('width'),0);
+    Q.height = parseInt(Q.el.attr('height'),0);
     Q.cssWidth = Q.el.width();
     Q.cssHeight = Q.el.height();
 

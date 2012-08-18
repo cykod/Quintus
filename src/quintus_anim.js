@@ -137,8 +137,8 @@ Quintus.Anim = function(Q) {
         this.x = this.centerX - Q.width / 2 / this.scale;
       }
       if(y !== void 0) { 
-        this.y = this.centerY - Q.height / 2 / this.scale;
         this.centerY = y;
+        this.y = this.centerY - Q.height / 2 / this.scale;
       }
 
     },

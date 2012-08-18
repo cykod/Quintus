@@ -11,10 +11,13 @@ Quintus.Scenes = function(Q) {
   });
 
   // Set up or return a new scene
-  Q.scene = function(name,sceneObj) {
-    if(!sceneObj) {
+  Q.scene = function(name,sceneObj,opts) {
+    if(sceneObj === void 0) {
       return Q.scenes[name];
     } else {
+      if(_.isFunction(sceneObj)) {
+        sceneObj = new Q.Scene(sceneObj,opts);
+      }
       Q.scenes[name] = sceneObj;
       return sceneObj;
     }
@@ -139,19 +142,22 @@ Quintus.Scenes = function(Q) {
       sort: false
     },
 
-    init: function(scene) {
+    init: function(scene,opts) {
       this.scene = scene;
       this.items = [];
       this.lists = {};
       this.index = {};
       this.removeList = [];
 
+      this.options = _(this.defaults).clone();
       if(this.scene)  { 
-        this.options = _(this.defaults).clone();
         Q._extend(this.options,scene.opts);
       }
+      if(opts) { Q._extend(this.options,opts); }
+
+
       if(this.options.sort && !_.isFunction(this.options.sort)) {
-          this.options.sort = function(a,b) { return a.p.z - b.p.z; };
+          this.options.sort = function(a,b) { return ((a.p && a.p.z) || -1) - ((b.p && b.p.z) || -1); };
       }
     },
 
@@ -177,7 +183,7 @@ Quintus.Scenes = function(Q) {
     },
 
     detect: function(func) {
-      for(var i = 0,val=null, len=this.items.length; i < len; i++) {
+      for(var i = this.items.length-1;i >= 0; i--) {
         if(func.call(this.items[i],arguments[1],arguments[2])) {
           return this.items[i];
         }
@@ -254,7 +260,7 @@ Quintus.Scenes = function(Q) {
 
     _hitTest: function(obj,type) {
       if(obj != this) {
-        var col = (!type || this.p.type & type) && Q.overlap(obj,this);
+        var col = (!type || (this.p && this.p.type & type)) && Q.overlap(obj,this);
         if(col) {
           col= Q.collision(obj,this);
         }
@@ -316,11 +322,15 @@ Quintus.Scenes = function(Q) {
 
     invoke: function(funcName) {
       for(var i=0,len=this.items.length;i<len;i++) {              
-        this.items[funcName].call(
+        this.items[i][funcName].call(
           this.items[i],arguments[1],arguments[2]
         );
       }
       return this;
+    },
+
+    trigger: function(name,params) {
+      this.invoke("trigger",name,params);
     },
 
     detect: function(func) {
@@ -356,7 +366,16 @@ Quintus.Scenes = function(Q) {
 
     at: function(idx) {
       return this.items[idx];
+    },
+
+    first: function() {
+      return this.items[0];
+    },
+
+    last: function() {
+      return this.items[this.items.length-1];
     }
+
   });
 
   // Maybe add support for different types
@@ -412,6 +431,8 @@ Quintus.Scenes = function(Q) {
     if(!Q.loop) {
       Q.gameLoop(Q.stageGameLoop);
     }
+
+    return Q.stages[num];
   };
 
   Q.stageGameLoop = function(dt) {
