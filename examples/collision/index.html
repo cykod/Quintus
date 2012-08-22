@@ -103,6 +103,8 @@ var Q = Quintus().include("Sprites, Scenes").setup({ width: 960, height: 512 });
       ctx.save();
       ctx.translate(this.p.x + this.p.cx, this.p.y + this.p.cy);
 
+      ctx.rotate(this.p.angle * Math.PI / 180);
+
       ctx.beginPath();
       ctx.fillStyle = this.p.hit ? "blue" : "red";
       ctx.strokeStyle = "black";

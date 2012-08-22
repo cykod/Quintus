@@ -369,5 +369,82 @@ Quintus.Input = function(Q) {
   };
   
 
+  Q.component("platformerControls", {
+
+    added: function() {
+      var p = this.entity.p;
+
+      if(!p.speed) { p.speed = 200; }
+
+      this.entity.on("step",this,"step");
+    },
+
+    step: function(dt) {
+      var p = this.entity.p;
+
+      if(Q.inputs['left']) {
+        p.vx = -p.speed;
+      } else if(Q.inputs['right']) {
+        p.vx = p.speed;
+      }
+
+    }
+  });
+
+
+  Q.component("stepControls", {
+
+    added: function() {
+      var p = this.entity.p;
+
+      if(!p.stepDistance) { p.stepDistance = 32; }
+      if(!p.stepDelay) { p.stepDelay = 0.2; }
+
+      p.stepWait = 0;
+      this.entity.on("step",this,"step");
+    },
+
+    step: function(dt) {
+      var p = this.entity.p,
+          moved = false;
+      p.stepWait -= dt;
+
+      if(p.stepping) {
+        p.x += p.diffX * dt / p.stepDelay;
+        p.y += p.diffY * dt / p.stepDelay;
+      }
+
+      if(p.stepWait > 0) { return; }
+      if(p.stepping) {
+        p.x = p.destX;
+        p.y = p.destY;
+      }
+      p.stepping = false;
+
+      p.diffX = 0;
+      p.diffY = 0;
+
+      if(Q.inputs['left']) {
+        p.diffX = -p.stepDistance;
+      } else if(Q.inputs['right']) {
+        p.diffX = p.stepDistance;
+      }
+
+      if(Q.inputs['up']) {
+        p.diffY = -p.stepDistance;
+      } else if(Q.inputs['down']) {
+        p.diffY = p.stepDistance;
+      }
+
+      if(p.diffY || p.diffX ) { 
+        p.stepping = true;
+        p.destX = p.x + p.diffX;
+        p.destY = p.y + p.diffY;
+        p.stepWait = p.stepDelay; 
+      }
+
+    }
+
+  });
 };
 

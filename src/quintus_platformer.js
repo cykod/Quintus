@@ -3,13 +3,13 @@ Quintus.Platformer = function(Q) {
  Q.TileLayer = Q.Sprite.extend({
 
     init: function(props) {
-      this._super(_(props).defaults({
+      this._super(props,{
         tileW: 32,
         tileH: 32,
         blockTileW: 10,
         blockTileH: 10,
         type: 1
-      }));
+      });
       if(this.p.dataAsset) {
         this.load(this.p.dataAsset);
       }
