@@ -15,7 +15,7 @@ Quintus.Touch = function(Q) {
       Q.el.on('touchmove mousemove',this.drag);
       Q.el.on('touchend mouseup touchcancel',this.touchEnd);
       this.touchPos = new Q.Evented();
-      this.touchPos.p = { w:6, h:6 };
+      this.touchPos.p = { w:6, h:6, cx: 3, cy: 3 };
       this.activeTouches = {};
       this.touchedObjects = {};
     },
@@ -28,14 +28,14 @@ Quintus.Touch = function(Q) {
 
     normalizeTouch: function(touch,stage) {
       var canvasPos = $(Q.el).offset();
-      this.touchPos.p.ox = this.touchPos.p.cx = (touch.pageX - canvasPos.left) / Q.cssWidth * Q.width;
-      this.touchPos.p.oy = this.touchPos.p.cy = (touch.pageY - canvasPos.top) / Q.cssHeight * Q.height;
+      this.touchPos.p.ox = this.touchPos.p.px = (touch.pageX - canvasPos.left) / Q.cssWidth * Q.width;
+      this.touchPos.p.oy = this.touchPos.p.py = (touch.pageY - canvasPos.top) / Q.cssHeight * Q.height;
       
       if(stage.viewport) {
-        this.touchPos.p.cx /= stage.viewport.scale;
-        this.touchPos.p.cy /= stage.viewport.scale;
-        this.touchPos.p.cx += stage.viewport.x;
-        this.touchPos.p.cy += stage.viewport.y;
+        this.touchPos.p.px /= stage.viewport.scale;
+        this.touchPos.p.py /= stage.viewport.scale;
+        this.touchPos.p.px += stage.viewport.x;
+        this.touchPos.p.py += stage.viewport.y;
       }
 
       return this.touchPos;
@@ -55,8 +55,8 @@ Quintus.Touch = function(Q) {
           touch.identifier = touch.identifier || 0;
           var pos = this.normalizeTouch(touch,stage);
 
-          pos.p.x = pos.p.cx - 3;
-          pos.p.y = pos.p.cy - 3;
+          pos.p.x = pos.p.px - 3;
+          pos.p.y = pos.p.py - 3;
           pos.obj = null;
 
           var obj = stage.collide(pos,touchType);
@@ -68,8 +68,8 @@ Quintus.Touch = function(Q) {
 
           if(obj && !this.touchedObjects[obj]) {
             this.activeTouches[touch.identifier] = {
-              x: pos.p.cx,
-              y: pos.p.cy,
+              x: pos.p.px,
+              y: pos.p.py,
               origX: obj.p.x,
               origY: obj.p.y,
               sx: pos.p.ox,
@@ -101,8 +101,8 @@ Quintus.Touch = function(Q) {
 
         if(active) {
           var pos = this.normalizeTouch(touch,stage);
-          active.x = pos.p.cx;
-          active.y = pos.p.cy;
+          active.x = pos.p.px;
+          active.y = pos.p.py;
           active.dx = pos.p.ox - active.sx;
           active.dy = pos.p.oy - active.sy;
 

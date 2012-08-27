@@ -437,7 +437,6 @@ Quintus.Scenes = function(Q) {
 
   Q.stageGameLoop = function(dt) {
     if(Q.ctx) { Q.clear(); }
-    //dt = 0.016;
 
     for(var i =0,len=Q.stages.length;i<len;i++) {
       Q.activeStage = i;
