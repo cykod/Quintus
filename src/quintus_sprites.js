@@ -115,6 +115,8 @@ Quintus.Sprites = function(Q) {
     draw: function(ctx) {
       var p = this.p;
 
+
+      if(this.p.hidden) { return; }
       if(!ctx) { ctx = Q.ctx; }
 
       this.trigger('predraw',ctx);

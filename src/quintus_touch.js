@@ -57,8 +57,14 @@ Quintus.Touch = function(Q) {
 
           pos.p.x = pos.p.cx - 3;
           pos.p.y = pos.p.cy - 3;
+          pos.obj = null;
 
           var obj = stage.collide(pos,touchType);
+
+          if(obj || stageIdx == touchStage.length - 1) {
+            pos.obj = obj;
+            this.trigger("touch",pos);
+          }
 
           if(obj && !this.touchedObjects[obj]) {
             this.activeTouches[touch.identifier] = {
@@ -76,6 +82,7 @@ Quintus.Touch = function(Q) {
             obj.trigger('touch', this.activeTouches[touch.identifier]);
             break;
           }
+
         }
 
       }
@@ -135,14 +142,14 @@ Quintus.Touch = function(Q) {
     }
 
     if(!Q._touch) {
-      Q._touch = new Q.TouchSystem();
+      Q.touchInput = new Q.TouchSystem();
     }
     return Q;
   };
 
   Q.untouch = function() {
-    if(Q._touch) {
-      Q._touch.destroy();
+    if(Q.touchInput) {
+      Q.touchInput.destroy();
       delete Q['_touch'];
     }
     return Q;
