@@ -11,6 +11,7 @@ Quintus.Sprites = function(Q) {
   //  cols  - number of columns per row
   Q.Class.extend("SpriteSheet",{
     init: function(name, asset,options) {
+      if(!Q.asset(asset)) { alert("Invalid Asset:" + asset); }
       _.extend(this,{
         name: name,
         asset: asset,
