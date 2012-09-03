@@ -38,6 +38,9 @@ Quintus.Touch = function(Q) {
         this.touchPos.p.py += stage.viewport.y;
       }
 
+      this.touchPos.p.x = this.touchPos.p.px - 3;
+      this.touchPos.p.y = this.touchPos.p.py - 3;
+      this.touchPos.obj = null;
       return this.touchPos;
     },
 
@@ -55,9 +58,6 @@ Quintus.Touch = function(Q) {
           touch.identifier = touch.identifier || 0;
           var pos = this.normalizeTouch(touch,stage);
 
-          pos.p.x = pos.p.px - 3;
-          pos.p.y = pos.p.py - 3;
-          pos.obj = null;
 
           var obj = stage.collide(pos,touchType);
 
@@ -150,7 +150,7 @@ Quintus.Touch = function(Q) {
   Q.untouch = function() {
     if(Q.touchInput) {
       Q.touchInput.destroy();
-      delete Q['_touch'];
+      delete Q['touchInput'];
     }
     return Q;
   };
