@@ -64,6 +64,13 @@ Quintus.Sprites = function(Q) {
   };
 
 
+  Q.SPRITE_DEFAULT  = 1;
+  Q.SPRITE_PARTICLE = 2;
+  Q.SPRITE_ACTIVE   = 4;
+  Q.SPRITE_FRIENDLY = 8;
+  Q.SPRITE_ENEMY    = 16;
+
+
 // Properties:
   //    x
   //    y
@@ -78,7 +85,7 @@ Quintus.Sprites = function(Q) {
         z: 0,
         angle: 0,
         frame: 0,
-        type: 0
+        type: Q.SPRITE_DEFAULT | Q.SPRITE_ACTIVE
       },defaultProps);
 
       Q._extend(this.p,props); 
@@ -123,11 +130,12 @@ Quintus.Sprites = function(Q) {
       this.trigger('predraw',ctx);
 
       /* Only worry about context if we have an angle */
-      if(p.angle) {
+      if(p.angle || p.scale) {
         ctx.save();
 
         ctx.translate(p.x,p.y);
         ctx.translate(p.cx,p.cy)
+        if(p.scale) { ctx.scale(p.scale,p.scale); }
         ctx.rotate(p.angle * Math.PI / 180)
         ctx.translate(-p.cx, -p.cy);
 
@@ -154,6 +162,9 @@ Quintus.Sprites = function(Q) {
         if(this.p.points) {
           ctx.save();
           ctx.translate(this.p.x + this.p.cx, this.p.y + this.p.cy);
+          if(p.scale) { ctx.scale(p.scale,p.scale); }
+          ctx.rotate(p.angle * Math.PI / 180)
+          ctx.translate(-p.cx, -p.cy);
           ctx.beginPath();
           ctx.fillStyle = this.p.hit ? "blue" : "red";
           ctx.strokeStyle = "black";

@@ -363,6 +363,11 @@ var Quintus = function Quintus(opts) {
         callback = target;
         target = null;
       }
+
+      // If there's still no callback, default to the event name
+      if(!callback) {
+        callback = event;
+      }
       // Handle case for callback that is a string, this will
       // pull the callback from the target object or from this
       // object.
@@ -528,6 +533,11 @@ var Quintus = function Quintus(opts) {
     // on an object by searching for a property of the same name.
     has: function(component) {
       return this[component] ? true : false; 
+    },
+
+    // See if a object is a specific class
+    isA: function(className) {
+      return this.className == className;
     },
 
     // Adds one or more components to an object. Accepts either 
@@ -863,6 +873,11 @@ var Quintus = function Quintus(opts) {
            function(itm) { alert("Error Loading: " + itm ); })(itm);
         };
 
+    /* Convert to an array if it's a string */
+    if(_.isString(assets)) {
+      assets = Q._normalizeArg(assets);
+    }
+
     /* If the user passed in an array, convert it */
     /* to a hash with lookups by filename */
     if(_.isArray(assets)) { 
@@ -873,9 +888,6 @@ var Quintus = function Quintus(opts) {
           assetObj[itm] = itm;
         }
       });
-    } else if(_.isString(assets)) {
-      /* Turn assets into an object if it's a string */
-      assetObj[assets] = assets;
     } else {
       /* Otherwise just use the assets as is */
       assetObj = assets;
@@ -1080,14 +1092,15 @@ var Quintus = function Quintus(opts) {
     },
 
     // Transform an array with an x and y property by this Matrix
-    transformArr: function(arr) {
-      var x = arr[0], y = arr[1];
+    transformArr: function(inArr,outArr) {
+      var x = inArr[0], y = inArr[1];
       
-      arr[0] = x * this.m[0] + y * this.m[1] + this.m[2];
-      arr[1] = x * this.m[3] + y * this.m[4] + this.m[5];
+      outArr[0] = x * this.m[0] + y * this.m[1] + this.m[2];
+      outArr[1] = x * this.m[3] + y * this.m[4] + this.m[5];
 
-      return arr;
+      return outArr;
     },
+
 
     // Return just the x component by this Matrix
     transformX: function(x,y) {

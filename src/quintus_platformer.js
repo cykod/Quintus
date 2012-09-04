@@ -1,5 +1,77 @@
 Quintus.Platformer = function(Q) {
 
+  Q.component('viewport',{
+    added: function() {
+      this.entity.on('predraw',this,'predraw');
+      this.entity.on('draw',this,'postdraw');
+      this.x = 0,
+      this.y = 0;
+      this.offsetX = 0;
+      this.offsetY = 0;
+      this.centerX = Q.width/2;
+      this.centerY = Q.height/2;
+      this.scale = 1;
+    },
+
+    extend: {
+      follow: function(sprite,directions) {
+        this.off('step',this.viewport,'follow');
+        this.viewport.directions = directions || { x: true, y: true };
+        this.viewport.following = sprite;
+        this.on('step',this.viewport,'follow');
+        this.viewport.follow();
+      },
+
+      unfollow: function() {
+        this.off('step',this.viewport,'follow');
+      },
+
+      centerOn: function(x,y) {
+        this.viewport.centerOn(x,y);
+      }
+    },
+
+    follow: function() {
+      this.centerOn(
+                    this.directions.x ? 
+                      this.following.p.x + this.following.p.w/2 - this.offsetX :
+                      undefined,
+                    this.directions.y ?
+                     this.following.p.y + this.following.p.h/2 - this.offsetY :
+                     undefined
+                  );
+    },
+
+    offset: function(x,y) {
+      this.offsetX = x;
+      this.offsetY = y;
+    },
+
+    centerOn: function(x,y) {
+      if(x !== void 0) {
+        this.centerX = x;
+        this.x = this.centerX - Q.width / 2 / this.scale;
+      }
+      if(y !== void 0) { 
+        this.centerY = y;
+        this.y = this.centerY - Q.height / 2 / this.scale;
+      }
+
+    },
+
+    predraw: function() {
+      Q.ctx.save();
+      Q.ctx.translate(Math.floor(Q.width/2),Math.floor(Q.height/2));
+      Q.ctx.scale(this.scale,this.scale);
+      Q.ctx.translate(-Math.floor(this.centerX), -Math.floor(this.centerY));
+    },
+
+    postdraw: function() {
+      Q.ctx.restore();
+    }
+  });
+
+
  Q.TileLayer = Q.Sprite.extend({
 
     init: function(props) {
@@ -18,6 +90,17 @@ Quintus.Platformer = function(Q) {
       this.p.blockH = this.p.tileH * this.p.blockTileH;
       this.colBounds = {}; 
       this.directions = [ 'top','left','right','bottom'];
+
+      this.collisionObject = { 
+        p: {
+          w: this.p.tileW,
+          h: this.p.tileH,
+          cx: this.p.tileW/2,
+          cy: this.p.tileH/2
+        }
+      };
+
+      this.collisionNormal = { separate: []};
     },
 
     load: function(dataAsset) {
@@ -43,64 +126,42 @@ Quintus.Platformer = function(Q) {
         }
       }
     },
-  
 
-    checkBounds: function(pos,col,start) {
-      start = start || 0;
-      for(var i=0;i<4;i++) {
-        var dir = this.directions[(i+start)%4];
-        var result = this.checkPoints(pos,col[dir],dir);
-        if(result) {
-          result.start = i+1;
-          return result;
-        }
-      }
-      return false;
-    },
-
-    checkPoints: function(pos,pts,which) {
-      for(var i=0,len=pts.length;i<len;i++) {
-        var result = this.checkPoint(pos.x+pts[i][0],
-                                     pos.y+pts[i][1],which);
-        if(result) {
-          result.point = pts[i];
-          return result;
-        }
-      }
-      return false;
-    },
-
-    checkPoint: function(x,y,which) {
+    collide: function(obj) {
       var p = this.p,
-          tileX = Math.floor((x - p.x) / p.tileW),
-          tileY = Math.floor((y - p.y) / p.tileH);
- 
-      if(p.tiles[tileY] && p.tiles[tileY][tileX] > 0) {
-        this.colBounds.tile = p.tiles[tileY][tileX];
-        this.colBounds.direction = which;
-        switch(which) {
-          case 'top':
-            this.colBounds.destX = x;
-            this.colBounds.destY = (tileY+1)*p.tileH + p.y + Q.dx;
-            break;
-          case 'bottom':
-            this.colBounds.destX = x;
-            this.colBounds.destY = tileY*p.tileH + p.y - Q.dx;
-            break;
-          case 'left':
-            this.colBounds.destX = (tileX+1)*p.tileW + p.x + Q.dx;
-            this.colBounds.destY = y;
-            break;
-          case 'right':
-            this.colBounds.destX = tileX*p.tileW + p.x - Q.dx;
-            this.colBounds.destY = y;
-            break;
-        }
-        return this.colBounds;
-      }
-      return false;
-    },
+          tileStartX = Math.floor((obj.p.x - p.x) / p.tileW),
+          tileStartY = Math.floor((obj.p.y - p.y) / p.tileH),
+          tileEndX =  Math.floor((obj.p.x + obj.p.w - p.x) / p.tileW),
+          tileEndY =  Math.floor((obj.p.y + obj.p.h - p.y) / p.tileH),
+          colObj = this.collisionObject,
+          normal = this.collisionNormal,
+          col;
+  
+      normal.collided = false;
 
+      for(var tileY = tileStartY; tileY<=tileEndY; tileY++) {
+        for(var tileX = tileStartX; tileX<=tileEndX; tileX++) {
+          if(p.tiles[tileY] && p.tiles[tileY][tileX] > 0) {
+            colObj.p.x = tileX * p.tileW + p.x;
+            colObj.p.y = tileY * p.tileH + p.y;
+            
+            col = Q.collision(obj,colObj);
+            if(col && 
+               (!normal.collided || normal.magnitude < col.magnitude )) {
+                 normal.collided = true;
+                 normal.separate[0] = col.separate[0];
+                 normal.separate[1] = col.separate[1];
+                 normal.magnitude = col.magnitude;
+                 normal.distance = col.distance;
+                 normal.normalX = col.normalX;
+                 normal.normalY = col.normalY;
+            }
+          }
+        }
+      }
+
+      return normal.collided ? normal : false;
+    },
 
     prerenderBlock: function(blockX,blockY) {
       var p = this.p,
@@ -175,34 +236,49 @@ Quintus.Platformer = function(Q) {
   Q.component('2d',{
     added: function() {
       var entity = this.entity;
-      _(entity.p).defaults({
+      Q._defaults(entity.p,{
         vx: 0,
         vy: 0,
         ax: 0,
         ay: 0,
         gravity: 1,
-        collisionMask: 1
+        collisionMask: Q.SPRITE_DEFAULT
       });
-      entity.bind('step',this,"step");
-      if(Q.debug) {
-        entity.bind('draw',this,'debugDraw');
-      }
+      entity.on('step',this,"step");
+      entity.on('hit',this,'collision');
     },
-  
-    extend: {
-      collisionPoints: function(points) {
-        var p = this.p, w = p.w, h = p.h;
-        if(!points) {
-          p.col = {
-            top:   [ [w/2, 0]],
-            left:  [ [0, h/3], [0, 2*h/3]],
-            bottom:[ [w/2, h]],
-            right: [ [w, h/3], [w, 2*h/3]]
-          }
-        } else {
-          p.col = points;
-        }
+
+    collision: function(col) {
+      var entity = this.entity,
+          p = entity.p,
+          magnitude = 0;
+
+      // Top collision
+      if(col.normalY < -0.3 && p.vy > 0) { 
+        col.impact = p.vy;
+        p.vy = 0; 
+        entity.trigger("bump.bottom",col);
       }
+      if(col.normalY > 0.3 && p.vy < 0) {
+        col.impact = Math.abs(p.vy);
+        p.vy = 0; 
+        entity.trigger("bump.top",col);
+      }
+
+      if(col.normalX < -0.3 && p.vx > 0) { 
+        col.impact = p.vx;
+        p.vx = 0; 
+        entity.trigger("bump.right",col);
+      }
+      if(col.normalX > 0.3 && p.vx < 0) { 
+        col.impact = Math.abs(p.vx);
+        p.vx = 0; 
+        entity.trigger("bump.left",col);
+      }
+
+      p.x -= col.separate[0] * 0.999;
+      p.y -= col.separate[1] * 0.999;
+
     },
 
     step: function(dt) {
@@ -215,80 +291,27 @@ Quintus.Platformer = function(Q) {
         p.vy += p.ay * dt + Q.gravityY * dt * p.gravity;
         p.x += p.vx * dt;
         p.y += p.vy * dt;
+
         this.entity.parent.collide(this.entity);
         dtStep -= 1/30;
       }
-    },
-    debugDraw: function(ctx) {
-      var p = this.entity.p;
-      ctx.save();
-      ctx.fillStyle = "black";
-      if(p.col) {
-        _.each(p.col,function(points,dir) {
-          for(var i=0;i<points.length;i++) {
-            ctx.fillRect(p.x + points[i][0] - 2,
-                         p.y + points[i][1] - 2,
-                         4,4);
-          }
-        });
-      }
-      ctx.restore();
     }
   });
 
-
-  Q.PlatformStage = Q.Stage.extend({
-    collisionLayer: function(layer) {
-      this.collision = this.insert(layer);
+  Q.component('aiBounce', {
+    added: function() {
+      this.entity.on("bump.right",this,"goLeft");
+      this.entity.on("bump.left",this,"goRight");
     },
 
-    _tileCollision: function(obj,start) {
-      if(obj.p.col) {
-        var result = this.collision.checkBounds(obj.p,obj.p.col,start);
-        if(result) {
-          return result;
-        }
-      }
-      return false;
+    goLeft: function(col) {
+      this.entity.p.vx = -col.impact;
     },
 
-    _hitTest: function(obj,collision) {
-      if(obj != this && this != collision && 
-         this.p.type && (this.p.type & obj.p.collisionMask )) {
-        var col = Q.overlap(obj,this);
-        return col ? this : false;
-      }
-      return false;
-    },
-  
-    collide: function(obj) {
-      var col;
-      if(obj.p.collisionMask & this.collision.p.type) {
-        while(col = this._tileCollision(obj,col ? col.start : 0)) {
-          if(col) {
-            var destX = col.destX - col.point[0],
-                destY = col.destY - col.point[1];
-            obj.p.x = destX;
-            obj.p.y = destY;
-            if(col.direction == 'top' || col.direction == 'bottom') {
-              obj.p.vy = 0;
-            } else {
-              obj.p.vx = 0;
-            }
-            obj.trigger('hit',this.collision);
-            obj.trigger('hit.tile',col);
-          }
-        }
-      }
-      col = this.detect(this._hitTest,obj,this.collision);
-      if(col) {
-        obj.trigger('hit',col);
-        obj.trigger('hit.sprite',col);
-      }
+    goRight: function(col) {
+      this.entity.p.vx = col.impact;
     }
   });
-
-
 
 };
 

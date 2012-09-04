@@ -370,13 +370,25 @@ Quintus.Input = function(Q) {
   
 
   Q.component("platformerControls", {
+    defaults: {
+      speed: 200,
+      jumpSpeed: -300
+    },
 
     added: function() {
       var p = this.entity.p;
 
-      if(!p.speed) { p.speed = 200; }
+      Q._defaults(p,this.defaults);
 
       this.entity.on("step",this,"step");
+      this.entity.on("bump.bottom",this,"landed");
+
+      p.landed = 0;
+    },
+
+    landed: function(col) {
+      var p = this.entity.p;
+      p.landed = 1/20;
     },
 
     step: function(dt) {
@@ -386,7 +398,15 @@ Quintus.Input = function(Q) {
         p.vx = -p.speed;
       } else if(Q.inputs['right']) {
         p.vx = p.speed;
+      } else {
+        p.vx = 0;
       }
+
+      if(p.landed > 0 && (Q.inputs['up'] || Q.inputs['fire'])) {
+        p.vy = p.jumpSpeed;
+        p.landed = -dt;
+      }
+      p.landed -= dt;
 
     }
   });

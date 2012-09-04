@@ -66,6 +66,10 @@ var Q = Quintus().include("Sprites, Scenes").setup({ width: 960, height: 512 });
         p.dx = 1;
         p.dy = 1;
         p.speed = Math.random() * 20 + 30;
+        p.omega = Math.random() * 40 - 20;
+        p.scaleOffset = 0;
+        p.scaleSpeed = Math.random();
+        p.scaleAmount = 0.70 * Math.random();
 
         this._super(p);
      },
@@ -92,9 +96,24 @@ var Q = Quintus().include("Sprites, Scenes").setup({ width: 960, height: 512 });
         p.y = Q.height - p.h;
       }
 
-      
-      p.hit = this.parent.collide(this);
+      p.angle += dt * p.omega; 
 
+      p.scaleOffset += dt;
+      p.scale = 1 + Math.sin(p.scaleOffset * p.scaleSpeed) * p.scaleAmount;
+
+
+      var maxCol = 3, collided = false;
+
+      p.hit = false;
+      while((collided = this.parent.search(this)) && maxCol > 0) {
+
+        if(collided) {
+          p.hit = true;
+          this.p.x -= collided.separate[0];
+          this.p.y -= collided.separate[1];
+        }
+        maxCol--;
+      }
     },
 
     draw: function(ctx) {
@@ -104,6 +123,7 @@ var Q = Quintus().include("Sprites, Scenes").setup({ width: 960, height: 512 });
       ctx.translate(this.p.x + this.p.cx, this.p.y + this.p.cy);
 
       ctx.rotate(this.p.angle * Math.PI / 180);
+      ctx.scale(this.p.scale,this.p.scale);
 
       ctx.beginPath();
       ctx.fillStyle = this.p.hit ? "blue" : "red";
