@@ -284,6 +284,9 @@ Quintus.Platformer = function(Q) {
     step: function(dt) {
       var p = this.entity.p,
           dtStep = dt;
+      // TODO: check the entity's magnitude of vx and vy,
+      // reduce the max dtStep if necessary to prevent 
+      // skipping through objects.
       while(dtStep > 0) {
         dt = Math.min(1/30,dtStep);
         // Updated based on the velocity and acceleration
