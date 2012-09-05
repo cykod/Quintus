@@ -1,4 +1,5 @@
-var Q = Quintus()
+window.addEventListener("load",function() {
+var Q = window.Q = Quintus()
         .include("Sprites, Scenes, Input, Platformer")
         .setup({ maximize: true })
         .controls();
@@ -53,4 +54,6 @@ Q.load("sprites.png, sprites.json, level.json, tiles.png", function() {
   Q.compileSheets("sprites.png","sprites.json");
 
   Q.stageScene("level1");
+});
+
 });

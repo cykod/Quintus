@@ -37,7 +37,7 @@ Quintus.Input = function(Q) {
 
     keyboardControls: function(keys) {
       keys = keys || DEFAULT_KEYS;
-      _(keys).each(function(name,key) {
+      Q._each(keys,function(name,key) {
        this.bindKey(key,name);
       },Q.input);
       this.enableKeyboard();
@@ -47,9 +47,10 @@ Quintus.Input = function(Q) {
       if(this.keyboardEnabled) return false;
 
       // Make selectable and remove an :focus outline
-      Q.el.attr('tabindex',0).css('outline',0);
+      Q.el.tabIndex = 0;
+      Q.el.style.outline = 0;
 
-      Q.el.keydown(function(e) {
+      Q.el.addEventListener("keydown",function(e) {
         if(Q.input.keys[e.keyCode]) {
           var actionName = Q.input.keys[e.keyCode];
           Q.inputs[actionName] = true;
@@ -57,9 +58,9 @@ Quintus.Input = function(Q) {
           Q.input.trigger('keydown',e.keyCode);
         }
         e.preventDefault();
-      });
+      },false);
 
-      Q.el.keyup(function(e) {
+      Q.el.addEventListener("keyup",function(e) {
         if(Q.input.keys[e.keyCode]) {
           var actionName = Q.input.keys[e.keyCode];
           Q.inputs[actionName] = false;
@@ -67,19 +68,24 @@ Quintus.Input = function(Q) {
           Q.input.trigger('keyup',e.keyCode);
         }
         e.preventDefault();
-      });
+      },false);
       this.keyboardEnabled = true;
     },
 
     touchLocation: function(touch) {
       var el = Q.el, 
-          pageX = touch.pageX,
-          pageY = touch.pageY,
-          pos = el.offset(),
-          touchX = (el.attr('width') || Q.width) * 
-                   (pageX - pos.left) / el.width(),
-          touchY = (el.attr('height')||Q.height) * 
-                   (pageY - pos.top) / el.height();
+          posX = touch.offsetX,
+          posY = touch.OffsetY,
+          touchX, touchY;
+
+      if(pageX == "undefined" || pageY == "undefined") {
+        posX = touch.layerX;
+        posY = touch.layerY;
+      }
+
+      touchX = Q.width * posX / Q.cssWidth;
+      touchY = Q.height * posY / Q.cssHeight;
+
       return { x: touchX, y: touchY };
     },
 
@@ -87,13 +93,13 @@ Quintus.Input = function(Q) {
       if(this.touchEnabled) return false;
       if(!hasTouch) return false;
 
-      Q.input.keypad = opts = _({
+      Q.input.keypad = opts = Q._extend({
         left: 0,
         gutter:10,
         controls: DEFAULT_TOUCH_CONTROLS,
-        width: Q.el.attr('width') || Q.width,
-        bottom: Q.el.attr('height') || Q.height
-      }).extend(opts||{});
+        width: Q.width,
+        bottom: Q.height, 
+      },opts);
 
       opts.unit = (opts.width / opts.controls.length);
       opts.size = opts.unit - 2 * opts.gutter;
@@ -108,8 +114,7 @@ Quintus.Input = function(Q) {
       }
 
       function touchDispatch(event) {
-        var elemPos = Q.el.position(),
-            wasOn = {},
+        var wasOn = {},
             i, len, tch, key, actionName;
 
         // Reset all the actions bound to controls
@@ -147,36 +152,48 @@ Quintus.Input = function(Q) {
         return null;
       }
 
-      Q.el.on('touchstart touchend touchmove touchcancel',function(e) {
-        touchDispatch(e.originalEvent);
+      this.touchDispatchHandler = function(e) {
+        touchDispatch(e);
         e.preventDefault();
-      });
+      }
+
+
+      Q._each(["touchstart","touchend","touchmove","touchcancel"],function(evt) {
+        Q.el.addEventListener(evt,this.touchDispatchHandler);
+      },this);
 
       this.touchEnabled = true;
     },
 
     disableTouchControls: function() {
-      Q.el.off('touchstart touchend touchmove touchcancel');
+      Q._each(["touchstart","touchend","touchmove","touchcancel"],function(evt) {
+        Q.el.removeEventListener(evt,this.touchDispatchHandler);
+      },this);
+
+      Q.el.removeEventListener('touchstart',this.joypadStart);
+      Q.el.removeEventListener('touchmove',this.joypadMove);
+      Q.el.removeEventListener('touchend',this.joypadEnd);
+      Q.el.removeEventListener('touchcancel',this.joypadEnd);
       this.touchEnabled = false;
     },
 
    joypadControls: function(opts) {
       if(this.joypadEnabled) return false;
       if(!hasTouch) return false;
-      var joypad = Q.joypad = _.defaults(opts || {},{
+      var joypad = Q.joypad = Q._defaults(opts || {},{
         size: 50,
         trigger: 20,
         center: 25,
         color: "#CCC",
         background: "#000",
         alpha: 0.5,
-        zone: (Q.el.attr('width')||Q.width) / 2,
+        zone: Q.width / 2,
         joypadTouch: null,
         inputs: DEFAULT_JOYPAD_INPUTS,
         triggers: []
       });
 
-      Q.el.on('touchstart',function(e) {
+      this.joypadStart = function(e) {
         if(joypad.joypadTouch === null) {
           var evt = e.originalEvent,
           touch = evt.changedTouches[0],
@@ -190,11 +207,12 @@ Quintus.Input = function(Q) {
             joypad.y = null;
           }
         }
-      });
+      };
+
       
-      Q.el.on('touchmove',function(e) {
+      this.joypadMove = function(e) {
         if(joypad.joypadTouch !== null) {
-          var evt = e.originalEvent;
+          var evt = e;
 
           for(var i=0,len=evt.changedTouches.length;i<len;i++) {
             var touch = evt.changedTouches[i];
@@ -236,7 +254,7 @@ Quintus.Input = function(Q) {
                 }
               }
 
-              _.extend(joypad, {
+              Q._extend(joypad, {
                 dx: dx, dy: dy,
                 x: joypad.centerX + dx,
                 y: joypad.centerY + dy,
@@ -250,11 +268,10 @@ Quintus.Input = function(Q) {
           }
         }
         e.preventDefault();
+      };
 
-      });
-
-      Q.el.on('touchend touchcancel',function(e) {
-          var evt = e.originalEvent;
+      this.joypadEnd = function(e) { 
+          var evt = e;
 
           if(joypad.joypadTouch !== null) {
             for(var i=0,len=evt.changedTouches.length;i<len;i++) { 
@@ -270,7 +287,13 @@ Quintus.Input = function(Q) {
             }
           }
           e.preventDefault();
-      });
+      };
+
+
+      Q.el.addEventListener("touchstart",this.joypadStart);
+      Q.el.addEventListener("touchmove",this.joypadMove);
+      Q.el.addEventListener("touchend",this.joypadEnd);
+      Q.el.addEventListener("touchcancel",this.joypadEnd);
 
       this.joypadEnabled = true;
     },

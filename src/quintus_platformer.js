@@ -104,7 +104,7 @@ Quintus.Platformer = function(Q) {
     },
 
     load: function(dataAsset) {
-      var data = _.isString(dataAsset) ?  Q.asset(dataAsset) : dataAsset;
+      var data = Q._isString(dataAsset) ?  Q.asset(dataAsset) : dataAsset;
       this.p.tiles = data;
       this.p.rows = data.length;
       this.p.cols = data[0].length;

@@ -706,19 +706,24 @@ var Quintus = function Quintus(opts) {
     }
     options = options || {};
     id = id || "quintus";
-    Q.el = $(Q._isString(id) ? "#" + id : id);
 
-    if(Q.el.length === 0) {
-      var defaultWidth = options.width || 320,
-          defaultHeight = options.height || 420;
-      
-      Q.el = $("<canvas width='" + defaultWidth + "' height='" + defaultHeight + "'></canvas>")
-              .attr({ id: id })
-              .appendTo("body");
+    if(Q._isString(id)) {
+      Q.el = document.getElementById(id);
+    } else {
+      Q.el = id;
     }
 
-    var w = Q.el.attr('width'),
-        h = Q.el.attr('height');
+    if(!Q.el) {
+      Q.el = document.createElement("canvas");
+      Q.el.width = options.width || 320;
+      Q.el.height = options.ehgiht || 420;
+      Q.el.id = id;
+
+      document.body.appendChild(Q.el);
+    }
+
+    var w = parseInt(Q.el.width,10),
+        h = parseInt(Q.el.height,10);
 
     var maxWidth = options.maxWidth || 5000,
         maxHeight = options.maxHeight || 5000,
@@ -728,12 +733,14 @@ var Quintus = function Quintus(opts) {
         upsampleHeight = options.upsampleHeight;
 
     if(options.maximize == true || (Q.touchDevice && options.maximize == 'touch'))  {
-      $("html, body").css({ padding:0, margin: 0 });
+      document.body.style.padding = 0;
+      document.body.style.margin = 0;
+
       var w = Math.min(window.innerWidth,maxWidth);
       var h = Math.min(window.innerHeight - 5,maxHeight)
 
       if(Q.touchDevice) {
-        Q.el.css({height: h * 2});
+        Q.el.style.height = (h*2) + "px";
         window.scrollTo(0,1);
 
         w = Math.min(window.innerWidth,maxWidth);
@@ -743,37 +750,50 @@ var Quintus = function Quintus(opts) {
 
     if((upsampleWidth && w <= upsampleWidth) ||
        (upsampleHeight && h <= upsampleHeight)) {
-      Q.el.css({  width:w, height:h })
-          .attr({ width:w*2, height:h*2 });
+      Q.el.style.height = h + "px";
+      Q.el.style.width = w + "px";
+      Q.el.width = w * 2;
+      Q.el.height = h * 2;
     }
     else if(((resampleWidth && w > resampleWidth) ||
         (resampleHeight && h > resampleHeight)) && 
        Q.touchDevice) { 
-      Q.el.css({  width:w, height:h })
-          .attr({ width:w/2, height:h/2 });
+      Q.el.style.height = h + "px";
+      Q.el.style.width = w + "px";
+      Q.el.width = w / 2;
+      Q.el.height = h / 2;
     } else {
-      Q.el.css({  width:w, height:h })
-          .attr({ width:w, height:h });
+      Q.el.style.height = h + "px";
+      Q.el.style.width = w + "px";
+      Q.el.width = w;
+      Q.el.height = h;
     }
 
-    Q.wrapper = Q.el
-                 .wrap("<div id='" + id + "_container'/>")
-                 .parent()
-                 .css({ width: Q.el.width(),
-                        margin: '0 auto' });
-                        
-    Q.el.css('position','relative');
+    var elParent = Q.el.parentNode;
 
-    Q.ctx = Q.el[0].getContext && 
-            Q.el[0].getContext("2d");
+    if(elParent) {
+      Q.wrapper = document.createElement("div");
+      Q.wrapper.id = id + '_container';
+      Q.wrapper.style.width = w + "px";
+      Q.wrapper.style.margin = "0 auto";
 
 
-    Q.width = parseInt(Q.el.attr('width'),0);
-    Q.height = parseInt(Q.el.attr('height'),0);
-    Q.cssWidth = Q.el.width();
-    Q.cssHeight = Q.el.height();
+      elParent.insertBefore(Q.wrapper,Q.el);
+      Q.wrapper.appendChild(Q.el);
+    }
+    
+    Q.el.style.position = 'relative';
 
-    $(window).bind('orientationchange',function() {
+    Q.ctx = Q.el.getContext && 
+            Q.el.getContext("2d");
+
+
+    Q.width = parseInt(Q.el.width,10);
+    Q.height = parseInt(Q.el.height,10);
+    Q.cssWidth = w;
+    Q.cssHeight = h;
+
+    window.addEventListener('orientationchange',function() {
       setTimeout(function() { window.scrollTo(0,1); }, 0);
     });
 
@@ -786,18 +806,19 @@ var Quintus = function Quintus(opts) {
     if(Q.clearColor) {
       Q.ctx.globalAlpha = 1;
       Q.ctx.fillStyle = Q.clearColor;
-      Q.ctx.fillRect(0,0,Q.el[0].width,Q.el[0].height);
+      Q.ctx.fillRect(0,0,Q.width,Q.height);
     } else {
-      Q.ctx.clearRect(0,0,Q.el[0].width,Q.el[0].height);
+      Q.ctx.clearRect(0,0,Q.width,Q.height);
     }
   };
 
 
   // Return canvas image data given an Image object.
   Q.imageData = function(img) {
-    var canvas = $("<canvas>").attr({ 
-      width: img.width, 
-      height: img.height })[0];
+    var canvas = doucment.createElement("canvas");
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
 
     var ctx = canvas.getContext("2d");
     ctx.drawImage(img,0,0);
@@ -841,8 +862,8 @@ var Quintus = function Quintus(opts) {
   // load callback to determine the image has been loaded
   Q.loadAssetImage = function(key,src,callback,errorCallback) {
     var img = new Image();
-    $(img).on('load',function() {  callback(key,img); });
-    $(img).on('error',errorCallback);
+    img.onload = function() {  callback(key,img); };
+    img.onerror = errorCallback;
     img.src = Q.options.imagePath + src;
   };
 
@@ -886,8 +907,8 @@ var Quintus = function Quintus(opts) {
       return;
     }
 
-    $(snd).on('error',errorCallback);
-    $(snd).on('canplaythrough',function() { 
+    snd.addEventListener("error",errorCallback);
+    snd.addEventListener('canplaythrough',function() { 
       callback(key,snd); 
     });
     snd.src = Q.options.audioPath + baseName + "." + extension;
@@ -898,9 +919,27 @@ var Quintus = function Quintus(opts) {
   // Loader for other file types, just store the data
   // returned from an Ajax call.
   Q.loadAssetOther = function(key,src,callback,errorCallback) {
-    $.get(Q.options.dataPath + src,function(data) {
-      callback(key,data);
-    }).fail(errorCallback);
+    var request = new XMLHttpRequest();
+
+    var fileParts = src.split("."),
+        fileExt = fileParts[fileParts.length-1].toLowerCase();
+
+    request.onreadystatechange = function() {
+      if(request.readyState == 4) {
+        if(request.status == 200) {
+          if(fileExt == 'json') {
+            callback(key,JSON.parse(request.responseText))
+          } else {
+            callback(key,request.responseText);
+          }
+        } else {
+          errorCallback()
+        }
+      }
+    }
+
+    request.open("GET",Q.options.dataPath + src, true);
+    request.send(null);
   };
 
   // Helper method to return a name without an extension

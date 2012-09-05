@@ -59,7 +59,7 @@ Quintus.Audio = function(Q) {
       Q.audio.spriteFile = asset['resources'][0].replace(/\.[a-z]+$/,"");
       Q.audio.sprites = asset['spritemap'];
 
-      Q.el.on("touchstart",Q.audio.start);
+      Q.el.addEventListener("touchstart",Q.audio.start);
     }
 
     // Turn off normal sound loading and processing
@@ -87,7 +87,7 @@ Quintus.Audio = function(Q) {
       }
       Q.audio.sheet.load();
 
-      Q.el.off("touchstart",Q.audio.start);
+      Q.el.removeEventListener("touchstart",Q.audio.start);
     };
 
     Q.play = function(sound,debounce) {

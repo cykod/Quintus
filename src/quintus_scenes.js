@@ -15,7 +15,7 @@ Quintus.Scenes = function(Q) {
     if(sceneObj === void 0) {
       return Q.scenes[name];
     } else {
-      if(_.isFunction(sceneObj)) {
+      if(Q._isFunction(sceneObj)) {
         sceneObj = new Q.Scene(sceneObj,opts);
       }
       Q.scenes[name] = sceneObj;
@@ -211,14 +211,14 @@ Quintus.Scenes = function(Q) {
       this.index = {};
       this.removeList = [];
 
-      this.options = _(this.defaults).clone();
+      this.options = Q._extend({},this.defaults);
       if(this.scene)  { 
         Q._extend(this.options,scene.opts);
       }
       if(opts) { Q._extend(this.options,opts); }
 
 
-      if(this.options.sort && !_.isFunction(this.options.sort)) {
+      if(this.options.sort && !Q._isFunction(this.options.sort)) {
           this.options.sort = function(a,b) { return ((a.p && a.p.z) || -1) - ((b.p && b.p.z) || -1); };
       }
     },
@@ -506,7 +506,7 @@ Quintus.Scenes = function(Q) {
   Q.select = function(selector,scope) {
     scope = (scope === void 0) ? Q.activeStage : scope;
     scope = Q.stage(scope);
-    if(_.isNumber(selector)) {
+    if(Q._isNumber(selector)) {
       scope.index[selector];
     } else {
       return new Q.StageSelector(scope,selector);
@@ -526,7 +526,7 @@ Quintus.Scenes = function(Q) {
 
   Q.stageScene = function(scene,num,stageClass) {
     stageClass = stageClass || Q.Stage;
-    if(_(scene).isString()) {
+    if(Q._isString(scene)) {
       scene = Q.scene(scene);
     }
 
