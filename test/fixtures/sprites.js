@@ -17,6 +17,21 @@ SpriteFixtures = {
 
   doneLoaded: function() {
     return SpriteFixtures.isLoaded;
+  },
+
+  sample: function(src) {
+    var img = new Image();
+    
+    runs(function() {
+      img.src = "fixtures/samples/" + src
+      img.addEventListener('error',function() {
+        throw "Problem loading sample image:" + src;
+      });
+    });
+
+    waitsFor(function() { return img.complete; });
+
+    return img;
   }
 
 

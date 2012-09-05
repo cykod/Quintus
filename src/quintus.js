@@ -1,8 +1,8 @@
 //     Quintus Game Engine, Version 0.0.1
 //     (c) 2012 Pascal Rettig, Cykod LLC
-//     Quintus may be freely distributed under the MIT license.
+//     Quintus may be freely distributed under the MIT license or GPL License.
 //     For all details and documentation:
-//     http://quintushtml5.com
+//     http://html5quintus.com
 //
 // Quintus HTML5 Game Engine 
 // =========================
@@ -63,30 +63,30 @@ var Quintus = function Quintus(opts) {
   };
 
   Q.select = function() { /* No-op */ }
-  
-  // Default engine options defining the paths 
-  // where images, audio and other data files should be found
-  // relative to the base HTML file. As well as a couple of other
-  // options.
-  //
-  // These can be overriden by passing in options to the `Quintus()` 
-  // factory method, for example:
-  //
-  //     // Override the imagePath to default to /assets/images/
-  //     var Q = Quintus({ imagePath: "/assets/images/" });
-  //
-  // If you follow the default convention from the examples, however,
-  // you should be able to call `Quintus()` without any options.
-  Q.options = {
-    imagePath: "images/",
-    audioPath: "audio/",
-    dataPath:  "data/",
-    audioSupported: [ 'mp3','ogg' ],
-    sound: true,
-    frameTimeLimit: 100
-  };
-  if(opts) { _(Q.options).extend(opts); }
 
+  // Syntax for including other modules into quintus, can accept a comma-separated
+  // list of strings, an array of strings, or an array of actual objects. Example:
+  //
+  //     Q.include("Input, Sprites, Scenes")
+  //
+  Q.include = function(mod) {
+    Q._each(Q._normalizeArg(mod),function(name) {
+      m = Quintus[name] || name;
+      if(!Q._isFunction(m)) { throw "Invalid Module:" + name; }
+      m(Q);
+    });
+    return Q;
+  };
+
+  // Utility Methods
+  // ===============
+  //
+  // Most of these utility methods are a subset of Underscore.js,
+  // Most are pulled directly from underscore and some are
+  // occasionally optimized for speed and memory usage in lieu of flexibility.
+  // Underscore.js is (c) 2009-2012 Jeremy Ashkenas, DocumentCloud Inc.
+  // Underscore is freely distributable under the MIT license.
+  // http://underscorejs.org
 
   // An internal utility method (utility methods are prefixed with underscores)
   // It's used to take a string of comma separated names and turn it into an `Array`
@@ -97,10 +97,10 @@ var Quintus = function Quintus(opts) {
   //
   // Used by `Q.include` and `Q.Sprite.add` to add modules and components, respectively.
   Q._normalizeArg = function(arg) {
-    if(_.isString(arg)) {
+    if(Q._isString(arg)) {
       arg = arg.replace(/\s+/g,'').split(",");
     }
-    if(!_.isArray(arg)) {
+    if(!Q._isArray(arg)) {
       arg = [ arg ];
     }
     return arg;
@@ -129,20 +129,90 @@ var Quintus = function Quintus(opts) {
     return dest;
   };
 
-
-  // Syntax for including other modules into quintus, can accept a comma-separated
-  // list of strings, an array of strings, or an array of actual objects. Example:
-  //
-  //     Q.include("Input, Sprites, Scenes")
-  //
-  Q.include = function(mod) {
-    _.each(Q._normalizeArg(mod),function(name) {
-      m = Quintus[name] || name;
-      if(!_.isFunction(m)) { throw "Invalid Module:" + name; }
-      m(Q);
-    });
-    return Q;
+  // Shortcut for hasOwnProperty
+  Q._has = function(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
   };
+
+  // Check if something is a string
+  // NOTE: this fails for non-primitives
+  Q._isString = function(obj) {
+    return typeof obj === "string"
+  };
+
+  // Check if something is a function
+  Q._isFunction = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Function]';
+  };
+
+  // Check if something is a function
+  Q._isObject = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Object]';
+  };
+
+  // Check if something is a function
+  Q._isArray = function(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+  };
+
+  // Basic iteration method
+  Q._each = function(obj,iterator,context) {
+    if (obj == null) return;
+    if (obj.forEach) {
+      obj.forEach(iterator,context);
+    } else if (obj.length === +obj.length) {
+      for (var i = 0, l = obj.length; i < l; i++) {
+        iterator.call(context, obj[i], i, obj);
+      }
+    } else {
+      for (var key in obj) {
+        iterator.call(context, obj[key], key, obj)
+      }
+    }
+  };
+
+  // Return an object's keys
+  Q._keys = Object.keys || function(obj) {
+    if (obj !== Object(obj)) throw new TypeError('Invalid object');
+    var keys = [];
+    for (var key in obj) if (Q._has(obj, key)) keys[keys.length] = key;
+    return keys;
+  };
+
+  var idIndex = 0;
+  // Return a unique identifier
+  Q._uniqueId = function() {
+    return idIndex++;
+  };
+
+
+
+  // Options
+  // ========
+  
+  // Default engine options defining the paths 
+  // where images, audio and other data files should be found
+  // relative to the base HTML file. As well as a couple of other
+  // options.
+  //
+  // These can be overriden by passing in options to the `Quintus()` 
+  // factory method, for example:
+  //
+  //     // Override the imagePath to default to /assets/images/
+  //     var Q = Quintus({ imagePath: "/assets/images/" });
+  //
+  // If you follow the default convention from the examples, however,
+  // you should be able to call `Quintus()` without any options.
+  Q.options = {
+    imagePath: "images/",
+    audioPath: "audio/",
+    dataPath:  "data/",
+    audioSupported: [ 'mp3','ogg' ],
+    sound: true,
+    frameTimeLimit: 100
+  };
+  if(opts) { Q._extend(Q.options,opts); }
+
 
   // Game Loop support
   // =================
@@ -273,7 +343,7 @@ var Quintus = function Quintus(opts) {
     /* Create a new Class that inherits from this class */
     Q.Class.extend = function(className, prop, classMethods) {
       /* No name, don't add onto Q */
-      if(!_.isString(className)) {
+      if(!Q._isString(className)) {
         classMethods = prop;
         prop = className;
         className = null;
@@ -371,7 +441,7 @@ var Quintus = function Quintus(opts) {
       // Handle case for callback that is a string, this will
       // pull the callback from the target object or from this
       // object.
-      if(_.isString(callback)) {
+      if(Q._isString(callback)) {
         callback = (target || this)[callback];
       }
 
@@ -418,7 +488,7 @@ var Quintus = function Quintus(opts) {
       } else {
         // If the callback is a string, find a method of the
         // same name on the target.
-        if(_.isString(callback) && target[callback]) {
+        if(Q._isString(callback) && target[callback]) {
           callback = target[callback];
         }
         var l = this.listeners && this.listeners[event];
@@ -503,7 +573,7 @@ var Quintus = function Quintus(opts) {
     // a method by that name.
     destroy: function() {
       if(this.extend) {
-        var extensions = _.keys(this.extend);
+        var extensions = Q._keys(this.extend);
         for(var i=0,len=extensions.length;i<len;i++) {
           delete this.entity[extensions[i]];
         }
@@ -630,13 +700,13 @@ var Quintus = function Quintus(opts) {
   Q.touchDevice = ('ontouchstart' in document);
 
   Q.setup = function(id, options) {
-    if(_.isObject(id)) {
+    if(Q._isObject(id)) {
       options = id;
       id = null;
     }
     options = options || {};
     id = id || "quintus";
-    Q.el = $(_.isString(id) ? "#" + id : id);
+    Q.el = $(Q._isString(id) ? "#" + id : id);
 
     if(Q.el.length === 0) {
       var defaultWidth = options.width || 320,
@@ -713,7 +783,13 @@ var Quintus = function Quintus(opts) {
 
   // Clear the canvas completely.
   Q.clear = function() {
-    Q.ctx.clearRect(0,0,Q.el[0].width,Q.el[0].height);
+    if(Q.clearColor) {
+      Q.ctx.globalAlpha = 1;
+      Q.ctx.fillStyle = Q.clearColor;
+      Q.ctx.fillRect(0,0,Q.el[0].width,Q.el[0].height);
+    } else {
+      Q.ctx.clearRect(0,0,Q.el[0].width,Q.el[0].height);
+    }
   };
 
 
@@ -754,7 +830,8 @@ var Quintus = function Quintus(opts) {
   // Determine the type of asset based on the lookup table above
   Q.assetType = function(asset) {
     /* Determine the lowercase extension of the file */
-    var fileExt = _(asset.split(".")).last().toLowerCase();
+    var fileParts = asset.split("."),
+        fileExt = fileParts[fileParts.length-1].toLowerCase();
 
     /* Lookup the asset in the assetTypes hash, or return other */
     return Q.assetTypes[fileExt] || 'Other';
@@ -874,15 +951,15 @@ var Quintus = function Quintus(opts) {
         };
 
     /* Convert to an array if it's a string */
-    if(_.isString(assets)) {
+    if(Q._isString(assets)) {
       assets = Q._normalizeArg(assets);
     }
 
     /* If the user passed in an array, convert it */
     /* to a hash with lookups by filename */
-    if(_.isArray(assets)) { 
-      _.each(assets,function(itm) {
-        if(_.isObject(itm)) {
+    if(Q._isArray(assets)) { 
+      Q._each(assets,function(itm) {
+        if(Q._isObject(itm)) {
           Q._extend(assetObj,itm);
         } else {
           assetObj[itm] = itm;
@@ -894,7 +971,7 @@ var Quintus = function Quintus(opts) {
     }
 
     /* Find the # of assets we're loading */
-    var assetsTotal = _(assetObj).keys().length,
+    var assetsTotal = Q._keys(assetObj).length,
         assetsRemaining = assetsTotal;
 
     /* Closure'd per-asset callback gets called */
@@ -923,7 +1000,7 @@ var Quintus = function Quintus(opts) {
     };
 
     /* Now actually load each asset */
-    _.each(assetObj,function(itm,key) {
+    Q._each(assetObj,function(itm,key) {
 
       /* Determine the type of the asset */
       var assetType = Q.assetType(itm);
@@ -963,8 +1040,8 @@ var Quintus = function Quintus(opts) {
   //         Q.stageScene("level1"); // or something to start the game
   //      });
   Q.preload = function(arg,options) {
-    if(_(arg).isFunction()) {
-      Q.load(_(Q.preloads).uniq(),arg,options);
+    if(Q._isFunction(arg)) {
+      Q.load(Q._uniq(Q.preloads),arg,options);
       Q.preloads = [];
     } else {
       Q.preloads = Q.preloads.concat(arg);
@@ -972,6 +1049,9 @@ var Quintus = function Quintus(opts) {
   };
 
 
+  // Math Methods
+  // ==============
+  //
   // Math methods, for rotating and scaling points
 
   // A list of matrices available

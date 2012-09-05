@@ -1,0 +1,58 @@
+<!DOCTYPE html>  <html> <head>   <title>platformer.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               platformer.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Q</span> <span class="o">=</span> <span class="nx">Quintus</span><span class="p">()</span>
+        <span class="p">.</span><span class="nx">include</span><span class="p">(</span><span class="s2">&quot;Sprites, Scenes, Input, Platformer&quot;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">setup</span><span class="p">({</span> <span class="nx">maximize</span><span class="o">:</span> <span class="kc">true</span> <span class="p">})</span>
+        <span class="p">.</span><span class="nx">controls</span><span class="p">();</span>
+
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sprite</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">,{</span>
+  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="p">{</span> <span class="nx">sheet</span><span class="o">:</span> <span class="s1">&#39;player&#39;</span><span class="p">,</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">390</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">20</span> <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;2d, platformerControls&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hit.sprite&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">collision</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">collision</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">isA</span><span class="p">(</span><span class="s2">&quot;Tower&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;You Win!&quot;</span><span class="p">);</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">stageScene</span><span class="p">(</span><span class="s2">&quot;level1&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sprite</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="s2">&quot;Tower&quot;</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="p">{</span> <span class="nx">sheet</span><span class="o">:</span> <span class="s1">&#39;tower&#39;</span> <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Q</span><span class="p">.</span><span class="nx">Sprite</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="s2">&quot;Enemy&quot;</span><span class="p">,{</span>
+  <span class="nx">init</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_super</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="p">{</span> <span class="nx">sheet</span><span class="o">:</span> <span class="s1">&#39;enemy&#39;</span><span class="p">,</span> <span class="nx">vx</span><span class="o">:</span> <span class="mi">100</span> <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;2d, aiBounce&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hit.sprite&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">collision</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="nx">collision</span><span class="p">.</span><span class="nx">obj</span><span class="p">.</span><span class="nx">isA</span><span class="p">(</span><span class="s2">&quot;Player&quot;</span><span class="p">))</span> <span class="p">{</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">stageScene</span><span class="p">(</span><span class="s2">&quot;level1&quot;</span><span class="p">);</span> <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">Q</span><span class="p">.</span><span class="nx">scene</span><span class="p">(</span><span class="s2">&quot;level1&quot;</span><span class="p">,</span><span class="kd">function</span><span class="p">(</span><span class="nx">stage</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="nx">stage</span><span class="p">.</span><span class="nx">collisionLayer</span><span class="p">(</span><span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">TileLayer</span><span class="p">({</span>
+                             <span class="nx">dataAsset</span><span class="o">:</span> <span class="s1">&#39;level.json&#39;</span><span class="p">,</span>
+                             <span class="nx">sheet</span><span class="o">:</span> <span class="s1">&#39;tiles&#39;</span> <span class="p">}));</span>
+
+  <span class="kd">var</span> <span class="nx">player</span> <span class="o">=</span> <span class="nx">stage</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Player</span><span class="p">());</span>
+  <span class="nx">stage</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s2">&quot;viewport&quot;</span><span class="p">).</span><span class="nx">follow</span><span class="p">(</span><span class="nx">player</span><span class="p">);</span>
+
+  <span class="nx">stage</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Enemy</span><span class="p">({</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">700</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">0</span> <span class="p">}));</span>
+  <span class="nx">stage</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Enemy</span><span class="p">({</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">800</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">00</span> <span class="p">}));</span>
+
+  <span class="nx">stage</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="k">new</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">Tower</span><span class="p">({</span> <span class="nx">x</span><span class="o">:</span> <span class="mi">180</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="mi">35</span> <span class="p">}));</span>
+
+<span class="p">});</span>
+
+<span class="nx">Q</span><span class="p">.</span><span class="nx">load</span><span class="p">(</span><span class="s2">&quot;sprites.png, sprites.json, level.json, tiles.png&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">Q</span><span class="p">.</span><span class="nx">sheet</span><span class="p">(</span><span class="s2">&quot;tiles&quot;</span><span class="p">,</span><span class="s2">&quot;tiles.png&quot;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">tilew</span><span class="o">:</span> <span class="mi">32</span><span class="p">,</span> <span class="nx">tileh</span><span class="o">:</span> <span class="mi">32</span> <span class="p">});</span>
+  <span class="nx">Q</span><span class="p">.</span><span class="nx">compileSheets</span><span class="p">(</span><span class="s2">&quot;sprites.png&quot;</span><span class="p">,</span><span class="s2">&quot;sprites.json&quot;</span><span class="p">);</span>
+
+  <span class="nx">Q</span><span class="p">.</span><span class="nx">stageScene</span><span class="p">(</span><span class="s2">&quot;level1&quot;</span><span class="p">);</span>
+<span class="p">});</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

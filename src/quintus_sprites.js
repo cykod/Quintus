@@ -11,8 +11,8 @@ Quintus.Sprites = function(Q) {
   //  cols  - number of columns per row
   Q.Class.extend("SpriteSheet",{
     init: function(name, asset,options) {
-      if(!Q.asset(asset)) { alert("Invalid Asset:" + asset); }
-      _.extend(this,{
+      if(!Q.asset(asset)) { throw "Invalid Asset:" + asset; }
+      Q._extend(this,{
         name: name,
         asset: asset,
         w: Q.asset(asset).width,
@@ -21,7 +21,8 @@ Quintus.Sprites = function(Q) {
         tileh: 64,
         sx: 0,
         sy: 0
-        },options);
+        });
+      if(options) { Q._extend(this,options); }
       this.cols = this.cols || 
                   Math.floor(this.w / this.tilew);
     },
@@ -58,7 +59,7 @@ Quintus.Sprites = function(Q) {
 
   Q.compileSheets = function(imageAsset,spriteDataAsset) {
     var data = Q.asset(spriteDataAsset);
-    _(data).each(function(spriteData,name) {
+    Q._each(data,function(spriteData,name) {
       Q.sheet(name,imageAsset,spriteData);
     });
   };
@@ -101,7 +102,7 @@ Quintus.Sprites = function(Q) {
       }
       this.p.cx = this.p.cx || (this.p.points ? 0 : (this.p.w / 2));
       this.p.cy = this.p.cy || (this.p.points ? 0 : (this.p.h / 2));
-      this.p.id = this.p.id || _.uniqueId();
+      this.p.id = this.p.id || Q._uniqueId();
     },
 
     asset: function() {
@@ -180,7 +181,10 @@ Quintus.Sprites = function(Q) {
           ctx.restore();
         }
 
-        ctx.strokeStyle = "gray";
+        ctx.save();
+        ctx.globalAlpha = 1;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#000";
         ctx.beginPath();
         ctx.moveTo(p.x,p.y);
         ctx.lineTo(p.x+p.w,p.y);
@@ -188,6 +192,7 @@ Quintus.Sprites = function(Q) {
         ctx.lineTo(p.x,p.y+p.h);
         ctx.lineTo(p.x,p.y);
         ctx.stroke();
+        ctx.restore();
       }
     },
 

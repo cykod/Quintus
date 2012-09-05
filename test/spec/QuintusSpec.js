@@ -13,14 +13,208 @@ describe("Quintus Core Engine", function() {
 
   describe("Quintus Base",function() {
 
-    describe("Argument Normalizations",function() {
-      it("should turn a string into an array",function() {
-        expect(Q._normalizeArg(" Tester")).toEqual(["Tester"]);
+
+    describe("Utility Methods",function() {
+      describe("Argument Normalizations",function() {
+        it("should turn a string into an array",function() {
+          expect(Q._normalizeArg(" Tester")).toEqual(["Tester"]);
+        });
+
+        it("should take a comma separate list of strings and turn them into an array",function() {
+          expect(Q._normalizeArg("  Something,   Else,   Andanother   "))
+                 .toEqual(["Something","Else","Andanother"]);
+        });
+
       });
 
-      it("should take a comma separate list of strings and turn them into an array",function() {
-        expect(Q._normalizeArg("  Something,   Else,   Andanother   "))
-               .toEqual(["Something","Else","Andanother"]);
+      describe("Extend",function() {
+        var obj1, obj2;
+
+        beforeEach(function() {
+          obj1 = { a: 'Test1', b: 'Test2' }
+          obj2 = { c: 'Test3', d: 'Test4' }
+          obj3 = { b: "TestNew", c: "TestNew" }
+        });
+
+        it("should extend one object with the properties of another",function() {
+          var obj4 = Q._extend(obj1,obj2);
+
+          expect(obj4).toEqual(obj1);
+
+          expect(obj4.c).toEqual("Test3");
+          expect(obj4.d).toEqual("Test4");
+        });
+
+        it("shouldn't affect the second object",function() {
+          Q._extend(obj1,obj2);
+          expect(obj2.a).toBeUndefined();
+          expect(obj2.b).toBeUndefined();
+        });
+
+        it("should overwrite properties in the first object",function() {
+          expect(obj1.b).toEqual("Test2");
+
+          Q._extend(obj1,obj3);
+
+          expect(obj1.b).toEqual("TestNew");
+          expect(obj1.c).toEqual("TestNew");
+        });
+      });
+
+      describe("Defaults",function() {
+        var obj1, obj2;
+
+        beforeEach(function() {
+          obj1 = { a: 'Test1', b: 'Test2' }
+          obj2 = { c: 'Test3', d: 'Test4' }
+          obj3 = { b: "TestNew", c: "TestNew" }
+        });
+
+        it("Should add on properties to the first object",function() {
+          var obj4 = Q._defaults(obj1,obj2);
+
+          expect(obj4).toEqual(obj1);
+
+          expect(obj4.c).toEqual("Test3");
+          expect(obj4.d).toEqual("Test4");
+        });
+
+        it("Shouldn't overwrite existing properties",function() {
+          expect(obj1.b).toEqual("Test2");
+
+          Q._defaults(obj1,obj3);
+
+          expect(obj1.b).toEqual("Test2");
+          expect(obj1.c).toEqual("TestNew");
+
+        });
+      });
+
+      describe("isString",function() {
+
+        it("Should identify strings",function() {
+          expect(Q._isString("My String")).toBe(true);
+        });
+
+        it("Should return false for objects",function() {
+          expect(Q._isString({})).toBe(false);
+        });
+
+        it("Should return false for numbers",function() {
+          expect(Q._isString(1231)).toBe(false);
+        });
+
+        it("Should (sadly) return false for non-primitive strings",function() {
+          expect(Q._isString(String("Tester"))).toBe(true);
+        });
+
+      });
+
+      describe("isFunction",function() {
+
+        it("Should identify function",function() {
+          expect(Q._isFunction(function() {})).toBe(true);
+        });
+
+        it("Should return false for objects",function() {
+          expect(Q._isFunction({})).toBe(false);
+        });
+
+        it("Should return false for numbers",function() {
+          expect(Q._isFunction(1231)).toBe(false);
+        });
+
+        it("Should return false for strings",function() {
+          expect(Q._isFunction("Tester")).toBe(false);
+        });
+
+      });
+
+      describe("isObject",function() {
+        it("Should identify objects",function() {
+          expect(Q._isObject({})).toBe(true);
+        });
+
+        it("Should return false for functions",function() {
+          expect(Q._isObject(function() {})).toBe(false);
+        });
+
+        it("Should return false for arrays",function() {
+          expect(Q._isObject([])).toBe(false);
+        });
+
+        it("Should return false for numbers",function() {
+          expect(Q._isObject(1231)).toBe(false);
+        });
+
+        it("Should return false for strings",function() {
+          expect(Q._isObject("Tester")).toBe(false);
+        });
+      });
+
+      describe("isArray",function() {
+        it("Should identify arrays",function() {
+          expect(Q._isArray([])).toBe(true);
+        });
+
+        it("Should return false for functions",function() {
+          expect(Q._isArray(function() {})).toBe(false);
+        });
+
+        it("Should return false for numbers",function() {
+          expect(Q._isArray(1231)).toBe(false);
+        });
+
+        it("Should return false for strings",function() {
+          expect(Q._isArray("Tester")).toBe(false);
+        });
+
+        it("Should return false for objects",function() {
+          expect(Q._isArray({})).toBe(false);
+        });
+      });
+
+      describe("each",function() {
+        var a,b;
+
+        beforeEach(function() {
+          a = { a: 1, b: 2, c: 3 };
+          b = [ 1, 2, 3 ];
+        });
+
+        it("should loop over objects",function() {
+          var output = []
+          Q._each(a,function(val,key) {
+            output.push(key)
+            output.push(val);
+          });
+          expect(output).toEqual(['a',1,'b',2,'c',3]);
+        });
+
+        it("should loop over arrays",function() {
+          var output = []
+          Q._each(b,function(val,idx) {
+            output.push(idx)
+            output.push(val);
+          });
+          expect(output).toEqual([0,1,1,2,2,3]);
+        });
+      });
+
+      describe("keys",function() {
+        it("should be able to return a list of keys",function() {
+          var a = { a: 1, b: 2, c: 3 };
+          expect(Q._keys(a)).toEqual(['a','b','c']);
+        });
+      });
+
+      describe("uniqueId",function() {
+        it("Should generate a unique id",function() {
+          var first = Q._uniqueId();
+          expect(Q._uniqueId()).toNotEqual(first);
+          expect(Q._uniqueId()).toNotEqual(first);
+          expect(Q._uniqueId()).toNotEqual(Q._uniqueId());
+        });
       });
 
     });
