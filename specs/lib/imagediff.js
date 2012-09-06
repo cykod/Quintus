@@ -157,7 +157,7 @@
       i,
       cnt       = 0;
 
-    tolerance = tolerance || 1200;
+    tolerance = tolerance || 1000;
     
 
     if (!equalDimensions(a, b)) return false;
@@ -172,7 +172,7 @@
       }
     }
 
-    return cnt < 10 ? true : false;
+    return cnt < 20 ? true : false;
   }
 
 

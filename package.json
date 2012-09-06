@@ -1,8 +1,12 @@
 {
-    "name": "Quintus Engine",
+    "name": "Quintus"
+  , "author": "Pascal Rettig"
   , "version": "0.0.1"
   , "dependencies": {
       "grunt": ">0",
-      "optimist": ">0"
+      "optimist": ">0",
+      "grunt-jasmine-task": ">0",
+      "temporary": ">0"
+
   }
 }
