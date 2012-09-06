@@ -1,12 +1,12 @@
 window.addEventListener("load",function() {
 var Q = window.Q = Quintus()
-        .include("Sprites, Scenes, Input, Platformer")
+        .include("Sprites, Scenes, Input, 2D")
         .setup({ maximize: true })
         .controls();
 
 Q.Sprite.extend("Player",{
   init: function(p) {
-    this._super(p, { sheet: 'player', x: 390, y: 20 });
+    this._super(p, { sheet: 'player', x: 390, y: -200 });
     this.add('2d, platformerControls');
     this.on("hit.sprite",function(collision) {
       if(collision.obj.isA("Tower")) {
@@ -43,7 +43,7 @@ Q.scene("level1",function(stage) {
   stage.add("viewport").follow(player);
 
   stage.insert(new Q.Enemy({ x: 700, y: 0 }));
-  stage.insert(new Q.Enemy({ x: 800, y: 00 }));
+  stage.insert(new Q.Enemy({ x: 800, y: 0 }));
 
   stage.insert(new Q.Tower({ x: 180, y: 35 }));
 
