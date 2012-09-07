@@ -36,6 +36,11 @@ module.exports = function(grunt) {
       files: '<config:lint.files>',
       tasks: 'lint qunit'
     },
+    docco: {
+      app: {
+        src: ['lib/quintus*.js','examples/*/*.js']
+      }
+    },
     jshint: {
       options: {
         curly: true,
@@ -58,5 +63,6 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', 'lint jasmine concat min');
   grunt.loadNpmTasks('grunt-jasmine-task');
+  grunt.loadNpmTasks('grunt-docco');
 
 };

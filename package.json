@@ -6,6 +6,7 @@
       "grunt": ">0",
       "optimist": ">0",
       "grunt-jasmine-task": ">0",
+      "grunt-docco": ">0",
       "temporary": ">0"
 
   }
