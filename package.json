@@ -1,13 +1,25 @@
 {
-    "name": "Quintus"
-  , "author": "Pascal Rettig"
-  , "version": "0.0.1"
-  , "dependencies": {
+  "name": "Quintus",
+  "author": {
+     "name": "Pascal Rettig",
+     "email": "html5game@cykod.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/cykod/Quintus/blob/master/MIT-LICENSE.txt"
+    },
+    {
+      "type": "GPLv2",
+      "url": "https://github.com/cykod/Quintus/blob/master/GPL-LICENSE.txt"
+    }
+  ],
+  "version": "0.0.1",
+  "dependencies": {
       "grunt": ">0",
       "optimist": ">0",
       "grunt-jasmine-task": ">0",
       "grunt-docco": ">0",
       "temporary": ">0"
-
   }
 }

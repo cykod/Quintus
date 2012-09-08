@@ -22,7 +22,7 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['<banner:meta.banner>',"lib/quintus.js","lib/**/*.js"],
+        src: ['<banner:meta.banner>',"lib/quintus.js","lib/*.js"],
         dest: 'dist/quintus-all.js'
       }
     },
