@@ -9,30 +9,8 @@
 //
 // Most of the code isn't particularly interesting, the main piece
 // of Quintus-specific collision stuff is tucked away at the bottom of 
-// the step method:
+// the step method.
 //
-//     var maxCol = 3, collided = false;
-//     p.hit = false;
-//     while((collided = this.parent.search(this)) && maxCol > 0) {
-//       if(collided) {
-//         p.hit = true;
-//         this.p.x -= collided.separate[0];
-//         this.p.y -= collided.separate[1];
-//       }
-//       maxCol--;
-//     }
-// 
-// This code actually runs detection for the object and moves it away
-// from any collisions. There's a loop in there so that the object will
-// move away from up to 3 collisions per frame. 
-//
-// The search method simply returns the first collision it hits, whether
-// it be in the collision layer or with another sprite. This method is called 
-// on the `parent` stage object. You can also call the collide method which is
-// used primarily to trigger `hit` callbacks in lieu of returning the collision.
-//
-// Most of the time you won't need to worry about this directly as adding
-// the `2d` component to your class will handle it for you automatically.
 window.addEventListener('load',function(e) {
 
 
@@ -41,7 +19,11 @@ window.addEventListener('load',function(e) {
   var Q = Quintus().include("Sprites, Scenes")
                    .setup({ width: 960, height: 512 });
 
-  // Sprite class for the randomly generated pulsating / rotating shape
+  // Sprite class for the randomly generated pulsating / rotating shape,
+  // The most of the init code isn't particularly useful - it just 
+  // generates random convex shapes with anywhere from 3 to 7 points.
+  //
+  //
   Q.Sprite.extend("RandomShape", {
      init: function(p) {
         var angle = Math.random()*2*Math.PI,
@@ -131,6 +113,26 @@ window.addEventListener('load',function(e) {
       p.scale = 1 + Math.sin(p.scaleOffset * p.scaleSpeed) * p.scaleAmount;
 
 
+
+      // ### Checking for collisions.
+      // This code actually runs detection for the object and moves it away
+      // from any collisions. There's a loop in there so that the object will
+      // move away from up to 3 collisions per frame. 
+      //
+      // In order to work with collision detection, at minimum a sprite must have a width `w`,
+      // a height `h`, a horizontal location `x` and a vertical location `y`. From this
+      // the system will auto-generate a convex set of points in the shape of a square.
+      // If you want a collision shape of a different size, you'll need to add a `points`
+      // property that is an array of arrays of the form [ [ x0,y0 ], [x1, y1] ] that
+      // creates a convex shape. 
+      //
+      // The search method simply returns the first collision it hits, whether
+      // it be in the collision layer or with another sprite. This method is called 
+      // on the `parent` stage object. You can also call the collide method which is
+      // used primarily to trigger `hit` callbacks in lieu of returning the collision.
+      //
+      // Most of the time you won't need to worry about this directly as adding
+      // the `2d` component to your class will handle it for you automatically.
       var maxCol = 3, collided = false;
       p.hit = false;
       while((collided = this.parent.search(this)) && maxCol > 0) {
@@ -144,6 +146,12 @@ window.addEventListener('load',function(e) {
       }
     },
 
+    // The draw method is overloaded to draw the collision mesh and the
+    // bounding box. For normal bitmap-based sprites, you don't need to
+    // overload the draw method. Notice that rotating the shape and scaling
+    // the shape don't affect the bounding box, which is used for first-pass
+    // collision detection, so this is something you'll need to take into 
+    // consideration when setting up your shapes.
     draw: function(ctx) {
       var p = this.p;
 
@@ -178,15 +186,29 @@ window.addEventListener('load',function(e) {
     }
   });
 
+  // Number of shapes to add to the page
   var numShapes = 5;
 
+  // Scene that actually adds shapes onto the stage
   Q.scene("start",new Q.Scene(function(stage) {
-      while(numShapes-- > 0) {
-        stage.insert(new Q.RandomShape());
-      }
+    var shapesLeft = numShapes;
+    while(shapesLeft-- > 0) {
+      stage.insert(new Q.RandomShape());
+    }
   }));
 
+  // Finally call `stageScene` to start the show
   Q.stageScene("start");
+
+  // ## Possible Experimentations:
+  // 
+  // 1. Try staging the `start` scene on multiple stages (e.g. add Q.stageScene("start",1)), notice
+  //    the shapes only collide with other shapes on their own stage
+  // 2. Add in a check to the draw method that looks at the currently active stage
+  //    (stored in Q.activeStage) to determine the color of the shapes
+  // 3. Using the collision.normalX and collision.normalY values of each collision, adjust the
+  //    velocity of colliding shapes to bounce off each other more normally
+  // 4. Turn this into a game of asteroids.
 
 
 });
