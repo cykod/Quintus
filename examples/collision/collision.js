@@ -113,6 +113,7 @@ window.addEventListener('load',function(e) {
       p.scale = 1 + Math.sin(p.scaleOffset * p.scaleSpeed) * p.scaleAmount;
 
 
+      this._super();
 
       // ### Checking for collisions.
       // This code actually runs detection for the object and moves it away
@@ -128,14 +129,14 @@ window.addEventListener('load',function(e) {
       //
       // The search method simply returns the first collision it hits, whether
       // it be in the collision layer or with another sprite. This method is called 
-      // on the `parent` stage object. You can also call the collide method which is
+      // on the `stage` stage object. You can also call the collide method which is
       // used primarily to trigger `hit` callbacks in lieu of returning the collision.
       //
       // Most of the time you won't need to worry about this directly as adding
       // the `2d` component to your class will handle it for you automatically.
       var maxCol = 3, collided = false;
       p.hit = false;
-      while((collided = this.parent.search(this)) && maxCol > 0) {
+      while((collided = this.stage.search(this)) && maxCol > 0) {
 
         if(collided) {
           p.hit = true;
@@ -173,7 +174,17 @@ window.addEventListener('load',function(e) {
       ctx.stroke();
       ctx.fill();
 
+
       ctx.restore();
+
+      if(this.c && this.c.points) {
+        for(var k=0;k<this.c.points.length;k++) {
+          var pt = this.c.points[k];
+          ctx.fillRect(pt[0]-2, pt[1]-2,4,4);
+
+        }
+
+      }
 
       ctx.strokeStyle = "gray";
       ctx.beginPath();
