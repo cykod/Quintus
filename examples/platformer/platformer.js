@@ -30,7 +30,7 @@ Q.Sprite.extend("Player",{
     // You can call the parent's constructor with this._super(..)
     this._super(p, {
       sheet: "player",  // Setting a sprite sheet sets sprite width and height
-      x: 390,           // You can also set additional properties that can
+      x: 410,           // You can also set additional properties that can
       y: 90,            // be overridden on object creation
     });
 
@@ -79,9 +79,17 @@ Q.Sprite.extend("Enemy",{
 
     // Listen for a sprite collision, if it's the player,
     // restart the level
-    this.on("hit.sprite",function(collision) {
+    this.on("bump.left,bump.right",function(collision) {
       if(collision.obj.isA("Player")) { 
         Q.stageScene("level1"); 
+      }
+    });
+
+    this.on("bump.top",function(collision) {
+      console.log("Topper");
+      if(collision.obj.isA("Player")) { 
+        this.destroy();
+        collision.obj.p.vy = -300;
       }
     });
   }

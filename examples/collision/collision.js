@@ -16,8 +16,8 @@ window.addEventListener('load',function(e) {
 
   // Set up a standard Quintus instance with only the 
   // Sprites and Scene module (for the stage support) loaded.
-  var Q = Quintus().include("Sprites, Scenes")
-                   .setup({ width: 960, height: 512 });
+  var Q = window.Q = Quintus().include("Sprites, Scenes")
+                              .setup({ width: 960, height: 512 });
 
   // Sprite class for the randomly generated pulsating / rotating shape,
   // The most of the init code isn't particularly useful - it just 
@@ -154,13 +154,8 @@ window.addEventListener('load',function(e) {
     // collision detection, so this is something you'll need to take into 
     // consideration when setting up your shapes.
     draw: function(ctx) {
+      return; 
       var p = this.p;
-
-      ctx.save();
-      ctx.translate(this.p.x + this.p.cx, this.p.y + this.p.cy);
-
-      ctx.rotate(this.p.angle * Math.PI / 180);
-      ctx.scale(this.p.scale,this.p.scale);
 
       ctx.beginPath();
       ctx.fillStyle = this.p.hit ? "blue" : "red";
@@ -173,27 +168,6 @@ window.addEventListener('load',function(e) {
       ctx.lineTo(this.p.points[0][0],this.p.points[0][1]);
       ctx.stroke();
       ctx.fill();
-
-
-      ctx.restore();
-
-      if(this.c && this.c.points) {
-        for(var k=0;k<this.c.points.length;k++) {
-          var pt = this.c.points[k];
-          ctx.fillRect(pt[0]-2, pt[1]-2,4,4);
-
-        }
-
-      }
-
-      ctx.strokeStyle = "gray";
-      ctx.beginPath();
-      ctx.moveTo(p.x,p.y);
-      ctx.lineTo(p.x+p.w,p.y);
-      ctx.lineTo(p.x+p.w,p.y+p.h);
-      ctx.lineTo(p.x,p.y+p.h);
-      ctx.lineTo(p.x,p.y);
-      ctx.stroke();
     }
   });
 
@@ -210,6 +184,10 @@ window.addEventListener('load',function(e) {
 
   // Finally call `stageScene` to start the show
   Q.stageScene("start");
+
+  // Render the elements
+  Q.debug = true;
+  Q.debugFill = true;
 
   // ## Possible Experimentations:
   // 

@@ -97,7 +97,7 @@ describe("Quintus Sprites", function() {
      var test;
 
      beforeEach(function() {
-       test = new Q.TestSprite({ asset: 'blockbreak.png', x: 50, y: 50 });
+       test = new Q.TestSprite({ asset: 'blockbreak.png', x: 50, y: 50, cx: 0, cy: 0 });
      });
  
       it("should auto-assign width and height properties with an asset",function() {
@@ -113,7 +113,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-asset-should-be-able-to-draw-itself.png');
 
         runs(function() {
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -123,7 +123,7 @@ describe("Quintus Sprites", function() {
 
         runs(function() {
           test.hide();
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -132,7 +132,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-asset-should-be-able-to-draw-its-bounding-box.png');
         runs(function() {
           Q.debug = true;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -141,7 +141,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-asset-should-be-able-to-draw-itself-at-an-angle.png');
         runs(function() {
           test.p.angle = 45;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -150,7 +150,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-asset-should-be-able-to-scale-itself.png');
         runs(function() {
           test.p.scale = 2;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
 
@@ -185,7 +185,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-sheet-should-be-able-to-draw-itself.png');
 
         runs(function() {
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -195,7 +195,7 @@ describe("Quintus Sprites", function() {
 
         runs(function() {
           test.hide();
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -204,7 +204,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-sheet-should-be-able-to-draw-its-bounding-box.png');
         runs(function() {
           Q.debug = true;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -213,7 +213,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-sheet-should-be-able-to-draw-itself-at-an-angle.png');
         runs(function() {
           test.p.angle = 45;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
       });
@@ -222,7 +222,7 @@ describe("Quintus Sprites", function() {
         var img = SpriteFixtures.sample('QuintusSprites/sprite-sheet-should-be-able-to-scale-itself.png');
         runs(function() {
           test.p.scale = 2;
-          test.draw(Q.ctx);
+          test.render(Q.ctx);
           expect(canvas).toImageDiffEqual(img);
         });
 
