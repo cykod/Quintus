@@ -13,11 +13,11 @@ window.addEventListener("load",function() {
 // the Sprites, Scenes, Input and 2D module. The 2D module
 // includes the `TileLayer` class as well as the `2d` componet.
 var Q = window.Q = Quintus()
-        .include("Sprites, Scenes, Input, 2D")
+        .include("Sprites, Scenes, Input, 2D, Touch, UI")
         // Maximize this game to whatever the size of the browser is
         .setup({ maximize: true })
-        // And turn on default input controls
-        .controls();
+        // And turn on default input controls and touch input (for UI)
+        .controls().touch()
 
 // ## Player Sprite
 // The very basic player sprite, this is just a normal sprite
@@ -49,8 +49,8 @@ Q.Sprite.extend("Player",{
 
       // Check the collision, if it's the Tower, you win!
       if(collision.obj.isA("Tower")) {
-        alert("You Win!");
-        Q.stageScene("level1");
+        Q.stageScene("endGame",1, { label: "You Won!" }); 
+        this.destroy();
       }
     });
 
@@ -78,15 +78,17 @@ Q.Sprite.extend("Enemy",{
     this.add('2d, aiBounce');
 
     // Listen for a sprite collision, if it's the player,
-    // restart the level
-    this.on("bump.left,bump.right",function(collision) {
+    // restart the level unless we get hit on the top
+    this.on("bump.left,bump.right,bump.bottom",function(collision) {
       if(collision.obj.isA("Player")) { 
-        Q.stageScene("level1"); 
+        Q.stageScene("endGame",1, { label: "You Died" }); 
+        collision.obj.destroy();
       }
     });
 
+    // If the enemy gets hit on the top, destroy it
+    // and give the user a "hop"
     this.on("bump.top",function(collision) {
-      console.log("Topper");
       if(collision.obj.isA("Player")) { 
         this.destroy();
         collision.obj.p.vy = -300;
@@ -113,10 +115,28 @@ Q.scene("level1",function(stage) {
 
   // Add in a couple of enemies
   stage.insert(new Q.Enemy({ x: 700, y: 0 }));
-  stage.insert(new Q.Enemy({ x: 800, y: 00 }));
+  stage.insert(new Q.Enemy({ x: 800, y: 0 }));
 
   // Finally add in the tower goal
-  stage.insert(new Q.Tower({ x: 180, y: 35 }));
+  stage.insert(new Q.Tower({ x: 180, y: 50 }));
+});
+
+Q.scene('endGame',function(stage) {
+  var container = stage.insert(new Q.UI.Container({
+    x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
+  }));
+
+  var button = container.insert(new Q.UI.Button({ x: 0, y: 0, fill: "#CCCCCC",
+                                                  label: "Play Again" }))         
+  var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, 
+                                                   label: stage.options.label }));
+  button.on("click",function() {
+    Q.clearStages();
+    Q.stageScene('level1');
+  });
+
+  // Expand the container to visibily fit it's contents
+  container.fit(20);
 });
 
 // ## Asset Loading and Game Launch
