@@ -31,7 +31,7 @@ Q.Sprite.extend("Player",{
     this._super(p, {
       sheet: "player",  // Setting a sprite sheet sets sprite width and height
       x: 410,           // You can also set additional properties that can
-      y: 90,            // be overridden on object creation
+      y: 90             // be overridden on object creation
     });
 
     // Add in pre-made components to get up and running quickly
@@ -78,7 +78,7 @@ Q.Sprite.extend("Enemy",{
     this.add('2d, aiBounce');
 
     // Listen for a sprite collision, if it's the player,
-    // restart the level unless we get hit on the top
+    // end the game unless the enemy is hit on top
     this.on("bump.left,bump.right,bump.bottom",function(collision) {
       if(collision.obj.isA("Player")) { 
         Q.stageScene("endGame",1, { label: "You Died" }); 
@@ -121,6 +121,9 @@ Q.scene("level1",function(stage) {
   stage.insert(new Q.Tower({ x: 180, y: 50 }));
 });
 
+// To display a game over / game won popup box, 
+// create a endGame scene that takes in a `label` option
+// to control the displayed message.
 Q.scene('endGame',function(stage) {
   var container = stage.insert(new Q.UI.Container({
     x: Q.width/2, y: Q.height/2, fill: "rgba(0,0,0,0.5)"
@@ -130,6 +133,8 @@ Q.scene('endGame',function(stage) {
                                                   label: "Play Again" }))         
   var label = container.insert(new Q.UI.Text({x:10, y: -10 - button.p.h, 
                                                    label: stage.options.label }));
+  // When the button is clicked, clear all the stages
+  // and restart the game.
   button.on("click",function() {
     Q.clearStages();
     Q.stageScene('level1');
