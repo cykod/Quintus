@@ -48,7 +48,6 @@ window.addEventListener('load',function(e) {
     sprite1.add('2d')
 
     sprite1.on('step',function() {
-      console.log(this.p.y + " " + this.p.vy);
 
     });
 
