@@ -7,6 +7,7 @@ The Quintus engine is an HTML5 game engine designed to be modular and lightweigh
 
 
 [![Quintus Platformer Example](https://raw.github.com/cykod/Quintus/master/docs/images/platformer.png)](http://html5quintus.com/quintus/examples/platformer/)
+
 [Example Annotated Source](http://html5quintus.com/quintus/docs/platformer.html)
 
 More details and documentation at [HTML5Quintus.com](http://html5quintus.com/)
