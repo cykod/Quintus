@@ -20,7 +20,7 @@ window.addEventListener("load",function() {
   // canvas element on the page. If you already have a 
   // canvas element in your page, you can pass the element
   // or it's id as the first parameter to set up as well.
-  var Q = Quintus().include("Sprites").setup({ width: 400, height: 400 });
+  var Q = window.Q =  Quintus().include("Sprites").setup({ width: 400, height: 400 });
 
   // The `MovingSprite` class is a descendant of the base `Sprite` class,
   // all it does is add in a step method to Sprite that runs the standard
@@ -33,8 +33,8 @@ window.addEventListener("load",function() {
     draw: function(ctx) {
       ctx.fillStyle = "black";
       ctx.beginPath();
-      ctx.arc(this.p.x + this.p.w/2,
-              this.p.y + this.p.h/2,
+      ctx.arc(-this.p.cx,
+              -this.p.cy,
               this.p.w/2,0,Math.PI*2); 
       ctx.fill();
 
@@ -44,10 +44,10 @@ window.addEventListener("load",function() {
   // Create a new instance of the `Ball` Sprite,
   // passing in the size, position, velocity, and 
   // acceleration
-  var ball = new Q.Ball({ w:  20,  h:   20, 
-                          x:   0,  y:  300, 
-                          vx: 30, vy: -100, 
-                          ay: 30, ay:    0 });
+  var ball = window.ball = new Q.Ball({ w:  20,  h:   20, 
+                                        x:  30,  y:  300, 
+                                       vx:  30, vy: -100, 
+                                       ax:   0, ay:   30 });
 
   // You can start the game loop directly by
   // calling `gameLoop` with a callback and Quintus
@@ -63,8 +63,8 @@ window.addEventListener("load",function() {
       // Move the ball `dt` forward in time
       ball.step(dt);
 
-      // Draw the ball onto the canvas context.
-      ball.draw(Q.ctx);
+      // Render the ball onto the canvas context.
+      ball.render(Q.ctx);
   });
 
 
