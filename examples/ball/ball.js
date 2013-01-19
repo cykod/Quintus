@@ -61,7 +61,7 @@ window.addEventListener("load",function() {
       Q.clear();
 
       // Move the ball `dt` forward in time
-      ball.step(dt);
+      ball.update(dt);
 
       // Render the ball onto the canvas context.
       ball.render(Q.ctx);
