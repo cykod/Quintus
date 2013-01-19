@@ -112,9 +112,6 @@ window.addEventListener('load',function(e) {
       p.scaleOffset += dt;
       p.scale = 1 + Math.sin(p.scaleOffset * p.scaleSpeed) * p.scaleAmount;
 
-
-      this._super();
-
       // ### Checking for collisions.
       // This code actually runs detection for the object and moves it away
       // from any collisions. There's a loop in there so that the object will
