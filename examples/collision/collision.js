@@ -142,29 +142,6 @@ window.addEventListener('load',function(e) {
         }
         maxCol--;
       }
-    },
-
-    // The draw method is overloaded to draw the collision mesh and the
-    // bounding box. For normal bitmap-based sprites, you don't need to
-    // overload the draw method. Notice that rotating the shape and scaling
-    // the shape don't affect the bounding box, which is used for first-pass
-    // collision detection, so this is something you'll need to take into 
-    // consideration when setting up your shapes.
-    draw: function(ctx) {
-      return; 
-      var p = this.p;
-
-      ctx.beginPath();
-      ctx.fillStyle = this.p.hit ? "blue" : "red";
-      ctx.strokeStyle = "black";
-
-      ctx.moveTo(this.p.points[0][0],this.p.points[0][1]);
-      for(var i=0;i<this.p.points.length;i++) {
-        ctx.lineTo(this.p.points[i][0],this.p.points[i][1]);
-      }
-      ctx.lineTo(this.p.points[0][0],this.p.points[0][1]);
-      ctx.stroke();
-      ctx.fill();
     }
   });
 
@@ -183,6 +160,9 @@ window.addEventListener('load',function(e) {
   Q.stageScene("start");
 
   // Render the elements
+  // Turning Q.debug and Q.debugFill on will render
+  // the sprites' collision meshes, which is all we want
+  // in this situation, otherwise nothing would get rendered
   Q.debug = true;
   Q.debugFill = true;
 

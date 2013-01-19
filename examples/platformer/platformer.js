@@ -141,6 +141,7 @@ Q.scene('endGame',function(stage) {
   });
 
   // Expand the container to visibily fit it's contents
+  // (with a padding of 20 pixels)
   container.fit(20);
 });
 
@@ -163,21 +164,11 @@ Q.load("sprites.png, sprites.json, level.json, tiles.png", function() {
 // 
 // The are lots of things to try out here.
 // 
-// 1. Make the player able to squash the enemies by adding in listener to bump.bottom.
-//    The following code in the player's init method should do the trick:
-//
-//          this.on("bump.bottom",function(collision) {
-//            if(collision.obj.isA("Enemy")) {
-//              this.p.vy = -300;
-//              collision.obj.destroy();
-//            }
-//          });
-//
-// 2. Modify level.json to change the level around and add in some more enemies.
-// 3. Add in a second level by creating a level2.json and a level2 scene that gets
+// 1. Modify level.json to change the level around and add in some more enemies.
+// 2. Add in a second level by creating a level2.json and a level2 scene that gets
 //    loaded after level 1 is complete.
-// 4. Add in a title screen
-// 5. Add in points for jumping on enemies.
-// 6. Add in a `Repeater` behind the TileLayer to create a paralax scrolling effect.
+// 3. Add in a title screen
+// 4. Add in a hud and points for jumping on enemies.
+// 5. Add in a `Repeater` behind the TileLayer to create a paralax scrolling effect.
 
 });
