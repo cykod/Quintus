@@ -1,0 +1,14 @@
+{
+  "tiles" :  {  "tilew": 16, "tileh": 16, "sx": 0,  "sy":  0,  "w": 192,  "h": 144},
+  "block1":  {  "tilew": 32, "tileh": 16, "sx": 0,  "sy":  0,  "w": 160,  "h": 16 },
+  "block2":  {  "tilew": 32, "tileh": 16, "sx": 0,  "sy": 16,  "w": 160,  "h": 16 },
+  "block3":  {  "tilew": 32, "tileh": 16, "sx": 0,  "sy": 32,  "w": 160,  "h": 16 },
+  "block4":  {  "tilew": 32, "tileh": 16, "sx": 0,  "sy": 48,  "w": 160,  "h": 16 },
+  "paddlelg":{  "tilew": 48, "tileh": 16, "sx": 0,  "sy": 64,  "w": 48,   "h": 16 },
+  "ball":    {  "tilew": 16, "tileh": 16, "sx":48,  "sy": 64,  "w": 80,   "h": 16 },
+  "paddlesm":{  "tilew": 32, "tileh": 16, "sx": 0,  "sy": 80,  "w": 32,   "h": 16 },
+  "count":   {  "tilew": 32, "tileh": 48, "sx": 0,  "sy": 96,  "w": 96,   "h": 48 },
+  "powerup": {  "tilew": 16, "tileh": 16, "sx":96,  "sy": 96,  "w": 96,   "h": 16 },
+  "powerdown":{ "tilew": 16, "tileh": 16, "sx":112, "sy": 96,  "w": 96,   "h": 16 }
+}
+    
