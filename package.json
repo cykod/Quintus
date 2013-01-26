@@ -14,7 +14,7 @@
       "url": "https://github.com/cykod/Quintus/blob/master/GPL-LICENSE.txt"
     }
   ],
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
       "grunt": ">0",
       "optimist": ">0",

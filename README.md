@@ -42,6 +42,13 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
+### 0.0.4 GameState and MouseControls
+* Added Q.GameState for storing global game state ..
+* .. listening for events on changes to global game state
+* Added Q.input.mouseControls() for tracking mouse/touch locations
+* Couple fixes to Q.UI.Text 
+* Fix to Touch module on iOS
+
 ### 0.0.3 Move to update from step
 
 * Transitions scene from `step` to use `update`
