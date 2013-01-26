@@ -14,6 +14,11 @@ More details and documentation at [HTML5Quintus.com](http://html5quintus.com/)
 
 Read the [Quintus Guide](http://html5quintus.com/guide/intro.md) to get started on the Engine.
 
+Online Forum / Community
+========================
+
+For general questions, demos, etc please post to the [Quintus HTML5 Game Engine G+ Community](https://plus.google.com/communities/104292074755089084725)
+
 History of Quintus
 ==================
 
