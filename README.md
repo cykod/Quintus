@@ -35,7 +35,7 @@ Quintus has no dependencies.
 
 Alternatively you can clone the repo and either use each file separately or generate a unified version:
 
-    $ git clone git@github.com:cykod/Quintus.git
+    $ git clone git://github.com/cykod/Quintus.git
     $ cd Quintus
     $ npm install
     $ grunt
