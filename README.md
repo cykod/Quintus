@@ -19,6 +19,30 @@ Online Forum / Community
 
 For general questions, demos, etc please post to the [Quintus HTML5 Game Engine G+ Community](https://plus.google.com/communities/104292074755089084725)
 
+
+Using Quintus
+=============
+
+The easiest way to use Quintus is simply to use the CDN hosted version at:
+
+    <!-- Production minified ~20k gzipped -->
+    <script src='http://cdn.html5quintus.com/v0.0.4/quintus-all.min.js'></script>
+
+    <!-- Full Source ~37k gzipped -->
+    <script src='http://cdn.html5quintus.com/v0.0.4/quintus-all.js'></script>
+
+Quintus has no dependencies.
+
+Alternatively you can clone the repo and either use each file separately or generate a unified version:
+
+    $ git clone git@github.com:cykod/Quintus.git
+    $ cd Quintus
+    $ npm install
+    $ grunt
+    
+Check the `dist/` directory for contatenated versions. 
+
+
 History of Quintus
 ==================
 
@@ -33,10 +57,13 @@ If you have suggestions for additional enhancements, please add them to the Issu
 
 Here's some specific pieces that need some love:
 
-* Add a `center` method to Q.UI.Container to center on the page or in a container
 * Update the Q.Scenes method to only render sprites that are visible in the grid. (so draw doesn't get called with thousands of sprites)
 * Add JSON Level loading support for Scenes
+* Add tmx tile loading support
 * Fix the collision methods to calculate a collision magnitude based on dot product of sprite velocities
+* Turn into a Node binary for generating projects.
+* Add Spriter support into the engine
+* Add a simple level editor
 
 
 Changelog
