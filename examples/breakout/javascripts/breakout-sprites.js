@@ -3,6 +3,49 @@
   Q.gravityY = 0;
   Q.gravityX = 0;
 
+  Q.TileLayer.extend("GameTiles",{
+    init: function(p) {
+      this._super({
+        dataAsset: "bg.tmx",
+        sheet: 'tiles',
+        tileW: 16,
+        tileH: 16,
+        blockTileW: 21,
+        blockTileH: 27
+      });
+    },
+
+    // Override the load method to load the bg.tmx file,
+    // then pass the data array to the original implementation
+    load: function(dataAsset) {
+      var parser = new DOMParser(),
+          doc = parser.parseFromString(Q.asset(dataAsset), "application/xml");
+
+      var layer = doc.getElementsByTagName("layer")[0],
+          width = parseInt(layer.getAttribute("width")),
+          height = parseInt(layer.getAttribute("height"));
+
+      var data = [],
+          tiles = layer.getElementsByTagName("tile"),
+          idx = 0;
+      for(var y = 0;y < height;y++) {
+        data[y] = [];
+        for(var x = 0;x < width;x++) {
+          var tile = tiles[idx];
+          data[y].push(parseInt(tile.getAttribute("gid")-1));
+          idx++;
+        }
+      }
+      
+      this._super(data);
+    },
+
+    collidableTile: function(tileNum) {
+      return tileNum != 23;
+    }
+    
+  });
+
   Q.Sprite.extend("BlockTracker",{
     init: function(p) {
       this._super(p, {
@@ -77,7 +120,7 @@
           this.p.vy = -this.p.speed;
         }
         this.p.vx = dx * this.p.speed;
-      } else if(col.obj.isA("Block") || col.obj.isA("Ball")) {
+      } else {
 
 
         if(col.normalY < -0.3) { 
@@ -106,7 +149,7 @@
 
     start:function() {
       this.p.vy = this.p.speed;
-      this.p.vx = this.p.speed/2;
+      this.p.vx = this.p.speed;
 
     },
 
@@ -116,10 +159,12 @@
 
       this.stage.collide(this);
 
-      if(this.p.x < 24) { this.p.vx = Math.abs(this.p.vx); }
-      if(this.p.x > Q.width - 24) { this.p.vx = -Math.abs(this.p.vx); }
+      if(!Q.useTiles) {
+        if(this.p.x < 24) { this.p.vx = Math.abs(this.p.vx); }
+        if(this.p.x > Q.width - 24) { this.p.vx = -Math.abs(this.p.vx); }
 
-      if(this.p.y < 24) { this.p.vy = Math.abs(this.p.vy); }
+        if(this.p.y < 24) { this.p.vy = Math.abs(this.p.vy); }
+      }
 
       if(this.p.y > Q.height) {
         this.destroy(); // Remove the ball if it's off the screen
@@ -140,7 +185,7 @@
     },
 
     destroyed: function() {
-      Q.state.inc("score",50);
+      Q.state.inc("score",100);
 
       var rand = Math.round(Math.random()*7);
 
@@ -175,10 +220,10 @@
       this.p.x = Q.inputs['mouseX'];
 
       if(Q("Ball").length == 0) {
-        if(Q.state.get("lives") == 0) {
-          Q.stageScene("gameOver");
-        } else {
-          Q.state.dec("lives",1);
+				Q.state.dec("lives",1);
+				if(Q.state.get("lives") == 0) {
+					Q.stageScene("gameOver");
+				} else {
           this.stage.insert(new Q.Ball());
           this.stage.insert(new Q.Countdown());
         }

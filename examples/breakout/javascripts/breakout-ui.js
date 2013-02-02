@@ -3,10 +3,11 @@
   Q.Sprite.extend("Title", {
     init: function(p) {
       this._super({
+        y: 150,
+        x: Q.width/2,
         asset: "logo.png"
       });
 
-      this.center();
     }
   });
 
@@ -44,7 +45,7 @@
   Q.UI.Text.extend("Lives",{
     init: function() {
       this._super({
-        label: "lives: 2",
+        label: "lives: 3",
         align: "left",
         x: 70,
         y: Q.height - 10,

@@ -1,6 +1,5 @@
 window.addEventListener('load',function() {
 
-
   var Q = Quintus().include("Sprites, Scenes, Input, Anim, 2D, Audio, Touch, UI")
                    .include("BreakoutUI, BreakoutSprites, BreakoutScenes, BreakoutLevels")
                    .enableSound()
@@ -8,6 +7,7 @@ window.addEventListener('load',function() {
                    .touch();
 
   Q.input.mouseControls();
+  Q.input.keyboardControls();
 
 
   Q.load([
@@ -19,6 +19,7 @@ window.addEventListener('load',function() {
       // Data
       "bg.tmx", "sprites.json"
     ],function() { 
+      Q.useTiles = window.location.href.indexOf('usetiles') > -1;
 
       // Set up all the sprite sheets
       Q.compileSheets("tiles.png","sprites.json");
@@ -41,4 +42,4 @@ window.addEventListener('load',function() {
 
   window.Q = Q;
 
-});
+},true);

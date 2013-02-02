@@ -38,7 +38,7 @@ module.exports = function(grunt) {
     },
     docco: {
       app: {
-        src: ['lib/quintus*.js','examples/*/*.js']
+        src: ['lib/quintus*.js','examples/*/*.js','examples/*/javascripts/*.js']
       }
     },
     jshint: {

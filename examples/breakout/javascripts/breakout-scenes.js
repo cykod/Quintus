@@ -1,17 +1,33 @@
 ;Quintus.BreakoutScenes = function(Q) {
 
   Q.scene("title",function(stage) {
-    
+    Q.state.set("level",0);
+
+    // Clear the hud out
+    Q.clearStage(1); 
+
     var bg = stage.insert(new Q.Background({ type: Q.SPRITE_UI }));
     bg.on("touch",function() {  Q.stageScene("level1");  });
 
     stage.insert(new Q.Title());
 
+		var verb = Q.touchDevice ? 'Tap': 'Click';
+
     stage.insert(new Q.UI.Text({
-      label: "Click to start",
+      label: verb + " to start",
       align: 'center',
       x: Q.width/2,
-      y: 350,
+      y: 280,
+      weight: "normal",
+      size: 20
+    }));
+
+
+    stage.insert(new Q.UI.Text({
+      label: "during the game: use L/R arrow\nkeys to skip levels",
+      align: 'center',
+      x: Q.width/2,
+      y: 370,
       weight: "normal",
       size: 20
     }));
@@ -20,7 +36,7 @@
   Q.scene("gameOver",function(stage) {
 
     var bg = stage.insert(new Q.Background({ type: Q.SPRITE_UI }));
-    bg.on("touch",function() {  Q.stageScene("level1");  });
+    bg.on("touch",function() {  Q.stageScene("title");  });
 
     stage.insert(new Q.Title());
 
@@ -38,7 +54,7 @@
   Q.scene("winner",function(stage) {
 
     var bg = stage.insert(new Q.Background({ type: Q.SPRITE_UI }));
-    bg.on("touch",function() {  Q.stageScene("level1");  });
+    bg.on("touch",function() {  Q.stageScene("title");  });
 
     stage.insert(new Q.Title());
 
@@ -60,7 +76,12 @@
   }, { stage: 1 });
 
   function setupLevel(levelAsset,stage) {
-    stage.insert(new Q.Background());
+
+    if(Q.useTiles) {
+      stage.collisionLayer(new Q.GameTiles());
+    } else {
+      stage.insert(new Q.Background());
+    }
 
     stage.insert(new Q.BlockTracker({ data: Q.asset(levelAsset) }));
 
@@ -72,7 +93,7 @@
 
   Q.scene("level1",function(stage) {
     // Set up the game state
-    Q.state.reset({ score: 0, lives: 2, level: 1 });
+    Q.state.reset({ score: 0, lives: 3, level: 1 });
     
     // Add the hud in 
     Q.stageScene("hud"); 
@@ -93,15 +114,36 @@
   });
 
   Q.scene("level3",function(stage) {
-    Q.state.set("level",2);
+    Q.state.set("level",3);
     setupLevel("level3",stage);
     stage.on("complete",function() { Q.stageScene("level4"); });
   });
 
   Q.scene("level4",function(stage) {
-    Q.state.set("level",2);
+    Q.state.set("level",4);
     setupLevel("level4",stage);
     stage.on("complete",function() { Q.stageScene("winner"); });
+  });
+
+  // Level Skipping
+  Q.input.on('left',function() {
+    var level = Q.state.get("level");
+
+    if(level > 1) {
+      Q.stageScene('level' + (level-1));
+    } else {
+      Q.stageScene('title');
+    }
+  });
+
+  Q.input.on('right',function() {
+    var level = Q.state.get("level") || 0;
+
+    if(level < 4) {
+      Q.stageScene('level' + (level+1));
+    } else {
+      Q.stageScene('winner');
+    }
   });
 };
 

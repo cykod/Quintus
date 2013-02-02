@@ -5,6 +5,8 @@ Quintus is an easy-to-learn, fun-to-use HTML5 game engine for mobile, desktop an
 
 The Quintus engine is an HTML5 game engine designed to be modular and lightweight, with a concise JavaScript-friendly syntax. In lieu of trying to shoehorn a standard OOP-game engine structure into an HTML5 JavaScript engine, Quintus takes some cues from jQuery and provides plugins, events and a selector syntax. Instead of a deep single-inheritance-only model, Quintus provides a flexible component model in addition to traditional inheritance to make it easier to reuse functionality and share it across games and objects.
 
+**Warning: Quintus is at a very early stage of development, use at your own risk.***
+
 
 [![Quintus Platformer Example](https://raw.github.com/cykod/Quintus/master/docs/images/platformer.png)](http://html5quintus.com/quintus/examples/platformer/)
 
