@@ -71,14 +71,19 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
-### 0.0.4 GameState and MouseControls
+### 0.0.5 UI Example + Bug Fixes - 2/2/13
+* Fix to Q.UI.Button with an Asset
+* Fix to MouseControls on Android
+* Added UI example
+
+### 0.0.4 GameState and MouseControls - 1/27/13
 * Added Q.GameState for storing global game state ..
 * .. listening for events on changes to global game state
 * Added Q.input.mouseControls() for tracking mouse/touch locations
 * Couple fixes to Q.UI.Text 
 * Fix to Touch module on iOS
 
-### 0.0.3 Move to update from step
+### 0.0.3 Move to update from step - 1/19/13
 
 * Transitions scene from `step` to use `update`
 * Simplified Sprite stepping with update (no _super necessary any longer)
@@ -90,7 +95,7 @@ Changes to your code:
 
 * Your sprite's `step` method should no longer call `this._super(dt)` (in fact, sprites don't define a default super method anymore, so it'll cause a bug)- events are now handled by the `Sprite.update(dt)` method
 
-### 0.0.2 Reworked Sprites and Scenes
+### 0.0.2 Reworked Sprites and Scenes - 1/1/13
 
 * Full SAT collision (rotation / scaling)
 * Container / Children support
@@ -100,7 +105,7 @@ Changes to your code:
 * Added animate and tween support
 
 
-### 0.0.1 Unrelease
+### 0.0.1 Unrelease 
 
 * Initial Release
 * Basic Sprite and Scene Support
