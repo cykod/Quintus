@@ -15,7 +15,7 @@ window.addEventListener("load",function() {
 
   // Setup a scene with just one sprite to animate.
   Q.scene("scene1",function(stage) {
-      var sprite = new Q.Sprite({ asset: "enemy01.png", x: 32, y: 32 });
+      var sprite = new Q.Sprite({ asset: "enemy01.png", x: 32, y: 32, scale: 1 });
       sprite.add("tween");
       stage.insert(sprite);
       
@@ -27,7 +27,8 @@ window.addEventListener("load",function() {
         .chain({ angle:   0 }) 
         .chain({ angle: 360 }, 1, { callback: function(){ /*normalization*/ this.p.angle = 0; } })
         .chain({ angle: -360 }) 
-        .chain({ x: 160, y: 160 }, 1, Q.Easing.Quadratic.In );
+        .chain({ x: 160, y: 160, scale: 4 }, 1, Q.Easing.Quadratic.In )
+        .chain({ x: 160, y: 160, scale: 0.1 }, 1, Q.Easing.Quadratic.In );
   });
 
   Q.load(["enemy01.png"], function() {
