@@ -155,7 +155,7 @@ window.addEventListener('load',function(e) {
   // sprites on desktop.
   Q.el.addEventListener('mousemove',function(e) {
     var x = e.offsetX || e.layerX,
-        y = e.offsetY || e.layerY
+        y = e.offsetY || e.layerY,
         stage = Q.stage();
 
     // Use the helper methods in Q.touchInput to translate
