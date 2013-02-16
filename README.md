@@ -78,7 +78,8 @@ Changelog
 * Added support for Audio looping (via `Q.audio.play("name", { loop: true })`)
 * Added sound stopping support (`Q.audio.stop()` to stop all, `Q.audio.stop("name") to stop 1)
 * Moved non-working SVG, DOM and Physics modules to `extra/`
-* Added support for functions as direction options to follow (suggested by [@gvhuyssteen](https://github.com/gvhuyssteen)
+* Added support for functions as direction options to follow (suggested by [@gvhuyssteen](https://github.com/gvhuyssteen) )
+
   For Example:
       
         stage.follow(player, {
@@ -89,7 +90,7 @@ Changelog
            y: function(sprite) { return sprite.p.landed > 0 } 
         });
 
-* Improved tween animations, by [@fqborges](https://github.com/fqborges) fixes tween chaining and adds in an example in `examples/tween/
+* Improved tween animations, by [@fqborges](https://github.com/fqborges) fixes tween chaining and adds in an example in `examples/tween/`
 
 
 Changes to your code:
