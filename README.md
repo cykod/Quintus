@@ -75,7 +75,7 @@ Changelog
 * Fixed asset loading in Web Audio
 
 ### 0.1.0 Web Audio and better Tweens - 2/16/13 
-* **Note: this release was replaced with 0.1.1, which added no new featrures but fixed a couple bugs**
+* **Note: this release was replaced with 0.1.1, which added no new features but fixed a couple bugs**
 * Added support for Web Audio output (iOS6 supported, Yay!)
 * Added audio example in `examples/audio`
 * Removed sound sprite support
