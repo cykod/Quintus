@@ -138,7 +138,7 @@
         }
 
         if(col.obj.isA("Block")) {
-          Q.play("brickDeath.ogg");
+          Q.audio.play("brickDeath.ogg");
           col.obj.play("hit",2);
         }
       }
@@ -232,7 +232,7 @@
       if(this.p.powerdown > 0) {
         this.p.powerdown -= dt;
         if(this.p.powerdown <= 0) {
-          Q.play("recover.ogg");
+          Q.audio.play("recover.ogg");
           this.sheet("paddlelg",true);
         }
       }
@@ -266,7 +266,7 @@
 
     hit: function() {
       this.destroy();
-      Q.play("powerdown.ogg");
+      Q.audio.play("powerdown.ogg");
       Q("Paddle").trigger("powerdown");
     },
 
@@ -290,7 +290,7 @@
 
     hit: function() {
       this.destroy();
-      Q.play("powerup.ogg");
+      Q.audio.play("powerup.ogg");
       Q("Paddle").trigger("powerup");
     },
 
@@ -318,11 +318,11 @@
       // When our animation is over, trigger a "start" event on the stage
       this.on("start");
 
-      Q.play("countdownBlip.ogg");
+      Q.audio.play("countdownBlip.ogg");
     },
 
     animFrame: function(){
-      Q.play("countdownBlip.ogg");
+      Q.audio.play("countdownBlip.ogg");
     },
 
     start: function() {

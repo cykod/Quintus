@@ -71,6 +71,33 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
+### 0.1.0 Web Audio and better Tweens - 2/16/13
+* Added support for Web Audio output (iOS6 supported, Yay!)
+* Added audio example in `examples/audio`
+* Removed sound sprite support
+* Added support for Audio looping (via `Q.audio.play("name", { loop: true })`)
+* Added sound stopping support (`Q.audio.stop()` to stop all, `Q.audio.stop("name") to stop 1)
+* Moved non-working SVG, DOM and Physics modules to `extra/`
+* Added support for functions as direction options to follow (suggested by [@gvhuyssteen](https://github.com/gvhuyssteen) )
+
+  For Example:
+      
+        stage.follow(player, {
+           // Always follow x
+           x: true, 
+
+           // Only follow y if the player has landed
+           y: function(sprite) { return sprite.p.landed > 0 } 
+        });
+
+* Improved tween animations, by [@fqborges](https://github.com/fqborges) fixes tween chaining and adds in an example in `examples/tween/`
+
+
+Changes to your code:
+
+* You must call `Q.audio.play` instead of `Q.play` to play sound
+* If you were using sound sprites, they have been removed.
+
 ### 0.0.5 UI Example + Bug Fixes - 2/2/13
 * Fix to Q.UI.Button with an Asset
 * Fix to MouseControls on Android
