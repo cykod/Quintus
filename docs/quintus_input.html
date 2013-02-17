@@ -88,6 +88,16 @@
       <span class="k">this</span><span class="p">.</span><span class="nx">keyboardEnabled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
     <span class="p">},</span>
 
+    <span class="nx">_containerOffset</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetY</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">el</span><span class="p">;</span>
+      <span class="k">do</span> <span class="p">{</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">+=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetLeft</span><span class="p">;</span>
+        <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetY</span> <span class="o">+=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetTop</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">while</span><span class="p">(</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetParent</span><span class="p">);</span>
+    <span class="p">},</span>
+
     <span class="nx">touchLocation</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">touch</span><span class="p">)</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">el</span><span class="p">,</span> 
         <span class="nx">posX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span><span class="p">,</span>
@@ -100,12 +110,14 @@
       <span class="p">}</span>
 
       <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">posX</span><span class="p">)</span> <span class="o">||</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">posY</span><span class="p">))</span> <span class="p">{</span>
-        <span class="nx">posX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
-        <span class="nx">posY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">_containerOffset</span><span class="p">();</span> <span class="p">}</span>
+        <span class="nx">posX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span><span class="p">;</span>
+        <span class="nx">posY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageY</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetY</span><span class="p">;</span>
       <span class="p">}</span>
 
       <span class="nx">touchX</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">width</span> <span class="o">*</span> <span class="nx">posX</span> <span class="o">/</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">cssWidth</span><span class="p">;</span>
       <span class="nx">touchY</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">height</span> <span class="o">*</span> <span class="nx">posY</span> <span class="o">/</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">cssHeight</span><span class="p">;</span>
+
 
       <span class="k">return</span> <span class="p">{</span> <span class="nx">x</span><span class="o">:</span> <span class="nx">touchX</span><span class="p">,</span> <span class="nx">y</span><span class="o">:</span> <span class="nx">touchY</span> <span class="p">};</span>
     <span class="p">},</span>
@@ -340,8 +352,9 @@ and need to trigger an up action</p>             </td>             <td class="co
         <span class="p">}</span>
 
         <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">posX</span><span class="p">)</span> <span class="o">||</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">posY</span><span class="p">))</span> <span class="p">{</span>
-          <span class="nx">posX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
-          <span class="nx">posY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">_containerOffset</span><span class="p">();</span> <span class="p">}</span>
+          <span class="nx">posX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetX</span><span class="p">;</span>
+          <span class="nx">posY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageY</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">input</span><span class="p">.</span><span class="nx">offsetY</span><span class="p">;</span>
         <span class="p">}</span>
 
         <span class="k">if</span><span class="p">(</span><span class="nx">stage</span><span class="p">)</span> <span class="p">{</span>

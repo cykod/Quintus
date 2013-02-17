@@ -848,7 +848,21 @@ determine what sound types the browser can play using the
 built-in <code>Sound.canPlayType</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Q</span><span class="p">.</span><span class="nx">audioMimeTypes</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">mp3</span><span class="o">:</span> <span class="s1">&#39;audio/mpeg&#39;</span><span class="p">,</span> 
                        <span class="nx">ogg</span><span class="o">:</span> <span class="s1">&#39;audio/ogg; codecs=&quot;vorbis&quot;&#39;</span><span class="p">,</span>
                        <span class="nx">m4a</span><span class="o">:</span> <span class="s1">&#39;audio/m4a&#39;</span><span class="p">,</span>
-                       <span class="nx">wav</span><span class="o">:</span> <span class="s1">&#39;audio/wav&#39;</span> <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-84">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-84">&#182;</a>               </div>               <p>Loader for Audio assets. By default chops off the extension and 
+                       <span class="nx">wav</span><span class="o">:</span> <span class="s1">&#39;audio/wav&#39;</span> <span class="p">};</span>
+
+  <span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetExtension</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetPreferredExtension</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetPreferredExtension</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">snd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">();</span>
+
+    <span class="cm">/* Find a supported type */</span>
+    <span class="k">return</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetPreferredExtension</span> <span class="o">=</span> 
+      <span class="nx">Q</span><span class="p">.</span><span class="nx">_detect</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">audioSupported</span><span class="p">,</span>
+         <span class="kd">function</span><span class="p">(</span><span class="nx">extension</span><span class="p">)</span> <span class="p">{</span>
+         <span class="k">return</span> <span class="nx">snd</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">audioMimeTypes</span><span class="p">[</span><span class="nx">extension</span><span class="p">])</span> <span class="o">?</span> 
+                                <span class="nx">extension</span> <span class="o">:</span> <span class="kc">null</span><span class="p">;</span>
+      <span class="p">});</span>
+  <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-84">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-84">&#182;</a>               </div>               <p>Loader for Audio assets. By default chops off the extension and 
 will automatically determine which of the supported types is 
 playable by the browser and load that type.</p>
 
@@ -859,18 +873,10 @@ listed in the Quintus <code>options.audioSupported</code></p>             </td> 
       <span class="k">return</span><span class="p">;</span>
     <span class="p">}</span>
 
-    <span class="kd">var</span> <span class="nx">snd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">(),</span>
-        <span class="nx">baseName</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_removeExtension</span><span class="p">(</span><span class="nx">src</span><span class="p">),</span>
-        <span class="nx">extension</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
-        <span class="nx">filename</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-
-    <span class="cm">/* Find a supported type */</span>
-    <span class="nx">extension</span> <span class="o">=</span> 
-      <span class="nx">Q</span><span class="p">.</span><span class="nx">_detect</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">audioSupported</span><span class="p">,</span>
-         <span class="kd">function</span><span class="p">(</span><span class="nx">extension</span><span class="p">)</span> <span class="p">{</span>
-         <span class="k">return</span> <span class="nx">snd</span><span class="p">.</span><span class="nx">canPlayType</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">audioMimeTypes</span><span class="p">[</span><span class="nx">extension</span><span class="p">])</span> <span class="o">?</span> 
-                                <span class="nx">extension</span> <span class="o">:</span> <span class="kc">null</span><span class="p">;</span>
-    <span class="p">});</span>
+    <span class="kd">var</span> <span class="nx">baseName</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_removeExtension</span><span class="p">(</span><span class="nx">src</span><span class="p">),</span>
+        <span class="nx">extension</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetExtension</span><span class="p">(),</span>
+        <span class="nx">filename</span> <span class="o">=</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="nx">snd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Audio</span><span class="p">();</span>
 
     <span class="cm">/* No supported audio = trigger ok callback anyway */</span>
     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">extension</span><span class="p">)</span> <span class="p">{</span>
@@ -892,8 +898,11 @@ listed in the Quintus <code>options.audioSupported</code></p>             </td> 
   <span class="p">};</span>
 
   <span class="nx">Q</span><span class="p">.</span><span class="nx">loadAssetWebAudio</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span><span class="nx">src</span><span class="p">,</span><span class="nx">callback</span><span class="p">,</span><span class="nx">errorCallback</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
-    <span class="nx">request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">assetUrl</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">audioPath</span><span class="p">,</span><span class="nx">src</span><span class="p">),</span> <span class="kc">true</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">(),</span>
+        <span class="nx">baseName</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_removeExtension</span><span class="p">(</span><span class="nx">src</span><span class="p">),</span>
+        <span class="nx">extension</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_audioAssetExtension</span><span class="p">();</span>
+
+    <span class="nx">request</span><span class="p">.</span><span class="nx">open</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">assetUrl</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">audioPath</span><span class="p">,</span><span class="nx">baseName</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="nx">extension</span><span class="p">),</span> <span class="kc">true</span><span class="p">);</span>
     <span class="nx">request</span><span class="p">.</span><span class="nx">responseType</span> <span class="o">=</span> <span class="s2">&quot;arraybuffer&quot;</span><span class="p">;</span></pre></div>             </td>           </tr>                               <tr id="section-86">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-86">&#182;</a>               </div>               <p>Our asynchronous callback</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">request</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">audioData</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">response</span><span class="p">;</span>
 

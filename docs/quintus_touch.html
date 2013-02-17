@@ -52,14 +52,24 @@
       <span class="kd">var</span> <span class="nx">canvasPosX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span><span class="p">,</span>
           <span class="nx">canvasPosY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">offsetY</span><span class="p">;</span>
          
+
       <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">canvasPosX</span><span class="p">)</span> <span class="o">||</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">canvasPosY</span><span class="p">))</span> <span class="p">{</span>
         <span class="nx">canvasPosX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">layerX</span><span class="p">;</span>
         <span class="nx">canvasPosY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">layerY</span><span class="p">;</span>
       <span class="p">}</span>
 
       <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">canvasPosX</span><span class="p">)</span> <span class="o">||</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">_isUndefined</span><span class="p">(</span><span class="nx">canvasPosY</span><span class="p">))</span> <span class="p">{</span>
-        <span class="nx">canvasPosX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
-        <span class="nx">canvasPosY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">===</span> <span class="k">void</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+          <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetY</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+          <span class="kd">var</span> <span class="nx">el</span> <span class="o">=</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">el</span><span class="p">;</span>
+          <span class="k">do</span> <span class="p">{</span>
+            <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span> <span class="o">+=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetLeft</span><span class="p">;</span>
+            <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetY</span> <span class="o">+=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetTop</span><span class="p">;</span>
+          <span class="p">}</span> <span class="k">while</span><span class="p">(</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">el</span><span class="p">.</span><span class="nx">offsetParent</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="nx">canvasPosX</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageX</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetX</span><span class="p">;</span>
+        <span class="nx">canvasPosY</span> <span class="o">=</span> <span class="nx">touch</span><span class="p">.</span><span class="nx">pageY</span> <span class="o">-</span> <span class="nx">Q</span><span class="p">.</span><span class="nx">touch</span><span class="p">.</span><span class="nx">offsetY</span><span class="p">;</span>
       <span class="p">}</span>
 
 
@@ -75,6 +85,7 @@
 
       <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nx">px</span><span class="p">;</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">.</span><span class="nx">p</span><span class="p">.</span><span class="nx">py</span><span class="p">;</span>
+
       <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">.</span><span class="nx">obj</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">touchPos</span><span class="p">;</span>
     <span class="p">},</span>
