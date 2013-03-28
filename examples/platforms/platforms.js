@@ -1,12 +1,11 @@
-// # Quintus platformer example
+// # Quintus platforms example
 //
-// [Run the example](../examples/platformer/index.html)
+// [Run the example](../examples/platforms/index.html)
 // WARNING: this game must be run from a non-file:// url
 // as it loads a level json file.
 //
-// This is the example from the website homepage, it consists
-// a simple, non-animated platformer with some enemies and a 
-// target for the player.
+// This example uses convex polygons as structures for the 
+// player to jump across
 window.addEventListener("load",function() {
 
 // Set up an instance of the Quintus engine  and include
@@ -30,17 +29,10 @@ Q.Sprite.extend("Player",{
     // You can call the parent's constructor with this._super(..)
     this._super(p, {
       sheet: "player",  // Setting a sprite sheet sets sprite width and height
-      x: 410,           // You can also set additional properties that can
-      y: 90             // be overridden on object creation
+      x: 0,           // You can also set additional properties that can
+      y: -100             // be overridden on object creation
     });
 
-    // Add in pre-made components to get up and running quickly
-    // The `2d` component adds in default 2d collision detection
-    // and kinetics (velocity, gravity)
-    // The `platformerControls` makes the player controllable by the
-    // default input actions (left, right to move,  up or action to jump)
-    // It also checks to make sure the player is on a horizontal surface before
-    // letting them jump.
     this.add('2d, platformerControls');
 
     // Write event handlers to respond hook into behaviors.
@@ -53,7 +45,15 @@ Q.Sprite.extend("Player",{
         this.destroy();
       }
     });
+  },
 
+  step: function(dt) {
+    if(this.p.y > 200) {
+      Q.stageScene("endGame",1, { label: "You Fell!" });
+    }
+
+    if(this.p.vy > 600) { this.p.vy = 600; }
+    
   }
 
 });
@@ -67,62 +67,62 @@ Q.Sprite.extend("Tower", {
   }
 });
 
-// ## Enemy Sprite
-// Create the Enemy class to add in some baddies
-Q.Sprite.extend("Enemy",{
+
+Q.Sprite.extend("Block", {
   init: function(p) {
-    this._super(p, { sheet: 'enemy', vx: 100 });
+    this._super(p);
+  },
 
-    // Enemies use the Bounce AI to change direction 
-    // whenver they run into something.
-    this.add('2d, aiBounce');
+  draw: function(ctx) {
+    if(!this.p.points) {
+      Q._generatePoints(this);
+    }
 
-    // Listen for a sprite collision, if it's the player,
-    // end the game unless the enemy is hit on top
-    this.on("bump.left,bump.right,bump.bottom",function(collision) {
-      if(collision.obj.isA("Player")) { 
-        Q.stageScene("endGame",1, { label: "You Died" }); 
-        collision.obj.destroy();
-      }
-    });
-
-    // If the enemy gets hit on the top, destroy it
-    // and give the user a "hop"
-    this.on("bump.top",function(collision) {
-      if(collision.obj.isA("Player")) { 
-        this.destroy();
-        collision.obj.p.vy = -300;
-      }
-    });
+    ctx.beginPath();
+    ctx.fillStyle = this.p.hit ? "blue" : "red";
+    ctx.strokeStyle = "#000000";
+    ctx.fillStyle = "rgba(0,0,0,0.5)";
+    ctx.moveTo(this.p.points[0][0],this.p.points[0][1]);
+    for(var i=0;i<this.p.points.length;i++) {
+      ctx.lineTo(this.p.points[i][0],this.p.points[i][1]);
+    }
+    ctx.lineTo(this.p.points[0][0],this.p.points[0][1]);
+    ctx.stroke();
   }
 });
+
 
 // ## Level1 scene
 // Create a new scene called level 1
 Q.scene("level1",function(stage) {
 
   // Add in a repeater for a little parallax action
-  stage.insert(new Q.Repeater({ asset: "background-wall.png", speedX: 0.5, speedY: 0.5 }));
-
-  // Add in a tile layer, and make it the collision layer
-  stage.collisionLayer(new Q.TileLayer({
-                             dataAsset: 'level.json',
-                             sheet:     'tiles' }));
-
+  stage.insert(new Q.Repeater({ asset: "background-wall.png", speedX: 0.5, speedY: 0.5, type: 0 }));
 
   // Create the player and add them to the stage
   var player = stage.insert(new Q.Player());
+
+  stage.insert(new Q.Block({ x: 0, y: 0, h: 50, w: 50 }));
+
+  stage.insert(new Q.Block({ 
+    x: 140, y: 0, h: 50, w: 100,
+    points: [ [ 0, -15], [ 50, 0 ], [ 0, 15 ], [ -50, 0 ] ]
+  }));
+
+  stage.insert(new Q.Block({ 
+    x: 340, y: 0, h: 100, w: 100,
+    points: [ [ 0, -50], [25, -40] ,[ 50, 0 ], [ 0, 50 ], [ -100, 0 ] ]
+  }));
+
+
+  stage.insert(new Q.Block({ x: 500, y: 40, h: 50, w: 50 }));
 
   // Give the stage a moveable viewport and tell it
   // to follow the player.
   stage.add("viewport").follow(player);
 
-  // Add in a couple of enemies
-  stage.insert(new Q.Enemy({ x: 700, y: 0 }));
-  stage.insert(new Q.Enemy({ x: 800, y: 0 }));
-
   // Finally add in the tower goal
-  stage.insert(new Q.Tower({ x: 180, y: 50 }));
+  stage.insert(new Q.Tower({ x: 500, y: 0 }));
 });
 
 // To display a game over / game won popup box, 
@@ -153,15 +153,14 @@ Q.scene('endGame',function(stage) {
 // Q.load can be called at any time to load additional assets
 // assets that are already loaded will be skipped
 // The callback will be triggered when everything is loaded
-Q.load("sprites.png, sprites.json, level.json, tiles.png, background-wall.png", function() {
-  // Sprites sheets can be created manually
-  Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
-
+Q.load("sprites.png, sprites.json,  background-wall.png", function() {
   // Or from a .json asset that defines sprite locations
   Q.compileSheets("sprites.png","sprites.json");
 
   // Finally, call stageScene to run the game
   Q.stageScene("level1");
+
+  //Q.debug = true;
 });
 
 // ## Possible Experimentations:

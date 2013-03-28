@@ -24,8 +24,8 @@ window.addEventListener("load",function() {
       sprite
         .animate({ x: 288, y:  288 }, 2, Q.Easing.Quadratic.InOut, { delay: 1 })
         .chain({ angle: 360 }) 
-        .chain({ angle:   0 }) 
-        .chain({ angle: 360 }, 1, { callback: function(){ /*normalization*/ this.p.angle = 0; } })
+        .chain({ angle:   0 }, 1, { callback: function() { console.log("0"); } }) 
+        .chain({ angle: 360 }, 1, { callback: function(){ /*normalization*/ this.p.angle = 0; console.log("Callback"); } })
         .chain({ angle: -360 }) 
         .chain({ x: 160, y: 160, scale: 4 }, 1, Q.Easing.Quadratic.In )
         .chain({ x: 160, y: 160, scale: 0.1 }, 1, Q.Easing.Quadratic.In );
