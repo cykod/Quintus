@@ -1,0 +1,20 @@
+doctype 5
+html(lang="en")
+  head
+    title Quintus API Documenation
+    link(rel='stylesheet', href='api-styles.css')
+  body
+    .container
+      .sidebar
+        | Sidebar Content
+      .content
+        h1 Quintus API
+        p 
+          | This file provides the main Quintus API documentation. It's not the best place to get started learning Quintus however - for that, I recommend you check out the 
+          a(href='http://html5quintus.com/guide/intro.md') Quintus Guide
+          |, which talks you through most of the system in a more understandable manner.
+
+        section#core
+          include _core
+        section#sprites
+          include _sprites

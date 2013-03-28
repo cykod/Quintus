@@ -1,0 +1,133 @@
+@import "./normalize"
+
+/* apply a natural box layout model to all elements */
+* { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+clearfix() {
+  &:before, &:after { content: ""; display: table; }
+  &:after { clear: both; }
+   zoom: 1;
+}
+
+p { 
+  line-height:1.4em;
+}
+
+.container {
+  max-width:1280px;
+  margin:0 auto;
+}
+
+.sidebar { 
+  float:left;
+  width:250px;
+}
+
+
+.content {
+  margin-left:300px;
+}
+
+
+h1 { font-size:3em; }
+
+p { margin:0px; padding:0px; padding-bottom:10px; }
+
+section {
+  padding-top:20px;
+  margin-top:20px;
+
+  h1 { 
+    font-size:2em; margin-top:0px; margin-bottom:10px; padding:0px; 
+    background-color:#999;
+    color:black;
+    padding:5px 5px;
+  }
+  h2 { font-size:1.4em; }
+
+  h2 + p { padding-bottom:30px; }
+
+}
+
+.class .method {
+  margin-left:30px;
+}
+
+.method, .property {
+  border-left:1px solid #CCC;
+  position:relative;
+  h4 { padding:0px; margin:0px; padding-right:10px; float:left; }
+  padding-bottom:20px;
+  padding-left:10px;
+  margin-bottom:25px;
+
+  &:before {
+    position:absolute;
+    left:-20px;
+    top:2px;
+    content: "-"
+  }
+
+  .param {
+    clearfix();
+    clear:both;
+    background-color:#EEE;
+    padding:5px 10px;
+    margin-top:15px;
+
+    .type { color:#999; float:left; width:15%;  text-align:right; padding-right:15px;}
+    .name { float:left;  font-weight:bold; }
+    .desc {  width: 100%; clear:both; padding-left:15%; padding-bottom: 10px; }
+  }
+
+  .param + .param { margin-top:0px; }
+
+  &.multiple {
+    h4 { float:none; }
+    h4 + p { padding-top:20px; }
+  }
+}
+
+
+
+
+
+a.references {
+  color:#999;
+}
+
+.returns {
+  position:relative;
+  margin-left:15%;
+  padding-left:10px;
+  padding-top:10px;
+  font-weight:bold;
+}
+
+.returns:before {
+  content: "Returns"
+  left: -68px;
+  top: 10px;
+  position:absolute;
+  color:#999;
+  font-weight:normal;
+}
+
+pre.example {
+  margin-top: 35px;
+  position:relative;
+
+}
+pre.example:before {
+  content: "Example:"
+  font-family:arial;
+  font-weight:normal;
+  color:#999;
+  top:-20px;
+  left:0px;
+  position:absolute;
+}
+
+pre { 
+    padding-left:40px;
+}

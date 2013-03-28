@@ -1,0 +1,155 @@
+a.references(href="quintus.html") quintus.js
+h1 Quintus Core Engine
+p The code in quintus.js defines the base Quintus() method which create an instance of the engine. The basic engine doesn't do a whole lot - it provides an architecture for extension, a game loop, and a method for creating or binding to an exsiting canvas context. The engine has dependencies on Underscore.js and jQuery, although the jQuery dependency will be removed in the future.
+
+h2 Core Methods
+
+.method
+  h4 Quintus([ options ])
+  p The top-level Quintus engine factory wrapper. You create a new version of the engine by calling this function.
+  pre.example
+    code.
+      // Create a new instance of the engine
+      var Q = Quintus();
+
+.method
+  h4 Q(selector [, scope] [, options])
+  p An alias for Q.select, which defaults to a no-op but is replaced with usefulness in the [Quintus.Scenes] module.
+
+.method
+  h4 Q.include(mod)
+  p Method for including other modules into the Quintus core
+  .param
+    .type String or Array
+    .name mod
+    .desc either a string comma separated string or an Array of modules to include. 
+  pre.example.
+    // Include the sprites module
+    var Q = Quintus().include("Sprites");
+
+.method
+  h3 Q.gameLoop(callback)
+  p 
+
+
+h2 Utility methods
+
+p Quintus has a number of utility methods included in. A lot of these methods were pulled from <a href='http://underscorejs.com'>Underscore.js</a> but have been modified for speed and to prevent the creation of extra objects where possible.
+
+.method 
+  h4 Q._normalizeArg(arg)
+  p An internal utility method (utility methods are prefixed with underscores)
+  p It's used to take a string of comma separated names and turn it into an Array of name.  If an array of names is passed in, it's left as is. Example usage:
+  .param
+    .type String | Array
+    .name arg
+    .desc Either a comma separate string or an array of elements. 
+  .returns
+    | Array of strings
+  pre.example.
+     Q._normalizeArg("Sprites, Scenes, Physics   ");
+     // returns  [ "Sprites", "Scenes", "Physics" ]
+
+.method
+  h4 Q._extend(dest [, source])
+  p Extends a destination object with an optional source object. Any properties of dest that exist in source will be overwritten.
+  .param
+    .type Object
+    .name dest
+    .desc The object source should be mapped onto
+  .param
+    .type Object | null
+    .name source
+    .desc The optional source object to copy properties from
+  .returns dest
+  pre.example.
+    var obj = Q._extend({ a: 1, b: 4 }, { b: 2, c: 3 });
+    // obj = { a: 1, b: 2, c: 3 }
+
+.method
+  h4 Q._clone(obj)
+  p Return a shallow copy of an object. Sub-objects (and sub-arrays) are not cloned.
+  .param
+    .type Object
+    .name obj
+    .desc the object to clone
+  .returns
+    | shallow copy of Obj
+
+.method
+  h4 Q._defaults(dest [,source])
+  p Adds source's properties onto dest (like Q._extend), but adds properties that exist on dest take precedence. 
+  .param
+    .type Object
+    .name dest
+    .desc Destination object
+  .param
+    .type Object
+    .name source
+    .desc Source object
+  .returns
+    | dest
+  pre.example.
+    var obj = Q._defaults({ a: 1 }, { a: 10, b: 20, c: 30 });
+    // obj = { a: 1, b: 20, c: 30 }
+    // notice that a:1 is kept from the first object
+
+.method
+  h4 Q._has(obj,key)
+  p shortcut for hasOwnProperty
+  .param
+    .type Object
+    .name obj
+    .desc Object to check against
+  .param
+    .type String
+    .name key
+    .desc Property to check
+
+.method.multiple
+  h4 Q._isString(obj)
+  h4 Q._isNumber(obj)
+  h4 Q._isFunction(obj)
+  h4 Q._isObject(obj)
+  h4 Q._isArray(obj)
+  h4 Q._isUndefined(obj)
+  p Returns true of obj of the type in the mentioned in the title of the method
+  .param
+    .type Any
+    .name obj
+    .desc Object to check 
+
+.method
+  h4 Q._each(obj, iterator [,context])
+  p Basic iteration method.  This can often be a performance handicap when the callback iterator is created inline, as this leads to lots of functions that need to be GC'd. Better is to define the iterator as a private method so it is only created once.
+  .param
+    .type Object or Array
+    .name obj
+    .desc Object or Array to iterate over
+  .param
+    .type Function
+    .name iterator
+    .desc Function to repeat
+
+.method
+  h4 Q._invoke(arr,property[,arg1][,arg2])
+  p Invoke the named method on each element of the array, passing in up to 2 arguments.
+  .param
+    .type Array
+    .name arr
+    .desc Array to iterate over
+  .param
+    .type String
+    .name property
+    .desc Property name of method to invoke
+  .param 
+    .type Any
+    .name arg1
+    .desc iption
+
+
+
+
+
+
+

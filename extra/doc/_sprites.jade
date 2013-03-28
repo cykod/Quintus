@@ -1,0 +1,108 @@
+a.references(href="quintus_sprites.html") quintus_sprites.js
+h1 Quintus.Sprites
+
+h2 Sprite Sheets
+
+.class 
+  h3 Q.SpriteSheet
+  p A sprite sheet represents a single set of frames inside of an asset. This means that a single asset might be associated with multiple sprite sheets (one for each different sprite)
+
+  .method.constructor
+    h4 init(name, asset, options)
+    p Constructor, associates a sprite sheet name with an asset 
+    .param
+      .type string
+      .name name
+      .desc name of the sprite sheet to create
+    .param
+      .type string
+      .name asset
+      .desc name of the asset to associate with this sheet
+    .param
+      .type Object
+      .name options
+      .desc 
+        | options hash, default values are shown below
+        pre.options
+          code.
+            {
+              tilew: 64,                // Width of each tile
+              tileh: 64,                // Height of each tile
+              w: Q.asset(asset).width,  // total width of the sprite sheet
+              h: Q.asset(asset).height, // total height of the sprite sheet
+              sx: 0,                    // Starting x location of the sprite sheet
+              sy: 0,                    // Starting y location of the sprite sheet
+              cols: Math.floor(this.w / this.tilew) // number of columns
+            }
+
+  .method
+    h4 fx(frame)
+    p Return the starting x location of a frame
+    .param
+      .type Integer
+      .name frame
+      .desc frame number to generate location for
+
+  .method
+    h4 fy(frame)
+    p Return the starting y location of a frame
+    .param
+      .type Integer
+      .name frame
+      .desc frame number to generate location for
+
+
+.property
+  h4 Q.sheets
+  .type Object
+  p Hash that holds the list sprite sheets - usually you don't need to access this but it's useful for enumerating over all the sprite sheets that have been loaded.
+
+.method
+  h4 Q.sheet(name)
+  p Return a sprite sheet given a name.
+  .param
+    .type String
+    .name name
+    .desc the sprite sheet to return
+
+.method
+  h4 Q.sheet(name, asset, options)
+  p Create a new sprite sheet. This shares a signature with `Q.sheet(name)` but the extra parameters mean set the sheet instead of returning it. These three parameters are passed directly into new `Q.SpriteSheet(name,asset,options)`
+  .param 
+    .type String
+
+
+    
+
+.method
+  h4 Q.compileSheets(imageAsset, spriteDataAsset)
+  p Generate a number of sprite sheets based on a JSON data asset
+  
+
+h2 Sprites
+
+.constants
+  h3 Sprite Constants 
+  p 
+    | These constants are used in a sprite's `p.type` and `p.collisionMask` properties to determine which other sprites a specific sprite should collide with. They are also used by the `Quintus.Touch` module to determine which sprites to collide with.
+  h4 Q.SPRITE_NONE = 0
+  h4 Q.SPRITE_DEFAULT = 1
+  h4 Q.SPRITE_PARTCILE = 2
+  h4 Q.SPRITE_ACTIVE = 4
+  h4 Q.SPRITE_FRIENDLY = 8
+  h4 Q.SPRITE_ENEMY = 16
+  h4 Q.SPRITE_POWERUP = 32
+  h4 Q.SPRITE_UI = 64
+  h4 Q.SPRITE_ALL = 0xFFFF;
+
+
+.class
+  h3 Q.Sprite
+
+  .constructor
+    h4 init(props [, defaultProps])
+    p 
+
+
+
+
