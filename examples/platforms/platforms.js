@@ -102,7 +102,9 @@ Q.scene("level1",function(stage) {
   // Create the player and add them to the stage
   var player = stage.insert(new Q.Player());
 
-  stage.insert(new Q.Block({ x: 0, y: 0, h: 50, w: 50 }));
+  stage.insert(new Q.Block({ x: 50, y: -30, h: 30, w: 50 }));
+
+  stage.insert(new Q.Block({ x: 0, y: 0, h: 50, w: 150 }));
 
   stage.insert(new Q.Block({ 
     x: 140, y: 0, h: 50, w: 100,
@@ -113,7 +115,6 @@ Q.scene("level1",function(stage) {
     x: 340, y: 0, h: 100, w: 100,
     points: [ [ 0, -50], [25, -40] ,[ 50, 0 ], [ 0, 50 ], [ -100, 0 ] ]
   }));
-
 
   stage.insert(new Q.Block({ x: 500, y: 40, h: 50, w: 50 }));
 
