@@ -71,7 +71,7 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
-### 0.1.2 Sprite Platforms and Assorted Fixes - 4/7/13
+### 0.1.3 Sprite Platforms and Assorted Fixes - 4/7/13
 * Added collision loop for Sprites and added platforms example
 * Added Repeater to platformer and fixed default type
 * Fix to Joypad
