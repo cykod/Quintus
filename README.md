@@ -8,7 +8,7 @@ The Quintus engine is an HTML5 game engine designed to be modular and lightweigh
 **Warning: Quintus is at a very early stage of development, use at your own risk.***
 
 
-[![Quintus Platformer Example](https://raw.github.com/cykod/Quintus/master/docs/images/platformer.png)](http://html5quintus.com/quintus/examples/platformer/)
+[![Quintus Platformer Example](https://raw.github.com/cykod/Quintus/master/examples/platformer.png)](http://html5quintus.com/quintus/examples/platformer/)
 
 [Example Annotated Source](http://html5quintus.com/quintus/docs/platformer.html)
 
@@ -70,6 +70,16 @@ Here's some specific pieces that need some love:
 
 Changelog
 =========
+
+### 0.1.2 Sprite Platforms and Assorted Fixes - 4/7/13
+* Added collision loop for Sprites and added platforms example
+* Added Repeater to platformer and fixed default type
+* Fix to Joypad
+* Fix to sprite gridding
+* Child sort and flip support
+* Tile check fix from [izidormatusov](http://github.com/izidormatusov)
+* Initial API Docs
+
 ### 0.1.1 UI and Web Audio fixes - 2/17/13
 * Fixed UI touch location on iOS when canvas is smaller than full screen
 * Fixed asset loading in Web Audio
