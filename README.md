@@ -71,18 +71,9 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
-### 0.1.4 Updated Node + Grunt
+### 0.1.4 Updated Node + Grunt - 4/13/13
 * Updated Gruntfile.js and dependencies to latest versions
 
-
-### 0.1.3 Sprite Platforms and Assorted Fixes - 4/7/13
-* Added collision loop for Sprites and added platforms example
-* Added Repeater to platformer and fixed default type
-* Fix to Joypad
-* Fix to sprite gridding
-* Child sort and flip support
-* Tile check fix from [izidormatusov](http://github.com/izidormatusov)
-* Initial API Docs
 
 ### 0.1.3 Sprite Platforms and Assorted Fixes - 4/7/13
 * Added collision loop for Sprites and added platforms example
