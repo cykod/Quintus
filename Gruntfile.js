@@ -39,11 +39,21 @@ module.exports = function(grunt) {
       files: '<config:lint.files>',
       tasks: 'lint qunit'
     },
-    docco: {
-      app: {
-        src: ['lib/quintus*.js','examples/*/*.js','examples/*/javascripts/*.js']
+    exec: {
+      api_styles: {
+        cmd: "./node_modules/stylus/bin/stylus < ./extra/doc/api-styles.styl > ./docs/api-styles.css"
+      },
+
+      api_docs: {
+        cmd: "./node_modules/jade/bin/jade ./extra/doc/index.jade -O ./docs"
+      },
+
+      // Until grunt docco works again...
+      docco: {
+        cmd: "./node_modules/docco/bin/docco -o ./docs lib/quintus*.js examples/*/*.js examples/*/javascripts/*.js"
       }
     },
+
     jshint: {
       options: {
         curly: true,
@@ -64,10 +74,11 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint','jasmine','concat:dist','uglify:dist']);
+  grunt.registerTask("docs", [  'exec:api_styles', 'exec:api_docs', 'exec:docco' ]);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
-  grunt.loadNpmTasks('grunt-docco');
+  grunt.loadNpmTasks('grunt-exec');
 
 };
