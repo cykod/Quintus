@@ -9,7 +9,7 @@ window.addEventListener('load',function(e) {
 
   // Set up a standard Quintus instance with only the 
   // Sprites and Scene module (for the stage support) loaded.
-  var Q = window.Q = Quintus().include("Sprites, Scenes, Touch");
+  var Q = window.Q = Quintus().include("Sprites, Scenes, Input, Touch");
 
   Q.setup({ maximize: true })
    .touch(Q.SPRITE_ALL);
@@ -158,10 +158,10 @@ window.addEventListener('load',function(e) {
         y = e.offsetY || e.layerY,
         stage = Q.stage();
 
-    // Use the helper methods in Q.touchInput to translate
-    // from canvas to stage
-    var stageX = Q.touchInput.canvasToStageX(x,stage),
-        stageY = Q.touchInput.canvasToStageY(y,stage);
+    // Use the helper methods from the Input Module on Q to
+    // translate from canvas to stage
+    var stageX = Q.canvasToStageX(x, stage),
+        stageY = Q.canvasToStageY(y, stage);
 
     // Find the first object at that position on the stage
     var obj = stage.locate(stageX,stageY);
