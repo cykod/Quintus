@@ -71,7 +71,7 @@ Quintus.DOM = function(Q) {
     }
     var has3d =  ('WebKitCSSMatrix' in window && 
                   'm11' in new window.WebKitCSSMatrix());
-    var dummyStyle = $("<div>")[0].style;
+  var dummyStyle = document.createElement("div").style;
     var transformMethods = ['transform',
                             'webkitTransform',
                             'MozTransform',
@@ -105,7 +105,7 @@ Quintus.DOM = function(Q) {
     }
     // Dummy method
     function fallbackTransition() { }
-    var dummyStyle = $("<div>")[0].style;
+    var dummyStyle = document.createElement("div").style;
     var transitionMethods = ['transition',
                             'webkitTransition',
                             'MozTransition',
@@ -125,12 +125,11 @@ Quintus.DOM = function(Q) {
   Q.DOMSprite = Q.Sprite.extend({
     init: function(props) {
       this._super(props);
-      this.el = $("<div>").css({
-        width: this.p.w,
-        height: this.p.h,
-        zIndex: this.p.z || 0,
-        position: 'absolute'
-      });
+      this.el = document.createElement("div");
+      this.el.width = this.p.w;
+      this.el.height = this.p.h;
+      this.el.zIndex = this.p.z || 0;
+      this.el.position = 'absolute';
       this.dom = this.el[0];
       this.rp = {};
       this.setImage();
@@ -197,10 +196,10 @@ Quintus.DOM = function(Q) {
   if(Q.Stage) {
     Q.DOMStage = Q.Stage.extend({
       init: function(scene) {
-        this.el = $("<div>").css({
-          top:0,
-          position:'relative'
-        }).appendTo(Q.el);
+	this.el = document.createElement("div");
+	this.el.style.top = 0;
+	this.el.style.position = 'relative';
+	Q.el.appendChild(this.el);
         this.dom = this.el[0];
         this.wrapper = this.el.wrap('<div>').parent().css({
           position:'absolute',
