@@ -6,29 +6,39 @@ Quintus.DOM = function(Q) {
   Q.setupDOM = function(id,options) {
     options = options || {};
     id = id || "quintus";
-    Q.el = $(Q._isString(id) ? "#" + id : id);
-    if(Q.el.length === 0) {
-      Q.el = $("<div>")
-                .attr('id',id)
-                .css({width: 320, height:420 })
-                .appendTo("body");
+    Q.el = (Q._isString(id) ? document.getElementById("#"+id) :
+	    document.getElementById(id));
+    if(Q.el === null) {
+      Q.el = document.createElement("<div>");
+      Q.el.id = id;
+      Q.el.style.width = 320;
+      Q.el.style.height = 420;
+      document.getElementsByTagName('body')[0].appendChild(Q.el);
     }
     if(options.maximize) {
-      var w = $(window).width();
-      var h = $(window).height();
-      Q.el.css({width:w,height:h});
+      Q.el.style.width = window.innerWidth;
+      Q.el.style.height = window.innerHeight;
     }
-   Q.wrapper = Q.el
-                 .wrap("<div id='" + id + "_container'/>")
-                 .parent()
-                 .css({ width: Q.el.width(),
-                        height: Q.el.height(),
-                        margin: '0 auto' });
-    Q.el.css({ position:'relative', overflow: 'hidden' });
-    Q.width = Q.el.width();
-    Q.height = Q.el.height();
+    Q.el.style.position = 'relative';
+    Q.el.style.overflow = 'hidden';
+    
+    // Create wrapper and declare style.
+    Q.wrapper = document.createElement("<div id='" + id + "_container'/>");
+    Q.wrapper.style.width = Q.el.style.width;
+    Q.wrapper.style.height = Q.el.style.height;
+    Q.wrapper.style.margin = '0 auto';
+    // Join the wrapper onto the DOM tree as a sibling of of Q.el and
+    // immediately before where Q.el has been defined to ensure DOM tree
+    // structure is not changed.
+    Q.el.parentNode.insertBefore(Q.wrapper,Q.el);
+    // Make Q.el a child of Q.wrapper. This moves Q.el from being a sibling
+    Q.wrapper.appendChild(Q.el);
+    
+    Q.width = Q.el.style.width;
+    Q.height = Q.el.style.height;
+    
     setTimeout(function() { window.scrollTo(0,1); }, 0);
-    $(window).bind('orientationchange',function() {
+    window.addEventListener('orientationchange',function() {
       setTimeout(function() { window.scrollTo(0,1); }, 0);
     });
     return Q;
@@ -310,9 +320,5 @@ Quintus.DOM = function(Q) {
       this.shown[y][x] = false;
     }
   }); 
-
-
-
-
 };
 
