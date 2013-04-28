@@ -200,14 +200,15 @@ Quintus.DOM = function(Q) {
 	this.el.style.top = 0;
 	this.el.style.position = 'relative';
 	Q.el.appendChild(this.el);
-        this.dom = this.el[0];
-        this.wrapper = this.el.wrap('<div>').parent().css({
-          position:'absolute',
-          left:0,
-          top:0
-        });
+        this.dom = this.el;
+	this.wrapper = document.createElement("div");
+	this.wrapper.style.position = 'absolute';
+	this.wrapper.style.left = 0;
+	this.wrapper.style.top = 0;
+	this.el.parentNode.insertBefore(this.wrapper,this.el);
+	this.wrapper.appendChild(this.el);
         this.scale = 1;
-        this.wrapper_dom = this.wrapper[0];
+        this.wrapper_dom = this.wrapper;
         this._super(scene);
       },
 
