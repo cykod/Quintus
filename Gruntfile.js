@@ -59,15 +59,60 @@ module.exports = function(grunt) {
         browser: true
       },
       globals: {}
+    },
+    shell: {
+      gzip: {
+        command: [
+          "gzip dist/quintus-all.js",
+          "mv dist/quintus-all.js.gz dist/quintus-all.js",
+          "gzip dist/quintus-all.min.js",
+          "mv dist/quintus-all.min.js.gz dist/quintus-all.min.js"
+          ].join("&&")
+      }
     }
   });
 
   // Default task.
   grunt.registerTask('default', ['jshint','jasmine','concat:dist','uglify:dist']);
+  grunt.registerTask('release', ['jshint','jasmine','concat:dist','uglify:dist','shell:gzip','s3-copy']);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
+  grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-docco');
+
+  grunt.registerTask('s3-copy',function() { 
+    var AWS = require("aws-sdk"),
+        fs = require('fs'),
+        pjson = require('./package.json'),
+        s3Config = require("./s3.json"),
+        done = this.async();
+
+    AWS.config.loadFromPath("./s3.json");
+    var s3 = new AWS.S3();
+
+    var filePath = "v" + pjson.version + "/";
+
+    var allData = fs.readFileSync("dist/quintus-all.js");
+    var minData = fs.readFileSync('dist/quintus-all.min.js');
+
+    function s3Opts(key,data) {
+      return  {
+        Bucket: s3Config.bucket,
+        Key: filePath + key,
+        Body: data,
+        ACL: "public-read",
+        ContentEncoding: "gzip",
+        ContentType: "application/x-javascript"
+      }
+
+    }
+
+    s3.client.putObject(s3Opts('quintus-all.js',allData),
+      function() {
+        s3.client.putObject(s3Opts('quintus-all.min.js',minData), done) });
+  });
+     
 
 };
