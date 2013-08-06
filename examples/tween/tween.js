@@ -27,8 +27,8 @@ window.addEventListener("load",function() {
         .chain({ angle:   0 }, 1, { callback: function() { console.log("0"); } }) 
         .chain({ angle: 360 }, 1, { callback: function(){ /*normalization*/ this.p.angle = 0; console.log("Callback"); } })
         .chain({ angle: -360 }) 
-        .chain({ x: 160, y: 160, scale: 4 }, 1, Q.Easing.Quadratic.In )
-        .chain({ x: 160, y: 160, scale: 0.1 }, 1, Q.Easing.Quadratic.In );
+        .chain({ x: 160, y: 160, scale: 4, opacity: 0 }, 1, Q.Easing.Quadratic.In )
+        .chain({ x: 160, y: 160, scale: 0.1, opacity: 1 }, 1, Q.Easing.Quadratic.In );
   });
 
   Q.load(["enemy01.png"], function() {

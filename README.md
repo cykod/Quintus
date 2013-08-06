@@ -71,6 +71,20 @@ Here's some specific pieces that need some love:
 Changelog
 =========
 
+### 0.1.5 Assorted Fixes - 8/4/13
+* Assorted gruntfile stuff
+* Add hide, show, stop and start to stages
+* Per-sprite gravity override
+* Multi-layer support for TMX files by [fariazz](https://github.com/fariazz)
+* Fix to scene locate method #46 by [noahcampbell](https://github.com/noahcampbell)
+* Add support for sensors
+* Add support for loading scenes from a JSON file
+* auto-focus when keyboard controls are active
+* Add development mode: `Quintus({ development: true })` to make changing assets easier
+* Allow for easier opacity tweening
+* Simple TMX/XML parsing from [kvroman](https://github.com/kvroman)
+* Touch example fix from [scottheckel](http://github.com/scottheckel)
+
 ### 0.1.4 Updated Node + Grunt - 4/13/13
 * Updated Gruntfile.js and dependencies to latest versions
 

@@ -281,7 +281,7 @@ describe("Quintus Core Engine", function() {
 
         waitsFor(function() { return loops > 2; },
         "Callback should be called",
-        200);
+        600);
 
         runs(function() {
           expect(loops).toBeGreaterThan(2);
@@ -300,7 +300,7 @@ describe("Quintus Core Engine", function() {
 
         waitsFor(function() { return loops > 2; },
                  "Callback not called",
-                 200);
+                 600);
         runs(function() {
           Q.pauseGame();
           loops=2;

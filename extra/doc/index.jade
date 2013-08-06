@@ -3,6 +3,7 @@ html(lang="en")
   head
     title Quintus API Documenation
     link(rel='stylesheet', href='api-styles.css')
+    script(src='http://code.jquery.com/jquery-1.9.1.min.js')
   body
     .container
       .sidebar
@@ -18,3 +19,6 @@ html(lang="en")
           include _core
         section#sprites
           include _sprites
+    script.
+      $("pre").addClass("prettyprint")
+    script(src='http://google-code-prettify.googlecode.com/svn/loader/run_prettify.js')

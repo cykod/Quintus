@@ -45,12 +45,21 @@ module.exports = function(grunt) {
       },
 
       api_docs: {
-        cmd: "./node_modules/jade/bin/jade ./extra/doc/index.jade -O ./docs"
+        cmd: "./node_modules/jade/bin/jade ./extra/doc/index.jade -o ./docs"
       },
 
       // Until grunt docco works again...
       docco: {
         cmd: "./node_modules/docco/bin/docco -o ./docs lib/quintus*.js examples/*/*.js examples/*/javascripts/*.js"
+      },
+
+      gzip: {
+        cmd: [
+          "gzip dist/quintus-all.js",
+          "mv dist/quintus-all.js.gz dist/quintus-all.js",
+          "gzip dist/quintus-all.min.js",
+          "mv dist/quintus-all.min.js.gz dist/quintus-all.min.js"
+          ].join("&&")
       }
     },
 
@@ -75,10 +84,45 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['jshint','jasmine','concat:dist','uglify:dist']);
   grunt.registerTask("docs", [  'exec:api_styles', 'exec:api_docs', 'exec:docco' ]);
+  grunt.registerTask('release', ['jshint','jasmine','concat:dist','uglify:dist','exec:gzip','s3-copy']);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-shell');
+
+  grunt.registerTask('s3-copy',function() { 
+    var AWS = require("aws-sdk"),
+        fs = require('fs'),
+        pjson = require('./package.json'),
+        s3Config = require("./s3.json"),
+        done = this.async();
+
+    AWS.config.loadFromPath("./s3.json");
+    var s3 = new AWS.S3();
+
+    var filePath = "v" + pjson.version + "/";
+
+    var allData = fs.readFileSync("dist/quintus-all.js");
+    var minData = fs.readFileSync('dist/quintus-all.min.js');
+
+    function s3Opts(key,data) {
+      return  {
+        Bucket: s3Config.bucket,
+        Key: filePath + key,
+        Body: data,
+        ACL: "public-read",
+        ContentEncoding: "gzip",
+        ContentType: "application/x-javascript"
+      }
+
+    }
+
+    s3.client.putObject(s3Opts('quintus-all.js',allData),
+      function() {
+        s3.client.putObject(s3Opts('quintus-all.min.js',minData), done) });
+  });
+     
 
 };
