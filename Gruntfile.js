@@ -40,19 +40,6 @@ module.exports = function(grunt) {
       tasks: 'lint qunit'
     },
     exec: {
-      api_styles: {
-        cmd: "./node_modules/stylus/bin/stylus < ./extra/doc/api-styles.styl > ./docs/api-styles.css"
-      },
-
-      api_docs: {
-        cmd: "./node_modules/jade/bin/jade ./extra/doc/index.jade -o ./docs"
-      },
-
-      // Until grunt docco works again...
-      docco: {
-        cmd: "./node_modules/docco/bin/docco -o ./docs lib/quintus*.js examples/*/*.js examples/*/javascripts/*.js"
-      },
-
       gzip: {
         cmd: [
           "gzip dist/quintus-all.js",
@@ -78,19 +65,33 @@ module.exports = function(grunt) {
         browser: true
       },
       globals: {}
+    },
+
+    yuidoc: {
+      pkg: grunt.file.readJSON('package.json'),
+      api: {
+        name: '<%= pkg.name %>',
+        description: '<%= pkg.description %>',
+        version: '<%= pkg.version %>',
+        url: '<%= pkg.homepage %>',
+        options: {
+          paths: './lib/',
+          outdir: './doc/'
+        }
+      }
     }
   });
 
   // Default task.
   grunt.registerTask('default', ['jshint','jasmine','concat:dist','uglify:dist']);
-  grunt.registerTask("docs", [  'exec:api_styles', 'exec:api_docs', 'exec:docco' ]);
+  grunt.registerTask("docs", [  'yuidoc:api' ]);
   grunt.registerTask('release', ['jshint','jasmine','concat:dist','uglify:dist','exec:gzip','s3-copy']);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
   grunt.registerTask('s3-copy',function() { 
     var AWS = require("aws-sdk"),
