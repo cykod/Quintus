@@ -64,7 +64,8 @@ module.exports = function(grunt) {
         eqnull: true,
         browser: true
       },
-      globals: {}
+      globals: {},
+      all: ['lib/**/*.js']
     },
 
     yuidoc: {
@@ -83,9 +84,9 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['jshint','jasmine','concat:dist','uglify:dist']);
+  grunt.registerTask('default', ['jshint:all','jasmine','concat:dist','uglify:dist']);
   grunt.registerTask("docs", [  'yuidoc:api' ]);
-  grunt.registerTask('release', ['jshint','jasmine','concat:dist','uglify:dist','exec:gzip','s3-copy']);
+  grunt.registerTask('release', ['jshint:all','jasmine','concat:dist','uglify:dist','exec:gzip','s3-copy']);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
