@@ -74,7 +74,7 @@ Changelog
 * #41 - repeated rounding issues
 * Change SpriteSheet to use tileW, tileH instead of tilew, tileh
 * Add flipping to AIBounce componet by [fariazz](https://github.com/fariazz)
-* Add optional bounding box to viewport by [fariazz)(https://github.com/fariazz)
+* Add optional bounding box to viewport by [fariazz](https://github.com/fariazz)
 * Initial experiment with YuiDoc
 
 ### 0.1.5 Assorted Fixes - 8/4/13
