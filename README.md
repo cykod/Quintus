@@ -28,10 +28,10 @@ Using Quintus
 The easiest way to use Quintus is simply to use the CDN hosted version at:
 
     <!-- Production minified ~20k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.1/quintus-all.min.js'></script>
+    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.min.js'></script>
 
     <!-- Full Source ~37k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.1/quintus-all.js'></script>
+    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.js'></script>
 
 Quintus has no dependencies.
 
@@ -60,8 +60,6 @@ If you have suggestions for additional enhancements, please add them to the Issu
 Here's some specific pieces that need some love:
 
 * Update the Q.Scenes method to only render sprites that are visible in the grid. (so draw doesn't get called with thousands of sprites)
-* Add JSON Level loading support for Scenes
-* Add tmx tile loading support
 * Fix the collision methods to calculate a collision magnitude based on dot product of sprite velocities
 * Turn into a Node binary for generating projects.
 * Add Spriter support into the engine
@@ -70,6 +68,28 @@ Here's some specific pieces that need some love:
 
 Changelog
 =========
+
+### 0.1.6 Assorted Fixes - 9/6/13
+* Fix by [A11oW](https://github.com/A11oW) to Quintus input
+* #41 - repeated rounding issues
+* Change SpriteSheet to use tileW, tileH instead of tilew, tileh
+* Add flipping to AIBounce componet by [fariazz](https://github.com/fariazz)
+* Add optional bounding box to viewport by [fariazz](https://github.com/fariazz)
+* Initial experiment with YuiDoc
+
+### 0.1.5 Assorted Fixes - 8/4/13
+* Assorted gruntfile stuff
+* Add hide, show, stop and start to stages
+* Per-sprite gravity override
+* Multi-layer support for TMX files by [fariazz](https://github.com/fariazz)
+* Fix to scene locate method #46 by [noahcampbell](https://github.com/noahcampbell)
+* Add support for sensors
+* Add support for loading scenes from a JSON file
+* auto-focus when keyboard controls are active
+* Add development mode: `Quintus({ development: true })` to make changing assets easier
+* Allow for easier opacity tweening
+* Simple TMX/XML parsing from [kvroman](https://github.com/kvroman)
+* Touch example fix from [scottheckel](http://github.com/scottheckel)
 
 ### 0.1.4 Updated Node + Grunt - 4/13/13
 * Updated Gruntfile.js and dependencies to latest versions

@@ -5,6 +5,10 @@
     "name": "Pascal Rettig",
     "email": "html5game@cykod.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cykod/Quintus"
+  },
   "licenses": [
     {
       "type": "MIT",
@@ -15,18 +19,20 @@
       "url": "https://github.com/cykod/Quintus/blob/master/GPL-LICENSE.txt"
     }
   ],
-  "version": "0.1.4",
+  "version": "0.1.6",
   "dependencies": {
     "grunt": "~0.4.1",
-    "optimist": ">0",
+    "grunt-cli": "~0.1.9",
+    "optimist": "~0.6.0",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-jasmine": "~0.4.2",
+    "grunt-contrib-jasmine": "~0.5.1",
     "grunt-contrib-connect": "~0.2.0",
-    "grunt-docco": ">0",
-    "temporary": ">0",
-    "jade": ">0",
-    "stylus": ">0",
-    "grunt-contrib-concat": "~0.2.0"
+    "grunt-contrib-yuidoc": "~0.4.0",
+    "grunt-exec": "~0.4.0",
+    "grunt-contrib-concat": "~0.2.0",
+    "grunt-shell": "~0.3.1",
+    "temporary": "~0.0.5",
+    "aws-sdk": "1.4.1"
   }
 }
