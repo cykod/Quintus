@@ -44,7 +44,7 @@ Quintus.Physics = function(Q) {
       
       this.col = {};
       this.scale = this.opts.scale;
-      this.entity.bind('step',this,'boxStep');
+      this.entity.on('step',this,'boxStep');
     },
 
     setCollisionData: function(contact,impulse) {
@@ -107,10 +107,10 @@ Quintus.Physics = function(Q) {
       if(this.entity.stage) {
         this.inserted();
       } else {
-        this.entity.bind('inserted',this,'inserted');
+        this.entity.on('inserted',this,'inserted');
       }
-      this.entity.bind('step',this,'step');
-      this.entity.bind('removed',this,'removed');
+      this.entity.on('step',this,'step');
+      this.entity.on('removed',this,'removed');
     },
 
     position: function(x,y) {
