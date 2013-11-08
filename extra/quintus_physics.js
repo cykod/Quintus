@@ -24,7 +24,7 @@ Quintus.Physics = function(Q) {
     positionIterations: 3
   };
 
-  Q.register('world',{
+  Q.component('world',{
     added: function() {
       this.opts = Q._extend({},defOpts);
       this._gravity = new B2d.Vec(this.opts.gravityX,
@@ -102,7 +102,7 @@ Quintus.Physics = function(Q) {
     restitution: 0.1
   };
 
-  Q.register('physics',{
+  Q.component('physics',{
     added: function() {
       if(this.entity.stage) {
         this.inserted();
