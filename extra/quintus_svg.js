@@ -37,7 +37,7 @@ Quintus.SVG = function(Q) {
     return Q;
   };
 
-  Q.SVGSprite = Q.Sprite.extend({
+  Q.Sprite.extend("SVGSprite",{
     init: function(props) {
       this._super(Q._defaults(props,{
         shape: 'block',
@@ -108,25 +108,24 @@ Quintus.SVG = function(Q) {
         rp.y = p.y;
       } 
     },
-
+    render: function(ctx) {
+    	
+    	this.trigger('predraw',ctx);
+    	this.trigger('beforedraw',ctx);
+    	this.draw(ctx);
+    	this.trigger('beforedraw',ctx);
+    },
     draw: function(ctx) {
-      this.trigger('draw');
     },
 
     step: function(dt) {
       this.trigger('step',dt);
       this.setTransform();
-    },
-
-    destroy: function() {
-      if(this.destroyed) { return false; }
-      this._super();
-      this.parent.svg.removeChild(this.svg);
     }
   });
 
 
-  Q.SVGStage = Q.Stage.extend({
+  Q.Stage.extend("SVGStage",{
     init: function(scene) {
       this.svg = document.createElementNS(SVG_NS,'svg');
       this.svg.setAttribute('width',Q.width);
@@ -136,7 +135,10 @@ Quintus.SVG = function(Q) {
       this.viewBox = { x: 0, y: 0, w: Q.width, h: Q.height };
       this._super(scene);
     },
-
+    remove:function(itm){
+	  if(itm.svg) { this.svg.removeChild(itm.svg); }
+	  return this._super(itm);
+    },
     insert: function(itm) {
       if(itm.svg) { this.svg.appendChild(itm.svg); }
       return this._super(itm);
