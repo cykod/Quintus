@@ -6,7 +6,8 @@ Quintus.SVG = function(Q) {
   Q.setupSVG = function(id,options) {
     options = options || {};
     id = id || "quintus";
-    Q.svg =document.getElementById(id);
+    Q.svg =Q._isString(id) ? document.getElementById(id) : id;
+    
     if(!Q.svg) {
       Q.svg = document.createElementNS(SVG_NS,'svg');
       Q.svg.setAttribute('width',320);
