@@ -69,7 +69,6 @@ window.addEventListener('load',function(e) {
       if(sprite instanceof Q.CannonBall) {
         targetCount--;
         this.destroy();
-        console.log('AQUI NO HIT!');
         if(targetCount == 0) { Q.stageScene('level'); }
       }
     }
@@ -115,24 +114,31 @@ window.addEventListener('load',function(e) {
     stage.centerOn(300,100);
        
   }));
-  Q.stageScene("level");
-  $(Q.wrapper).on('touchstart touchmove mousemove',function(e) {
+  	Q.stageScene("level");
+  	var cannonMove=function(e) {
     var stage = Q.stage(0), 
         cannon = stage.cannon,
-        touch = e.originalEvent.changedTouches ?  
-                e.originalEvent.changedTouches[0] : e,
+        touch = e.changedTouches ?  
+                e.changedTouches[0] : e,
         point = stage.browserToWorld(touch.pageX,touch.pageY);
    
-    var angle = Math.atan2(point.y - cannon.p.y,
+    	var angle = Math.atan2(point.y - cannon.p.y,
                            point.x - cannon.p.x);
-    cannon.p.angle = angle * 180 / Math.PI;
-    e.preventDefault();
-  });
+	    cannon.p.angle = angle * 180 / Math.PI;
+	    e.preventDefault();
+  	};
+    Q._each(["touchstart","mousemove","touchmove"],function(evt) {
+        Q.wrapper.addEventListener(evt,cannonMove);
+    },this);
 
-  $(Q.wrapper).on('touchend mouseup',function(e) {
-    Q.stage(0).cannon.fire();
-    e.preventDefault();
-  });
+	var canonFire=function(e) {
+		Q.stage(0).cannon.fire();
+   		e.preventDefault();
+	}
+	Q._each(["touchend","mouseup"],function(evt) {
+		Q.wrapper.addEventListener(evt,canonFire);
+	});
+
   
 });
 
