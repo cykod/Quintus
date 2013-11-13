@@ -1,9 +1,12 @@
+/*global Quintus:false */
+/*global $:false */
+
 Quintus.SVG = function(Q) {
   var SVG_NS ="http://www.w3.org/2000/svg"; 
   Q.setupSVG = function(id,options) {
     options = options || {};
     id = id || "quintus";
-    Q.svg = $(_.isString(id) ? "#" + id : id)[0];
+    Q.svg = $(Q._isString(id) ? "#" + id : id)[0];
     if(!Q.svg) {
       Q.svg = document.createElementNS(SVG_NS,'svg');
       Q.svg.setAttribute('width',320);
@@ -34,9 +37,9 @@ Quintus.SVG = function(Q) {
     return Q;
   };
 
-  Q.SVGSprite = Q.Sprite.extend({
+  Q.Sprite.extend("SVGSprite",{
     init: function(props) {
-      this._super(_(props).defaults({
+      this._super(Q._defaults(props,{
         shape: 'block',
         color: 'black',
         angle: 0,
@@ -51,7 +54,7 @@ Quintus.SVG = function(Q) {
     },
 
     set: function(attr) {
-      _.each(attr,function(value,key) {
+      Q._each(attr,function(value,key) {
         this.svg.setAttribute(key,value);
       },this);
     },
@@ -61,7 +64,7 @@ Quintus.SVG = function(Q) {
       switch(p.shape) {
         case 'block':
           this.svg = document.createElementNS(SVG_NS,'rect');
-          _.extend(p,{ cx: p.w/2, cy: p.h/2 });
+          Q._extend(p,{ cx: p.w/2, cy: p.h/2 });
           this.set({ width: p.w, height: p.h });
           break;
         case 'circle':
@@ -70,7 +73,7 @@ Quintus.SVG = function(Q) {
           break;
         case 'polygon':
           this.svg = document.createElementNS(SVG_NS,'polygon');
-          var pts = _.map(p.points, 
+          var pts = Q._map(p.points, 
                           function(pt) { 
                             return pt[0] + "," + pt[1];
                           }).join(" ");
@@ -94,7 +97,7 @@ Quintus.SVG = function(Q) {
          rp.y !== p.y || 
          rp.angle !== p.angle ) {
         var transform = "translate(" + (p.x - p.cx) + "," +
-                                     + (p.y - p.cy) + ") " +
+                                       (p.y - p.cy) + ") " +
                         "rotate(" + p.angle + 
                                 "," + p.cx +
                                 "," + p.cy +
@@ -105,28 +108,24 @@ Quintus.SVG = function(Q) {
         rp.y = p.y;
       } 
     },
-
+    render: function(ctx) {
+    	
+    	this.trigger('predraw',ctx);
+    	this.trigger('beforedraw',ctx);
+    	this.draw(ctx);
+    	this.trigger('beforedraw',ctx);
+    },
     draw: function(ctx) {
-      this.trigger('draw');
     },
 
     step: function(dt) {
       this.trigger('step',dt);
       this.setTransform();
-    },
-
-    destroy: function() {
-      if(this.destroyed) return false;
-      this._super();
-      for(var x in this.parent){
-      	alert(x+' '+this.parent[x]);
-      }
-      this.parent.svg.removeChild(this.svg);
     }
   });
 
 
-  Q.SVGStage = Q.Stage.extend({
+  Q.Stage.extend("SVGStage",{
     init: function(scene) {
       this.svg = document.createElementNS(SVG_NS,'svg');
       this.svg.setAttribute('width',Q.width);
@@ -136,7 +135,10 @@ Quintus.SVG = function(Q) {
       this.viewBox = { x: 0, y: 0, w: Q.width, h: Q.height };
       this._super(scene);
     },
-
+    remove:function(itm){
+	  if(itm.svg) { this.svg.removeChild(itm.svg); }
+	  return this._super(itm);
+    },
     insert: function(itm) {
       if(itm.svg) { this.svg.appendChild(itm.svg); }
       return this._super(itm);
@@ -189,3 +191,4 @@ Quintus.SVG = function(Q) {
 
 
 };
+
