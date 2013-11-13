@@ -6,7 +6,7 @@ Quintus.SVG = function(Q) {
   Q.setupSVG = function(id,options) {
     options = options || {};
     id = id || "quintus";
-    Q.svg = $(Q._isString(id) ? "#" + id : id)[0];
+    Q.svg =document.getElementById(id);
     if(!Q.svg) {
       Q.svg = document.createElementNS(SVG_NS,'svg');
       Q.svg.setAttribute('width',320);
@@ -15,23 +15,25 @@ Quintus.SVG = function(Q) {
     }
 
     if(options.maximize) {
-      var w = $(window).width()-1;
-      var h = $(window).height()-10;
+      var w = window.innerWidth-1;
+      var h = window.innerHeight-10;
       Q.svg.setAttribute('width',w);
       Q.svg.setAttribute('height',h);
     }
- 
-    Q.width = Q.svg.getAttribute('width');
+	Q.width = Q.svg.getAttribute('width');
     Q.height = Q.svg.getAttribute('height');
-    Q.wrapper = $(Q.svg)
-                 .wrap("<div id='" + id + "_container'/>")
-                 .parent()
-                 .css({ width: Q.width,
-                        height: Q.height,
-                        margin: '0 auto' });
+    var parent=Q.svg.parentNode;
+    var container=document.createElement('div');
+    container.setAttribute('id',id+'_container');
+    container.style.width=Q.width;
+    container.style.height=Q.height;
+    container.style.margin='0 auto';
+    container.appendChild(Q.svg);
+    parent.appendChild(container);
+    Q.wrapper=container;
  
     setTimeout(function() { window.scrollTo(0,1); }, 0);
-    $(window).bind('orientationchange',function() {
+    window.addEventListener('orientationchange',function() {
       setTimeout(function() { window.scrollTo(0,1); }, 0);
     });
     return Q;
