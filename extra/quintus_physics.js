@@ -24,7 +24,7 @@ Quintus.Physics = function(Q) {
     positionIterations: 3
   };
 
-  Q.register('world',{
+  Q.component('world',{
     added: function() {
       this.opts = Q._extend({},defOpts);
       this._gravity = new B2d.Vec(this.opts.gravityX,
@@ -44,7 +44,7 @@ Quintus.Physics = function(Q) {
       
       this.col = {};
       this.scale = this.opts.scale;
-      this.entity.bind('step',this,'boxStep');
+      this.entity.on('step',this,'boxStep');
     },
 
     setCollisionData: function(contact,impulse) {
@@ -102,15 +102,15 @@ Quintus.Physics = function(Q) {
     restitution: 0.1
   };
 
-  Q.register('physics',{
+  Q.component('physics',{
     added: function() {
       if(this.entity.stage) {
         this.inserted();
       } else {
-        this.entity.bind('inserted',this,'inserted');
+        this.entity.on('inserted',this,'inserted');
       }
-      this.entity.bind('step',this,'step');
-      this.entity.bind('removed',this,'removed');
+      this.entity.on('step',this,'step');
+      this.entity.on('removed',this,'removed');
     },
 
     position: function(x,y) {
@@ -133,7 +133,7 @@ Quintus.Physics = function(Q) {
  
     inserted: function() {
       var entity = this.entity,
-          stage = entity.parent,
+          stage = entity.stage,
           scale = stage.world.scale,
           p = entity.p,
           ops = entityDefaults,
