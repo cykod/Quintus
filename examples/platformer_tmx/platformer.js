@@ -106,7 +106,7 @@ Q.scene("level1",function(stage) {
 
   // Add in a tile layer, and make it the collision layer
   stage.collisionLayer(new Q.TileLayer({
-                             dataAsset: 'level.tmx', //level.json
+                             dataAsset: 'levelson.json', //level.json
                              sheet:     'tiles' })); //png image
 
 
@@ -153,7 +153,7 @@ Q.scene('endGame',function(stage) {
 // Q.load can be called at any time to load additional assets
 // assets that are already loaded will be skipped
 // The callback will be triggered when everything is loaded
-Q.load("sprites.png, sprites.json, level.tmx, tiles.png, background-wall.png", function() {
+Q.load("sprites.png, sprites.json, levelson.json, tiles.png, background-wall.png", function() {
   // Sprites sheets can be created manually
   Q.sheet("tiles","tiles.png", { tilew: 32, tileh: 32 });
 
