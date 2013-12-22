@@ -1,0 +1,1 @@
+{"player":{"sx":0,"sy":0,"cols":1,"tilew":32,"tileh":32,"frames":1},"enemy":{"sx":0,"sy":32,"cols":1,"tilew":32,"tileh":32,"frames":1},"tower":{"sx":0,"sy":64,"cols":1,"tilew":32,"tileh":32,"frames":1},"dot":{"sx":0, "sy":96, "cols":1, "tilew":32, "tileh":32 }}
