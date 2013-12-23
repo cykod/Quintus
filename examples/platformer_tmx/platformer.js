@@ -98,13 +98,24 @@ Q.Sprite.extend("Enemy",{
 });
 
 Q.SimpleTMXJSONLayer = Q.TileLayer.extend({
+
   init: function(props) {
     this._super(props);      
   },
 
+  findLayer: function(layers, layerName) {
+    var self = this;
+    var result = Q._detect(layers, function(layer) {
+      if(self.p.layerDetector(layer)) {
+        return layer;
+      }
+    });
+    return result;
+  },
+
   load: function(dataAsset) {
     var data = Q.asset(dataAsset);
-    var layer = data.layers[this.p.layerIndex],
+    var layer = this.findLayer(data.layers, this.p.layerName),
         width = layer.width,
         height = layer.height;
 
@@ -140,6 +151,7 @@ Q.scene("level1",function(stage) {
   // Add in a tile layer, and make it the collision layer
   stage.collisionLayer(new Q.SimpleTMXJSONLayer({
                              dataAsset: 'levelson.json', //level.json
+                             layerDetector: function(layer) { return layer.name === 'Tile Layer 1'; },
                              sheet:     'tiles' })); //png image
 
 
