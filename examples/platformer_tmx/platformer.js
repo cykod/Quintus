@@ -97,6 +97,39 @@ Q.Sprite.extend("Enemy",{
   }
 });
 
+Q.SimpleTMXJSONLayer = Q.TileLayer.extend({
+  init: function(props) {
+    this._super(props);      
+  },
+
+  load: function(dataAsset) {
+    var data = Q.asset(dataAsset);
+    var layer = data.layers[this.p.layerIndex],
+        width = layer.width,
+        height = layer.height;
+
+    var tiles = layer.data, 
+        idx = 0;
+
+    var map = [];
+    for(var y=0;y < height;y++) {
+      map[y] = [];
+      for(var x=0;x < width;x++) {
+        var tile = tiles[idx];
+        map[y].push(tile - 1);
+        idx++;
+      }
+    }
+
+    this.p.tiles = map;
+    this.p.rows = map.length;
+    this.p.cols = map[0].length;
+    this.p.w = this.p.cols * this.p.tileW;
+    this.p.h = this.p.rows * this.p.tileH;
+  }
+});
+
+
 // ## Level1 scene
 // Create a new scene called level 1
 Q.scene("level1",function(stage) {
@@ -105,7 +138,7 @@ Q.scene("level1",function(stage) {
   stage.insert(new Q.Repeater({ asset: "background-wall.png", speedX: 0.5, speedY: 0.5 }));
 
   // Add in a tile layer, and make it the collision layer
-  stage.collisionLayer(new Q.TileLayer({
+  stage.collisionLayer(new Q.SimpleTMXJSONLayer({
                              dataAsset: 'levelson.json', //level.json
                              sheet:     'tiles' })); //png image
 
