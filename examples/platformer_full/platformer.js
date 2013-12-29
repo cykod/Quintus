@@ -39,6 +39,14 @@ Q.Sprite.extend("Player",{
 
     this.on("bump.top","breakTile");
 
+    this.on("sensor.tile","checkLadder");
+  },
+
+  checkLadder: function(colObj) {
+    if(colObj.p.ladder) { 
+      this.p.onLadder = true;
+      this.p.ladderX = colObj.p.x;
+    }
   },
 
   breakTile: function(col) {
@@ -49,37 +57,70 @@ Q.Sprite.extend("Player",{
   },
 
   step: function(dt) {
-    if(Q.inputs['down']) {
-      this.p.ignoreControls = true;
-      this.play("duck_" + this.p.direction);
-      if(this.p.landed > 0) {
-        this.p.vx = this.p.vx * (1 - dt*2);
-      }
-      this.p.points = this.p.duckingPoints;
-    } else {
-      this.p.ignoreControls = false;
-      this.p.points = this.p.standingPoints;
+    if(this.p.onLadder) {
+      this.p.gravity = 0;
 
-      if(this.p.vx > 0) {
-        if(this.p.landed > 0) {
-          this.play("walk_right");
-        } else {
-          this.play("jump_right");
-        }
-        this.p.direction = "right";
-      } else if(this.p.vx < 0) {
-        if(this.p.landed > 0) {
-          this.play("walk_left");
-        } else {
-          this.play("jump_left");
-        }
-        this.p.direction = "left";
+      if(Q.inputs['up']) {
+        this.p.vy = -this.p.speed;
+        this.p.x = this.p.ladderX;
+        this.play("climb");
+      } else if(Q.inputs['down']) {
+        this.p.vy = this.p.speed;
+        this.p.x = this.p.ladderX;
+        this.play("climb");
       } else {
-        this.play("stand_" + this.p.direction);
+        this.p.vy = 0;
+        if(this.p.vx != 0) {
+          this.play("walk_" + this.p.direction);
+        } else {
+          this.play("stand_" + this.p.direction);
+        }
       }
-         
+    } else {
+      this.p.gravity = 1;
+
+      if(Q.inputs['down']) {
+        this.p.ignoreControls = true;
+        this.play("duck_" + this.p.direction);
+        if(this.p.landed > 0) {
+          this.p.vx = this.p.vx * (1 - dt*2);
+        }
+        this.p.points = this.p.duckingPoints;
+      } else {
+        this.p.ignoreControls = false;
+        this.p.points = this.p.standingPoints;
+
+        if(this.p.vx > 0) {
+          if(this.p.landed > 0) {
+            this.play("walk_right");
+          } else {
+            this.play("jump_right");
+          }
+          this.p.direction = "right";
+        } else if(this.p.vx < 0) {
+          if(this.p.landed > 0) {
+            this.play("walk_left");
+          } else {
+            this.play("jump_left");
+          }
+          this.p.direction = "left";
+        } else {
+          this.play("stand_" + this.p.direction);
+        }
+           
+      }
     }
 
+    this.p.onLadder = false;
+
+
+    if(this.p.y > 1000) {
+      this.stage.unfollow();
+    }
+
+    if(this.p.y > 2000) {
+      Q.stageScene("level1");
+    }
   }
 });
 
@@ -101,7 +142,8 @@ Q.loadTMX("level1.tmx", function() {
       stand_right: { frames:[14], rate: 1/10, flip: false },
       stand_left: { frames: [14], rate: 1/10, flip:"x" },
       duck_right: { frames: [15], rate: 1/10, flip: false },
-      duck_left: { frames:  [15], rate: 1/10, flip: "x" }
+      duck_left: { frames:  [15], rate: 1/10, flip: "x" },
+      climb: { frames:  [16, 17], rate: 1/3, flip: false }
     });
     Q.stageScene("level1");
   });
