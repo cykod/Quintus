@@ -19,7 +19,7 @@
       "url": "https://github.com/cykod/Quintus/blob/master/GPL-LICENSE.txt"
     }
   ],
-  "version": "0.1.6",
+  "version": "0.2.0",
   "dependencies": {
     "grunt": "~0.4.1",
     "grunt-cli": "~0.1.9",
