@@ -28,10 +28,10 @@ Using Quintus
 The easiest way to use Quintus is simply to use the CDN hosted version at:
 
     <!-- Production minified ~20k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.min.js'></script>
+    <script src='http://cdn.html5quintus.com/v0.2.0/quintus-all.min.js'></script>
 
-    <!-- Full Source ~37k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.js'></script>
+    <!-- Full Source ~40k gzipped -->
+    <script src='http://cdn.html5quintus.com/v0.2.0/quintus-all.js'></script>
 
 Quintus has no dependencies.
 
