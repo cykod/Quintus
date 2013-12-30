@@ -47,6 +47,11 @@ module.exports = function(grunt) {
           "gzip dist/quintus-all.min.js",
           "mv dist/quintus-all.min.js.gz dist/quintus-all.min.js"
           ].join("&&")
+      },
+
+      // Until grunt docco works again...
+      docco: {
+        cmd: "./node_modules/docco/bin/docco -o ./docs examples/*/*.js examples/*/javascripts/*.js"
       }
     },
 
@@ -68,6 +73,7 @@ module.exports = function(grunt) {
       all: ['lib/**/*.js']
     },
 
+
     yuidoc: {
       pkg: grunt.file.readJSON('package.json'),
       api: {
@@ -85,7 +91,7 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', ['jshint:all','jasmine','concat:dist','uglify:dist']);
-  grunt.registerTask("docs", [  'yuidoc:api' ]);
+  grunt.registerTask("docs", [  'yuidoc:api', 'exec:docco' ]);
   grunt.registerTask('release', ['jshint:all','jasmine','concat:dist','uglify:dist','exec:gzip','s3-copy']);
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
