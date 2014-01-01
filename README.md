@@ -28,10 +28,10 @@ Using Quintus
 The easiest way to use Quintus is simply to use the CDN hosted version at:
 
     <!-- Production minified ~20k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.min.js'></script>
+    <script src='http://cdn.html5quintus.com/v0.2.0/quintus-all.min.js'></script>
 
-    <!-- Full Source ~37k gzipped -->
-    <script src='http://cdn.html5quintus.com/v0.1.6/quintus-all.js'></script>
+    <!-- Full Source ~40k gzipped -->
+    <script src='http://cdn.html5quintus.com/v0.2.0/quintus-all.js'></script>
 
 Quintus has no dependencies.
 
@@ -68,6 +68,20 @@ Here's some specific pieces that need some love:
 
 Changelog
 =========
+
+### 0.2.0 Initial API Docs + Better Tiled Integration + Sloped Tiles
+* `quintus_tmx.js` TMX file extraction 
+* Multi-layer TMX Support + Sloped Tiles by [lendrick](https://github.com/lendrick)
+* TMX Object layer support
+* TMX Repeater support
+* TMX Sensor tile support
+* SVG and Physics refactoring by [drFabio](https://github.com/drFabio)
+* Generate collision points performance optimization
+* Disasteroids Example
+* Initial Platformer Full Example
+* Initial API Documentation
+* Conditional Render and step support
+* Tower Man Example
 
 ### 0.1.6 Assorted Fixes - 9/6/13
 * Fix by [A11oW](https://github.com/A11oW) to Quintus input
