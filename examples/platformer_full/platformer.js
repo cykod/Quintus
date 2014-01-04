@@ -57,6 +57,15 @@ Q.Sprite.extend("Player",{
     }
   },
 
+  continueOverSensor: function() {
+    this.p.vy = 0;
+    if(this.p.vx != 0) {
+      this.play("walk_" + this.p.direction);
+    } else {
+      this.play("stand_" + this.p.direction);
+    }
+  },
+
   breakTile: function(col) {
     if(col.obj.isA("TileLayer")) {
       if(col.tile == 24) { col.obj.setTile(col.tileX,col.tileY, 36); }
@@ -77,12 +86,26 @@ Q.Sprite.extend("Player",{
         this.p.x = this.p.ladderX;
         this.play("climb");
       } else {
-        this.p.vy = 0;
-        if(this.p.vx != 0) {
-          this.play("walk_" + this.p.direction);
-        } else {
-          this.play("stand_" + this.p.direction);
-        }
+        this.continueOverSensor();
+      }
+    } else if (this.p.door) {
+      if(Q.inputs['down']) {
+        // Enter door.
+        this.p.y = this.p.door.p.y;
+        this.p.x = this.p.door.p.x;
+        this.play('climb');
+        this.p.toDoor = this.p.door.findLinkedDoor();
+      }
+      else if (this.p.toDoor) {
+        // Transport to matching door.
+        this.p.y = this.p.toDoor.p.y;
+        this.p.x = this.p.toDoor.p.x;
+        this.stage.centerOn(this.p.x, this.p.y);
+        this.p.toDoor = false;
+        this.stage.follow(this);
+      }
+      else {
+        this.continueOverSensor();
       }
     } else {
       this.p.gravity = 1;
@@ -120,6 +143,7 @@ Q.Sprite.extend("Player",{
     }
 
     this.p.onLadder = false;
+    this.p.door = false;
 
 
     if(this.p.y > 1000) {
@@ -159,6 +183,39 @@ Q.Sprite.extend("Collectable", {
   }
 });
 
+Q.Sprite.extend("Door", {
+  init: function(p) {
+    this._super(p,{
+      sheet: p.sprite,
+      type: Q.SPRITE_DOOR,
+      collisionMask: Q.SPRITE_NONE,
+      sensor: true,
+      vx: 0,
+      vy: 0,
+      gravity: 0
+    });
+    this.add("2d, animation");
+
+    this.on("sensor");
+  },
+  findLinkedDoor: function() {
+    var find = this.p.link;
+    var linked = false
+    Q('Door').each(function() {
+      if (this.p.id == find) {
+        linked = this;
+        return false;
+      }
+    })
+    return linked;
+  },
+  // When the player is in the door.
+  sensor: function(colObj) {
+    // Mark the door object on the player.
+    colObj.p.door = this;
+  }
+});
+
 Q.Collectable.extend("Heart", {
   // When a Heart is hit.
   sensor: function(colObj) {
@@ -195,6 +252,7 @@ Q.loadTMX("level1.tmx, collectables.json, doors.json", function() {
   Q.load("player.json, player.png",function() {
     Q.compileSheets("player.png","player.json");
     Q.compileSheets("collectables.png","collectables.json");
+    Q.compileSheets("doors.png","doors.json");
     Q.animations("player", {
       walk_right: { frames: [0,1,2,3,4,5,6,7,8,9,10], rate: 1/15, flip: false, loop: true },
       walk_left: { frames:  [0,1,2,3,4,5,6,7,8,9,10], rate: 1/15, flip:"x", loop: true },
