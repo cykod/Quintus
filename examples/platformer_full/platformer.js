@@ -35,6 +35,8 @@ Q.Sprite.extend("Player",{
       duckingPoints : [ [ -16, 44], [ -23, 35 ], [-23,-10], [23,-10], [23, 35 ], [ 16, 44 ]],
       jumpSpeed: -400,
       speed: 300,
+      strength: 100,
+      score: 0,
       type: Q.SPRITE_PLAYER,
       collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_DOOR
     });
@@ -130,16 +132,69 @@ Q.Sprite.extend("Player",{
   }
 });
 
+Q.Sprite.extend("Collectable", {
+  init: function(p) {
+    this._super(p,{
+      sheet: p.sprite,
+      type: Q.SPRITE_COLLECTABLE,
+      collisionMask: Q.SPRITE_PLAYER,
+      sensor: true,
+      vx: 0,
+      vy: 0,
+      gravity: 0
+    });
+    this.add("2d, animation");
+
+    this.on("sensor");
+  },
+
+  // When a Collectable is hit.
+  sensor: function(colObj) {
+    // Increment the score.
+    if (this.p.amount) {
+      colObj.p.score += this.p.amount;
+      Q.stageScene('hud', 3, colObj.p);
+    }
+    this.destroy();
+  }
+});
+
+Q.Collectable.extend("Heart", {
+  // When a Heart is hit.
+  sensor: function(colObj) {
+    // Increment the strength.
+    if (this.p.amount) {
+      colObj.p.strength = Math.max(colObj.p.strength + 25, 100);
+      Q.stageScene('hud', 3, colObj.p);
+    }
+    this.destroy();
+  }
+});
+
 Q.scene("level1",function(stage) {
   Q.stageTMX("level1.tmx",stage);
 
   stage.add("viewport").follow(Q("Player").first());
 });
 
+Q.scene('hud',function(stage) {
+  var container = stage.insert(new Q.UI.Container({
+    x: 50, y: 0
+  }));
 
-Q.loadTMX("level1.tmx", function() {
+  var label = container.insert(new Q.UI.Text({x:200, y: 20,
+    label: "Score: " + stage.options.score, color: "white" }));
+
+  var strength = container.insert(new Q.UI.Text({x:50, y: 20,
+    label: "Health: " + stage.options.strength + '%', color: "white" }));
+
+  container.fit(20);
+});
+
+Q.loadTMX("level1.tmx, collectables.json, doors.json", function() {
   Q.load("player.json, player.png",function() {
     Q.compileSheets("player.png","player.json");
+    Q.compileSheets("collectables.png","collectables.json");
     Q.animations("player", {
       walk_right: { frames: [0,1,2,3,4,5,6,7,8,9,10], rate: 1/15, flip: false, loop: true },
       walk_left: { frames:  [0,1,2,3,4,5,6,7,8,9,10], rate: 1/15, flip:"x", loop: true },
@@ -152,6 +207,7 @@ Q.loadTMX("level1.tmx", function() {
       climb: { frames:  [16, 17], rate: 1/3, flip: false }
     });
     Q.stageScene("level1");
+    Q.stageScene('hud', 3, Q('Player').first().p);
   });
 });
 
