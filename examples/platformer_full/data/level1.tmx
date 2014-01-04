@@ -13,6 +13,11 @@
     <property name="sensor" value="true"/>
    </properties>
   </tile>
+  <tile id="25">
+   <properties>
+    <property name="sensor" value="true"/>
+   </properties>
+  </tile>
   <tile id="31">
    <properties>
     <property name="ladder" value="true"/>
@@ -39,12 +44,43 @@
     <property name="sensor" value="true"/>
    </properties>
   </tile>
+  <tile id="98">
+   <properties>
+    <property name="sensor" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <tileset firstgid="157" name="player" tilewidth="72" tileheight="97">
   <image source="../images/player.png" width="1296" height="98"/>
   <tile id="0">
    <properties>
     <property name="Class" value="Player"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="175" name="collectables" tilewidth="70" tileheight="70" spacing="2">
+  <image source="../images/collectables.png" width="936" height="216"/>
+  <tile id="1">
+   <properties>
+    <property name="Class" value="Collectable"/>
+    <property name="amount" value="10"/>
+    <property name="sprite" value="coin_gold"/>
+   </properties>
+  </tile>
+  <tile id="12">
+   <properties>
+    <property name="Class" value="Heart"/>
+    <property name="strength" value="25"/>
+   </properties>
+  </tile>
+ </tileset>
+ <tileset firstgid="214" name="doors" tilewidth="70" tileheight="110">
+  <image source="../images/doors.png" width="140" height="110"/>
+  <tile id="0">
+   <properties>
+    <property name="Class" value="Door"/>
+    <property name="open" value="true"/>
+    <property name="sprite" value="door_open"/>
    </properties>
   </tile>
  </tileset>
@@ -2869,15 +2905,15 @@
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
    <tile gid="153"/>
    <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -3056,9 +3092,6 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
@@ -3072,12 +3105,15 @@
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
    <tile gid="153"/>
    <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -3256,13 +3292,6 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
-   <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
@@ -3276,6 +3305,13 @@
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="153"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
+   <tile gid="99"/>
    <tile gid="153"/>
    <tile gid="153"/>
    <tile gid="0"/>
@@ -4058,7 +4094,37 @@
    <tile gid="0"/>
   </data>
  </layer>
+ <objectgroup name="Doors" width="200" height="20">
+  <object gid="214" x="1190" y="840">
+   <properties>
+    <property name="id" value="door-1"/>
+    <property name="link" value="door-2"/>
+   </properties>
+  </object>
+  <object gid="214" x="980" y="1190">
+   <properties>
+    <property name="id" value="door-2"/>
+    <property name="link" value="door-1"/>
+   </properties>
+  </object>
+ </objectgroup>
  <objectgroup name="Sprites" width="200" height="20">
   <object gid="157" x="235" y="820"/>
+  <object gid="176" x="1120" y="1120"/>
+  <object gid="176" x="1190" y="1120"/>
+  <object gid="176" x="1260" y="1120"/>
+  <object gid="176" x="1330" y="1120"/>
+  <object gid="176" x="1330" y="1050"/>
+  <object gid="176" x="1260" y="1050"/>
+  <object gid="176" x="1190" y="1050"/>
+  <object gid="176" x="1120" y="1050"/>
+  <object gid="176" x="1120" y="1190"/>
+  <object gid="176" x="1190" y="1190"/>
+  <object gid="176" x="1330" y="1190"/>
+  <object gid="176" x="1260" y="1190"/>
+  <object gid="176" x="1400" y="840"/>
+  <object gid="176" x="1330" y="840"/>
+  <object gid="176" x="1050" y="840"/>
+  <object gid="176" x="980" y="840"/>
  </objectgroup>
 </map>
