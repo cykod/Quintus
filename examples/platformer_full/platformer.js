@@ -19,6 +19,10 @@ var Q = window.Q = Quintus()
         // And turn on default input controls and touch input (for UI)
         .controls(true).touch()
 
+Q.SPRITE_PLAYER = 1;
+Q.SPRITE_COLLECTABLE = 2;
+Q.SPRITE_ENEMY = 4;
+Q.SPRITE_DOOR = 8;
 Q.Sprite.extend("Player",{
 
   init: function(p) {
@@ -30,7 +34,9 @@ Q.Sprite.extend("Player",{
       standingPoints: [ [ -16, 44], [ -23, 35 ], [-23,-48], [23,-48], [23, 35 ], [ 16, 44 ]],
       duckingPoints : [ [ -16, 44], [ -23, 35 ], [-23,-10], [23,-10], [23, 35 ], [ 16, 44 ]],
       jumpSpeed: -400,
-      speed: 300
+      speed: 300,
+      type: Q.SPRITE_PLAYER,
+      collisionMask: Q.SPRITE_DEFAULT | Q.SPRITE_DOOR
     });
 
     this.p.points = this.p.standingPoints;
