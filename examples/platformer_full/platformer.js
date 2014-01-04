@@ -57,6 +57,14 @@ Q.Sprite.extend("Player",{
     }
   },
 
+  enemyHit: function(enemy) {
+    this.p.strength -= 25;
+    console.log("strength is now " + this.p.strength);
+    if (this.p.strength == 0) {
+      Q.stageScene("level1");
+    }
+  },
+
   continueOverSensor: function() {
     this.p.vy = 0;
     if(this.p.vx != 0) {
@@ -152,6 +160,26 @@ Q.Sprite.extend("Player",{
 
     if(this.p.y > 2000) {
       Q.stageScene("level1");
+    }
+  }
+});
+
+Q.Sprite.extend("Enemy", {
+  init: function(p) {
+
+    this._super(p,{
+      sheet: p.sheet,
+      type: Q.SPRITE_ENEMY,
+      collisionMask: Q.SPRITE_PLAYER | Q.SPRITE_DEFAULT
+    });
+
+    this.add("2d");
+    this.on("hit.sprite",this,"hit");
+  },
+
+  hit: function(col) {
+    if(col.obj.isA("Player")) {
+      col.obj.trigger('enemy.hit', this);
     }
   }
 });
