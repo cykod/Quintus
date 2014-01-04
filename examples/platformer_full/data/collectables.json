@@ -1,0 +1,6 @@
+{
+  "coin_gold":{"sx":72,"sy":0,"cols":1,"spacingX":2,"spacingY":2,"tilew":70,"tileh":70,"frames":1},
+  "gem_red":{"sx":360,"sy":0,"cols":1,"spacingX":2,"spacingY":2,"tilew":70,"tileh":70,"frames":1},
+  "gem_yellow":{"sx":432,"sy":0,"cols":1,"spacingX":2,"spacingY":2,"tilew":70,"tileh":70,"frames":1},
+  "heart":{"sx":862,"sy":0,"cols":1,"spacingX":2,"spacingY":2,"tilew":70,"tileh":70,"frames":1}
+}
