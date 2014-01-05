@@ -1,0 +1,5 @@
+{
+  "snail":{"sx":0,"sy":32,"cols":1,"tilew":72,"tileh":42,"frames":3,"rows":3,"spacingY":32},
+  "slime":{"sx":72,"sy":32,"cols":1,"tilew":72,"tileh":42,"frames":3,"rows":3,"spacingY":32},
+  "fly":{"sx":144,"sy":32,"cols":1,"tilew":72,"tileh":42,"frames":3,"rows":3,"spacingY":32}
+}
