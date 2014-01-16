@@ -84,6 +84,27 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="216" name="enemies" tilewidth="72" tileheight="72">
+  <image source="../images/enemies.png" width="216" height="216"/>
+  <tile id="0">
+   <properties>
+    <property name="Class" value="Snail"/>
+    <property name="sprite" value="snail"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="Class" value="Slime"/>
+    <property name="sprite" value="slime"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="Class" value="Fly"/>
+    <property name="sprite" value="fly"/>
+   </properties>
+  </tile>
+ </tileset>
  <imagelayer name="Background" width="200" height="20">
   <image source="../images/bg.png"/>
  </imagelayer>
@@ -2098,7 +2119,7 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="73"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
@@ -2297,27 +2318,12 @@
    <tile gid="82"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="73"/>
+   <tile gid="73"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="41"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
-   <tile gid="0"/>
+   <tile gid="73"/>
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="41"/>
@@ -2325,6 +2331,21 @@
    <tile gid="0"/>
    <tile gid="0"/>
    <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="73"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="73"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="41"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="0"/>
+   <tile gid="73"/>
    <tile gid="0"/>
    <tile gid="129"/>
    <tile gid="104"/>
@@ -4126,5 +4147,9 @@
   <object gid="176" x="1330" y="840"/>
   <object gid="176" x="1050" y="840"/>
   <object gid="176" x="980" y="840"/>
+  <object gid="216" x="630" y="840"/>
+  <object gid="217" x="1050" y="1190"/>
+  <object gid="218" x="1110" y="842"/>
+  <object gid="217" x="2170" y="839"/>
  </objectgroup>
 </map>

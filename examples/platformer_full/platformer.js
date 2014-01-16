@@ -12,12 +12,17 @@ window.addEventListener("load",function() {
 // Set up an instance of the Quintus engine  and include
 // the Sprites, Scenes, Input and 2D module. The 2D module
 // includes the `TileLayer` class as well as the `2d` componet.
-var Q = window.Q = Quintus()
-        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX")
+var Q = window.Q = Quintus({audioSupported: [ 'wav','mp3','ogg' ]})
+        .include("Sprites, Scenes, Input, 2D, Anim, Touch, UI, TMX, Audio")
         // Maximize this game to whatever the size of the browser is
         .setup({ maximize: true })
         // And turn on default input controls and touch input (for UI)
         .controls(true).touch()
+        // Enable sounds.
+        .enableSound();
+
+// Load and init audio files.
+
 
 Q.SPRITE_PLAYER = 1;
 Q.SPRITE_COLLECTABLE = 2;
@@ -43,13 +48,28 @@ Q.Sprite.extend("Player",{
 
     this.p.points = this.p.standingPoints;
 
-    this.add('2d, platformerControls, animation');
+    this.add('2d, platformerControls, animation, tween');
 
     this.on("bump.top","breakTile");
 
     this.on("sensor.tile","checkLadder");
+    this.on("enemy.hit","enemyHit");
+    this.on("jump");
+    this.on("jumped");
 
     Q.input.on("down",this,"checkDoor");
+  },
+
+  jump: function(obj) {
+    // Only play sound once.
+    if (!obj.p.playedJump) {
+      Q.audio.play('jump.mp3');
+      obj.p.playedJump = true;
+    }
+  },
+
+  jumped: function(obj) {
+    obj.p.playedJump = false;
   },
 
   checkLadder: function(colObj) {
@@ -63,11 +83,34 @@ Q.Sprite.extend("Player",{
     this.p.checkDoor = true;
   },
 
-  enemyHit: function(enemy) {
+  resetLevel: function() {
+    Q.stageScene("level1");
+    this.p.strength = 100;
+    this.animate({opacity: 1});
+    Q.stageScene('hud', 3, this.p);
+  },
+
+  enemyHit: function(data) {
+    var col = data.col;
+    var enemy = data.enemy;
+    this.p.vy = -150;
+    if (col.normalX == 1) {
+      // Hit from left.
+      this.p.x -=15;
+      this.p.y -=15;
+    }
+    else {
+      // Hit from right;
+      this.p.x +=15;
+      this.p.y -=15;
+    }
+    this.p.immune = true;
+    this.p.immuneTimer = 0;
+    this.p.immuneOpacity = 1;
     this.p.strength -= 25;
-    console.log("strength is now " + this.p.strength);
+    Q.stageScene('hud', 3, this.p);
     if (this.p.strength == 0) {
-      Q.stageScene("level1");
+      this.resetLevel();
     }
   },
 
@@ -85,10 +128,25 @@ Q.Sprite.extend("Player",{
       if(col.tile == 24) { col.obj.setTile(col.tileX,col.tileY, 36); }
       else if(col.tile == 36) { col.obj.setTile(col.tileX,col.tileY, 24); }
     }
+    Q.audio.play('coin.mp3');
   },
 
   step: function(dt) {
     var processed = false;
+    if (this.p.immune) {
+      // Swing the sprite opacity between 50 and 100% percent when immune.
+      if ((this.p.immuneTimer % 12) == 0) {
+        var opacity = (this.p.immuneOpacity == 1 ? 0 : 1);
+        this.animate({"opacity":opacity}, 0);
+        this.p.immuneOpacity = opacity;
+      }
+      this.p.immuneTimer++;
+      if (this.p.immuneTimer > 144) {
+        // 3 seconds expired, remove immunity.
+        this.p.immune = false;
+        this.animate({"opacity": 1}, 1);
+      }
+    }
 
     if(this.p.onLadder) {
       this.p.gravity = 0;
@@ -173,7 +231,7 @@ Q.Sprite.extend("Player",{
     }
 
     if(this.p.y > 2000) {
-      Q.stageScene("level1");
+      this.resetLevel();
     }
   }
 });
@@ -182,20 +240,69 @@ Q.Sprite.extend("Enemy", {
   init: function(p) {
 
     this._super(p,{
-      sheet: p.sheet,
+      sheet: p.sprite,
+      vx: 50,
+      defaultDirection: 'left',
       type: Q.SPRITE_ENEMY,
-      collisionMask: Q.SPRITE_PLAYER | Q.SPRITE_DEFAULT
+      collisionMask: Q.SPRITE_DEFAULT
     });
 
-    this.add("2d");
+    this.add("2d, aiBounce, animation");
+    this.on("bump.top",this,"die");
     this.on("hit.sprite",this,"hit");
   },
 
+  step: function(dt) {
+    if(this.p.dead) {
+      this.del('2d, aiBounce');
+      this.p.deadTimer++;
+      if (this.p.deadTimer > 24) {
+        // Dead for 24 frames, remove it.
+        this.destroy();
+      }
+      return;
+    }
+    var p = this.p;
+
+    p.vx += p.ax * dt;
+    p.vy += p.ay * dt;
+
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
+
+    this.play('walk');
+  },
+
   hit: function(col) {
+    if(col.obj.isA("Player") && !col.obj.p.immune && !this.p.dead) {
+      col.obj.trigger('enemy.hit', {"enemy":this,"col":col});
+      Q.audio.play('hit.mp3');
+    }
+  },
+
+  die: function(col) {
     if(col.obj.isA("Player")) {
-      col.obj.trigger('enemy.hit', this);
+      Q.audio.play('coin.mp3');
+      this.p.vx=this.p.vy=0;
+      this.play('dead');
+      this.p.dead = true;
+      var that = this;
+      col.obj.p.vy = -300;
+      this.p.deadTimer = 0;
     }
   }
+});
+
+Q.Enemy.extend("Fly", {
+
+});
+
+Q.Enemy.extend("Slime", {
+
+});
+
+Q.Enemy.extend("Snail", {
+
 });
 
 Q.Sprite.extend("Collectable", {
@@ -221,6 +328,7 @@ Q.Sprite.extend("Collectable", {
       colObj.p.score += this.p.amount;
       Q.stageScene('hud', 3, colObj.p);
     }
+    Q.audio.play('coin.mp3');
     this.destroy();
   }
 });
@@ -257,6 +365,7 @@ Q.Collectable.extend("Heart", {
     if (this.p.amount) {
       colObj.p.strength = Math.max(colObj.p.strength + 25, 100);
       Q.stageScene('hud', 3, colObj.p);
+      Q.audio.play('heart.mp3');
     }
     this.destroy();
   }
@@ -282,10 +391,11 @@ Q.scene('hud',function(stage) {
   container.fit(20);
 });
 
-Q.loadTMX("level1.tmx, collectables.json, doors.json", function() {
-  Q.load("player.json, player.png",function() {
+Q.loadTMX("level1.tmx, collectables.json, doors.json, enemies.json", function() {
+  Q.load("player.json, player.png, fire.mp3, jump.mp3, heart.mp3, hit.mp3, coin.mp3",function() {
     Q.compileSheets("player.png","player.json");
     Q.compileSheets("collectables.png","collectables.json");
+    Q.compileSheets("enemies.png","enemies.json");
     Q.compileSheets("doors.png","doors.json");
     Q.animations("player", {
       walk_right: { frames: [0,1,2,3,4,5,6,7,8,9,10], rate: 1/15, flip: false, loop: true },
@@ -298,6 +408,13 @@ Q.loadTMX("level1.tmx, collectables.json, doors.json", function() {
       duck_left: { frames:  [15], rate: 1/10, flip: "x" },
       climb: { frames:  [16, 17], rate: 1/3, flip: false }
     });
+    var EnemyAnimations = {
+      walk: { frames: [0,1], rate: 1/15, loop: true },
+      dead: { frames: [2], rate: 1/10 }
+    };
+    Q.animations("fly", EnemyAnimations);
+    Q.animations("slime", EnemyAnimations);
+    Q.animations("snail", EnemyAnimations);
     Q.stageScene("level1");
     Q.stageScene('hud', 3, Q('Player').first().p);
   });
