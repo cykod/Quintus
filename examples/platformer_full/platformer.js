@@ -237,15 +237,15 @@ Q.Sprite.extend("Player",{
 });
 
 Q.Sprite.extend("Enemy", {
-  init: function(p) {
+  init: function(p,defaults) {
 
-    this._super(p,{
+    this._super(p,Q._defaults(defaults||{},{
       sheet: p.sprite,
       vx: 50,
       defaultDirection: 'left',
       type: Q.SPRITE_ENEMY,
       collisionMask: Q.SPRITE_DEFAULT
-    });
+    }));
 
     this.add("2d, aiBounce, animation");
     this.on("bump.top",this,"die");
@@ -298,10 +298,21 @@ Q.Enemy.extend("Fly", {
 });
 
 Q.Enemy.extend("Slime", {
-
+  init: function(p) {
+    this._super(p,{
+      w: 55,
+      h: 34
+    });
+  }
 });
 
 Q.Enemy.extend("Snail", {
+  init: function(p) {
+    this._super(p,{
+      w: 55,
+      h: 36
+    });
+  }
 
 });
 
@@ -409,7 +420,7 @@ Q.loadTMX("level1.tmx, collectables.json, doors.json, enemies.json", function() 
       climb: { frames:  [16, 17], rate: 1/3, flip: false }
     });
     var EnemyAnimations = {
-      walk: { frames: [0,1], rate: 1/15, loop: true },
+      walk: { frames: [0,1], rate: 1/3, loop: true },
       dead: { frames: [2], rate: 1/10 }
     };
     Q.animations("fly", EnemyAnimations);
