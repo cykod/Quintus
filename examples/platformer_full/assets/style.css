@@ -1,0 +1,58 @@
+body {
+  padding: 0px;
+  margin: 0px; }
+  body #loading {
+    margin: 50px auto;
+    max-width: 1024px;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    text-align: center; }
+    body #loading #loading_container {
+      position: relative;
+      margin: 0 auto;
+      width: 50%;
+      height: 40px;
+      background: #aaccff;
+      -moz-border-radius: 25px;
+      -webkit-border-radius: 25px;
+      border-radius: 25px;
+      padding: 10px;
+      -webkit-box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+      -moz-box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3); }
+      body #loading #loading_container #loading_progress {
+        display: block;
+        height: 100%;
+        width: 0;
+        color: white;
+        -webkit-border-top-right-radius: 8px;
+        -webkit-border-bottom-right-radius: 8px;
+        -moz-border-radius-topright: 8px;
+        -moz-border-radius-bottomright: 8px;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        -webkit-border-top-left-radius: 20px;
+        -webkit-border-bottom-left-radius: 20px;
+        -moz-border-radius-topleft: 20px;
+        -moz-border-radius-bottomleft: 20px;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        background-color: #2bc253;
+        background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #2bc253), color-stop(1, #54f054));
+        background-image: -webkit-linear-gradient(center bottom, #2bc253 37%, #54f054 69%);
+        background-image: -moz-linear-gradient(center bottom, #2bc253 37%, #54f054 69%);
+        background-image: -ms-linear-gradient(center bottom, #2bc253 37%, #54f054 69%);
+        background-image: -o-linear-gradient(center bottom, #2bc253 37%, #54f054 69%);
+        -webkit-box-shadow: inset 0 2px 9px rgba(255, 255, 255, 0.3), inset 0 -2px 6px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: inset 0 2px 9px rgba(255, 255, 255, 0.3), inset 0 -2px 6px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden; }
+        body #loading #loading_container #loading_progress span {
+          position: absolute;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          top: 25%;
+          display: block;
+          font-family: sans-serif; }

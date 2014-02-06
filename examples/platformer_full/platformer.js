@@ -402,8 +402,8 @@ Q.scene('hud',function(stage) {
   container.fit(20);
 });
 
-Q.loadTMX("level1.tmx, collectables.json, doors.json, enemies.json", function() {
-  Q.load("player.json, player.png, fire.mp3, jump.mp3, heart.mp3, hit.mp3, coin.mp3",function() {
+Q.loadTMX("level1.tmx, collectables.json, doors.json, enemies.json, fire.mp3, jump.mp3, heart.mp3, hit.mp3, coin.mp3", function() {
+  Q.load("player.json, player.png",function() {
     Q.compileSheets("player.png","player.json");
     Q.compileSheets("collectables.png","collectables.json");
     Q.compileSheets("enemies.png","enemies.json");
@@ -429,6 +429,14 @@ Q.loadTMX("level1.tmx, collectables.json, doors.json, enemies.json", function() 
     Q.stageScene("level1");
     Q.stageScene('hud', 3, Q('Player').first().p);
   });
+}, {
+  progressCallback: function(loaded,total) {
+    var element = document.getElementById("loading_progress");
+    element.style.width = Math.floor(loaded/total*100) + "%";
+    if (loaded == total) {
+      document.getElementById("loading").remove();
+    }
+  }
 });
 
 // ## Possible Experimentations:
