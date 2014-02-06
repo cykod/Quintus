@@ -1,0 +1,1 @@
+{"player":{"sx":0,"sy":1,"cols":18,"tilew":72,"tileh":97,"frames":18}}

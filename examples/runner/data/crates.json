@@ -1,0 +1,1 @@
+{"crates":{"sx":0,"sy":0,"cols":2,"tilew":32,"tileh":32,"frames":2}}
