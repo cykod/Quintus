@@ -1,6 +1,6 @@
 // # Quintus platformer example
 //
-// [Run the example](../examples/platformer/index.html)
+// [Run the example](../quintus/examples/platformer/index.html)
 // WARNING: this game must be run from a non-file:// url
 // as it loads a level json file.
 //

@@ -1,6 +1,6 @@
 // # Quintus SAT Collision detection example
 //
-// [Run the example](../examples/collision/index.html)
+// [Run the example](../quintus/examples/collision/index.html)
 //
 // This example creates a number of random convex shapes to
 // exercise the SAT-based (Separating-axis-theorem) collision 

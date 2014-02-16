@@ -1,6 +1,6 @@
 // # Quintus UI Elements example
 //
-// [Run the example](../examples/ui/index.html)
+// [Run the example](../quintus/examples/ui/index.html)
 //
 // This example creates a couple of UI elements
 window.addEventListener('load',function(e) {

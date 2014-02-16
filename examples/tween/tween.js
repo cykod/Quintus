@@ -1,6 +1,6 @@
 // # Quintus Tweened Animation Example
 //
-// [Run the example](../examples/tween/index.html)
+// [Run the example](../quintus/examples/tween/index.html)
 //
 // This example shows how to use the tween component to
 // play tweened animations in sprites.

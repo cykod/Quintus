@@ -1,6 +1,6 @@
 // # Quintus moving ball example
 //
-// [Run the example](../examples/ball/index.html)
+// [Run the example](../quintus/examples/ball/index.html)
 //
 // This is one of the simplest possible examples of using 
 // Quintus that doesn't use the scene/stage functionality, 

@@ -1,6 +1,6 @@
 // # Quintus Basic Sprite Example
 //
-// [Run the example](../examples/sprite/index.html)
+// [Run the example](../quintus/examples/sprite/index.html)
 //
 // This example creates two simple sprites to test basic collision detection
 // with regards to rotation, scaling and movement.

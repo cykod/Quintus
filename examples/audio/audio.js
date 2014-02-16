@@ -1,6 +1,6 @@
 // # Quintus Audio Example
 //
-// [Run the example](../examples/audio/index.html)
+// [Run the example](../quintus/examples/audio/index.html)
 //
 // This example demonstrates the Quintus audio library
 window.addEventListener('load',function(e) {

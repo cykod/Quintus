@@ -1,6 +1,6 @@
 // # Quintus Touch and Drag Example
 //
-// [Run the example](../examples/touch/index.html)
+// [Run the example](../quintus/examples/touch/index.html)
 //
 // This example creates a number of random convex shapes 
 // and then adds touch and drag support to them.
