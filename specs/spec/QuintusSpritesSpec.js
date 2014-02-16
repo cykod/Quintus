@@ -60,6 +60,20 @@ describe("Quintus Sprites", function() {
       });
     });
 
+	it("should return total frames of a sprite sheet with spacing and offset", function() {
+		Q.sheet("blocks", "blockbreak.png", {
+			tileW: 32,
+			tileH: 32,
+			h: 595,
+			w: 199,
+			sx: 1,
+			sy: 1,
+			spacingX: 1,
+			spacingY: 1
+		});
+		expect(Q.sheet("blocks").frames).toBe(108);
+	});
+
   });
 
   describe("Sprite",function() {
