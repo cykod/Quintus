@@ -18,28 +18,28 @@ Quintus.Persist = function(Q) {
 
 	Q.Persistance =  Class.extend("Persistance", { 
 
-	    /**
-	     Returns true iff local storage is supported 
+	  /**
+	    Returns true iff local storage is supported 
 
 	    @method isLocalStorageSupported
 	    @for Q.Persistance
-	    */
+	   */
 		isLocalStorageSupported: function(){
 			return typeof(Storage)!=="undefined";
 		},
 		
-	    /**
-	     Saves an an object in local storage.
+	  /**
+		Saves an an object in local storage.
 
-		 The object is stored as JSON data. 
-		 Due to limitations on local storage null and 
-	     undefined valuescan not be meaninfully stored.
+		The object is stored as JSON data. 
+		Due to limitations on local storage null and 
+		undefined valuescan not be meaninfully stored.
 
 	    @method save
 	    @for Q.Persistance
 	    @param {String} id - key to store the object by
 	    @param {Object} object - 
-	    */
+       */
 		save: function(id, object){
 			if(!this.isLocalStorageSupported()){
 				return;
@@ -48,13 +48,13 @@ Quintus.Persist = function(Q) {
 			localStorage.setItem(id,JSON.stringify(object));
 		},
 	   
-	    /**
-	     Loads object(s) from local storage. The objects are
-	     returned inside an object. When a value was either null
-	     or undefined the key will not be present. This allows 
-	     default values to be set.
+	  /**
+		Loads object(s) from local storage. The objects are
+		returned inside an object. When a value was either null
+		or undefined the key will not be present. This allows 
+		default values to be set.
 
-		 Usage example:
+		Usage example:
 
 			var defaults = {health: 100, ammo: 100, lives:5}
 		 	var loaded = persist.load("health, ammo") //  {health: 100, ammo: 5}
@@ -64,7 +64,7 @@ Quintus.Persist = function(Q) {
 	    @for Q.Persistance
 	    @param {String} id - key of the object that should be loaded
 	    @param {Function} errorCallback - called when loading failed.
-	    */
+	   */
 
 		load: function(id,errorCallback){
 			if(!this.isLocalStorageSupported()){
@@ -89,7 +89,7 @@ Quintus.Persist = function(Q) {
 				errorCallback.call(exception);
 			}
 			
-			return; {};
+			return {};
 		},
 		
 		_load: function(id){
@@ -108,6 +108,12 @@ Quintus.Persist = function(Q) {
 		
 	});
 	
+	 /**
+		Provides support for persisting values of Q.state.
+
+		@Component persistance
+		@for Quintus.Persist
+	  */
 	Q.component('persistance',{
 		added: function() {
 		  
@@ -116,16 +122,27 @@ Quintus.Persist = function(Q) {
 		extend: {
 
           /**
-          Resets the width, height and center based on the
-           asset or sprite sheet
-            A few things to keep in mind
-               * null and undefined values can not be loaded from local storage. These 
-               * To store objects, they are translated into JSON. 
-        
+			Loads the requested game states from local storage and will persist 
+			any changes made through Q.state.set(...). When a value is not present
+			in local storage it will be left undefined.
 
-          @method loadAndPersist
-          @param {String | Array | Object} states - loads and 
-         */
+		   	Setting multiple states is possible:
+
+	      	 	Q.state.loadAndPersist(['red.x, red.y, green.x','green.y']);
+
+           	Optionally it is possible to provide defaults for when a value is not 
+           	present in local storage. This is done in as such:
+
+	            Q.state.loadAndPersist({
+					'blue.x'   : 300,
+					'blue.y'   : 300,
+					'orange.x' : 100,
+					'orange.y' : 300,
+				})
+
+			@method loadAndPersist
+			@param {String | Array | Object} states - loads and persists the states
+		   */
 
 
 			loadAndPersist: function(states, errorCallback){
@@ -145,7 +162,16 @@ Quintus.Persist = function(Q) {
 					return index; 
 				});
 			},
-			
+          /**
+			Persist any changes made through Q.state.set(...).
+
+		   	Setting multiple states is possible:
+
+	      	 	Q.state.loadAndPersist(['red.x, red.y, green.x','green.y']);
+
+          	@method persist
+          	@param {String | Array} states - persists the states
+           */			
 			persist: function(states) {
 				states = Q._normalizeArg(states)
 				Q._each(states,this._registerPersistance,this);

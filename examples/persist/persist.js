@@ -17,21 +17,16 @@ window.addEventListener('load',function(e) {
   Q.touch(Q.SPRITE_ALL - Q.SPRITE_UI);                        
 
 
-  // Red is not persisted between reloads.
-  Q.state.reset({
-  	'red.x' : 100,
-  	'red.y' : 100,
-  });
-
-
   // Green is persisted by setting its initial state
   // and loading the values from local storage by name
   // in the second call
   Q.state.set({
   	'green.x' : 200,
   	'green.y' : 200,
+    'red.x' : 100,
+    'red.y' : 100,
   });
-  Q.state.loadAndPersist(['green.x','green.y']);
+  Q.state.loadAndPersist(['red.x, red.y, green.x','green.y']);
 
   Q.state.loadAndPersist({
   // Others do the same as green. But in a single statement. 
@@ -49,7 +44,7 @@ window.addEventListener('load',function(e) {
   Q.scene("start",function(stage) {
 
   		stage.insert(new Q.UI.Text({
-  			label: "Drag sprites around and reload page\nSprites will remember their position\n(except red, he's not cool)",
+  			label: "Drag sprites around and reload page\nSprites will remember their position",
   			color: 'white',
   			y: 100,
   			x: Q.width /2,
@@ -57,20 +52,20 @@ window.addEventListener('load',function(e) {
   		}));
 
   		function makeSprite(color){
-			var sprite = new Q.Sprite({
-			  			color: color,
-			  			w: 20,
-			  			h: 20,
-			  			x: Q.state.get(color + '.x'),
-			  			y: Q.state.get(color + '.y'),
-			  		})
-			sprite.on('drag',sprite, function(touch){
-				sprite.p.x = touch.x;
-				sprite.p.y = touch.y;
+  			var sprite = new Q.Sprite({
+  			  			color: color,
+  			  			w: 20,
+  			  			h: 20,
+  			  			x: Q.state.get(color + '.x'),
+  			  			y: Q.state.get(color + '.y'),
+  			  		})
+  			sprite.on('drag',sprite, function(touch){
+  				sprite.p.x = touch.x;
+  				sprite.p.y = touch.y;
 
-				Q.state.set(sprite.p.color + '.x',sprite.p.x);
-				Q.state.set(sprite.p.color + '.y',sprite.p.y);
-			});
+  				Q.state.set(sprite.p.color + '.x',sprite.p.x);
+  				Q.state.set(sprite.p.color + '.y',sprite.p.y);
+  			});
 
 			return sprite;
   		}
