@@ -142,6 +142,8 @@ Quintus.Persist = function(Q) {
 
 			@method loadAndPersist
 			@param {String | Array | Object} states - loads and persists the states
+		    @param {Function} errorCallback - called when loading failed.
+
 		   */
 
 
