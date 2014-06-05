@@ -154,12 +154,9 @@ window.addEventListener('load',function(e) {
   // in an event listener and use `Stage.locate` to highlight
   // sprites on desktop.
   Q.el.addEventListener('mousemove',function(e) {
-      var el = Q.el, 
-        rect = el.getBoundingClientRect(),
-        style = window.getComputedStyle(el),
-        x = e.clientX - rect.left - parseInt(style.paddingLeft),
-        y = e.clientY - rect.top  - parseInt(style.paddingTop);
-      var stage = Q.stage();
+    var x = e.offsetX || e.layerX,
+        y = e.offsetY || e.layerY,
+        stage = Q.stage();
 
     // Use the helper methods from the Input Module on Q to
     // translate from canvas to stage
