@@ -16,7 +16,7 @@ adds support for persisting game state to local storage.
 Quintus.Persist = function(Q) {
 
 
-	Q.Persistance =  Class.extend("Persistance", { 
+	Q.Persistance =  Q.Class.extend("Persistance", { 
 
 	  /**
 	    Returns true iff local storage is supported 

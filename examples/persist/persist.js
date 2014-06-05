@@ -26,7 +26,7 @@ window.addEventListener('load',function(e) {
     'red.x' : 100,
     'red.y' : 100,
   });
-  Q.state.loadAndPersist(['red.x, red.y, green.x','green.y']);
+  Q.state.loadAndPersist(['red.x', 'red.y', 'green.x','green.y']);
 
   Q.state.loadAndPersist({
   // Others do the same as green. But in a single statement. 
