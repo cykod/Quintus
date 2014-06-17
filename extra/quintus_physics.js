@@ -176,7 +176,7 @@ Quintus.Physics = function(Q) {
 
     removed: function() {
       var entity = this.entity,
-          stage = entity.parent;
+          stage = entity.stage;
       stage.world.destroyBody(this._body);
     },
 
