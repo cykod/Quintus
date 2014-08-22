@@ -100,7 +100,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
 
-  grunt.registerTask('s3-copy',function() { 
+  grunt.registerTask('s3-copy',function() {
     var AWS = require("aws-sdk"),
         fs = require('fs'),
         pjson = require('./package.json'),
@@ -131,6 +131,6 @@ module.exports = function(grunt) {
       function() {
         s3.client.putObject(s3Opts('quintus-all.min.js',minData), done) });
   });
-     
+
 
 };
