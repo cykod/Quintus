@@ -1,0 +1,8 @@
+{
+  "name": "quintus-server-example",
+  "version": "0.0.1",
+  "description": "Quintus Multi-user server example",
+  "dependencies": {
+    "express": "^4.10.1"
+  }
+}
