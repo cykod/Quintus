@@ -6,29 +6,39 @@ Quintus.DOM = function(Q) {
   Q.setupDOM = function(id,options) {
     options = options || {};
     id = id || "quintus";
-    Q.el = $(Q._isString(id) ? "#" + id : id);
-    if(Q.el.length === 0) {
-      Q.el = $("<div>")
-                .attr('id',id)
-                .css({width: 320, height:420 })
-                .appendTo("body");
+    Q.el = (Q._isString(id) ? document.getElementById("#"+id) :
+	    document.getElementById(id));
+    if(Q.el === null) {
+      Q.el = document.createElement("<div>");
+      Q.el.id = id;
+      Q.el.style.width = 320;
+      Q.el.style.height = 420;
+      document.getElementsByTagName('body')[0].appendChild(Q.el);
     }
     if(options.maximize) {
-      var w = $(window).width();
-      var h = $(window).height();
-      Q.el.css({width:w,height:h});
+      Q.el.style.width = window.innerWidth;
+      Q.el.style.height = window.innerHeight;
     }
-   Q.wrapper = Q.el
-                 .wrap("<div id='" + id + "_container'/>")
-                 .parent()
-                 .css({ width: Q.el.width(),
-                        height: Q.el.height(),
-                        margin: '0 auto' });
-    Q.el.css({ position:'relative', overflow: 'hidden' });
-    Q.width = Q.el.width();
-    Q.height = Q.el.height();
+    Q.el.style.position = 'relative';
+    Q.el.style.overflow = 'hidden';
+    
+    // Create wrapper and declare style.
+    Q.wrapper = document.createElement("<div id='" + id + "_container'/>");
+    Q.wrapper.style.width = Q.el.style.width;
+    Q.wrapper.style.height = Q.el.style.height;
+    Q.wrapper.style.margin = '0 auto';
+    // Join the wrapper onto the DOM tree as a sibling of of Q.el and
+    // immediately before where Q.el has been defined to ensure DOM tree
+    // structure is not changed.
+    Q.el.parentNode.insertBefore(Q.wrapper,Q.el);
+    // Make Q.el a child of Q.wrapper. This moves Q.el from being a sibling
+    Q.wrapper.appendChild(Q.el);
+    
+    Q.width = Q.el.style.width;
+    Q.height = Q.el.style.height;
+    
     setTimeout(function() { window.scrollTo(0,1); }, 0);
-    $(window).bind('orientationchange',function() {
+    window.addEventListener('orientationchange',function() {
       setTimeout(function() { window.scrollTo(0,1); }, 0);
     });
     return Q;
@@ -61,7 +71,7 @@ Quintus.DOM = function(Q) {
     }
     var has3d =  ('WebKitCSSMatrix' in window && 
                   'm11' in new window.WebKitCSSMatrix());
-    var dummyStyle = $("<div>")[0].style;
+  var dummyStyle = document.createElement("div").style;
     var transformMethods = ['transform',
                             'webkitTransform',
                             'MozTransform',
@@ -95,7 +105,7 @@ Quintus.DOM = function(Q) {
     }
     // Dummy method
     function fallbackTransition() { }
-    var dummyStyle = $("<div>")[0].style;
+    var dummyStyle = document.createElement("div").style;
     var transitionMethods = ['transition',
                             'webkitTransition',
                             'MozTransition',
@@ -115,12 +125,11 @@ Quintus.DOM = function(Q) {
   Q.DOMSprite = Q.Sprite.extend({
     init: function(props) {
       this._super(props);
-      this.el = $("<div>").css({
-        width: this.p.w,
-        height: this.p.h,
-        zIndex: this.p.z || 0,
-        position: 'absolute'
-      });
+      this.el = document.createElement("div");
+      this.el.width = this.p.w;
+      this.el.height = this.p.h;
+      this.el.zIndex = this.p.z || 0;
+      this.el.position = 'absolute';
       this.dom = this.el[0];
       this.rp = {};
       this.setImage();
@@ -187,18 +196,19 @@ Quintus.DOM = function(Q) {
   if(Q.Stage) {
     Q.DOMStage = Q.Stage.extend({
       init: function(scene) {
-        this.el = $("<div>").css({
-          top:0,
-          position:'relative'
-        }).appendTo(Q.el);
-        this.dom = this.el[0];
-        this.wrapper = this.el.wrap('<div>').parent().css({
-          position:'absolute',
-          left:0,
-          top:0
-        });
+	this.el = document.createElement("div");
+	this.el.style.top = 0;
+	this.el.style.position = 'relative';
+	Q.el.appendChild(this.el);
+        this.dom = this.el;
+	this.wrapper = document.createElement("div");
+	this.wrapper.style.position = 'absolute';
+	this.wrapper.style.left = 0;
+	this.wrapper.style.top = 0;
+	this.el.parentNode.insertBefore(this.wrapper,this.el);
+	this.wrapper.appendChild(this.el);
         this.scale = 1;
-        this.wrapper_dom = this.wrapper[0];
+        this.wrapper_dom = this.wrapper;
         this._super(scene);
       },
 
@@ -310,9 +320,5 @@ Quintus.DOM = function(Q) {
       this.shown[y][x] = false;
     }
   }); 
-
-
-
-
 };
 
