@@ -124,8 +124,11 @@ Q.GameObject.extend("BoxThrower",{
     this.p.launch -= dt;
 
     if(this.p.launch < 0) {
-      this.stage.insert(new Q.Box());
-      this.p.launch = this.p.launchDelay + this.p.launchRandom * Math.random();
+      for(var i=0;i<10;i++){
+        this.stage.insert(new Q.Box());
+        this.p.launch = this.p.launchDelay + this.p.launchRandom * Math.random();
+      }
+
     }
   }
 
@@ -134,8 +137,10 @@ Q.GameObject.extend("BoxThrower",{
 
 Q.scene("level1",function(stage) {
 
-  stage.insert(new Q.Repeater({ asset: "background-wall.png",
-                                speedX: 0.5 }));
+  stage.insert(new Q.Repeater(
+    { asset: "background-wall.png",
+    speedX: 0.5,
+  repeatY:true}));
 
   stage.insert(new Q.Repeater({ asset: "background-floor.png",
                                 repeatY: false,

@@ -15,7 +15,7 @@ window.addEventListener('load',function(e) {
         density: 4,
         x: props.dx * 50 + 10,
         y: props.dy * 50 + 210,
-        seconds: 5
+        seconds: 99
       });
       this.add('physics');
       this.on('step',this,'countdown');
@@ -84,9 +84,7 @@ window.addEventListener('load',function(e) {
       x: 250, y: 250, w: 700, h: 50, type:"static"
     }))
 
-    stage.insert(new Q.Sprite({ w: 10, h:50, x: 500, y: 200 }));
-    stage.insert(new Q.Sprite({ w: 10, h:50, x: 550, y: 200 }));
-    stage.insert(new Q.Sprite({ w: 70, h:10, x: 525, y: 170 }));
+  
     stage.insert(new Q.Sprite({ w: 10, h:50, x: 500, y: 130 }));
     stage.insert(new Q.Sprite({ w: 10, h:50, x: 550, y: 130 }));
     stage.insert(new Q.Sprite({ w: 70, h:10, x: 525, y: 110 }));

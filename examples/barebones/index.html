@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Arrow Keys Circle Control</title>
+	<script src='../../lib/quintus.js'></script>
+	<script src='../../lib/quintus_sprites.js'></script>
+	<script src='../../lib/quintus_scenes.js'></script>
+	<script src='../../lib/quintus_input.js'></script>
+	<script src='../../lib/quintus_anim.js'></script>
+	<script src='../../lib/quintus_2d.js'></script>
+	<script src='../../lib/quintus_touch.js'></script>
+	<script src='../../lib/quintus_ui.js'></script>
+	<script src="../../extra/quintus_svg.js"></script>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+window.addEventListener("load",function() {
+        var Q = Quintus()
+        .include("Sprites,Scenes,2D,SVG,Input")
+        .svgOnly()
+        .setup('quintus',{ maximize: true });
+        // Create a player sprite
+        Q.Sprite.extend("Player", {
+            init: function (p) {
+                this._super({
+        shape: 'circle',
+        color: 'red',
+        r: 8,
+        restitution: 0.5,
+        density: 4,
+        x: Q.width/2,
+        y: Q.height/2
+      });
+
+                // Enable input control for the player
+                this.add("2d, input");
+            },
+
+            step: function (dt) {
+                // Move the player based on arrow key input
+                var speed = 200;
+                if (Q.inputs['up']) this.p.y -= speed * dt;
+                if (Q.inputs['down']) this.p.y += speed * dt;
+                if (Q.inputs['left']) this.p.x -= speed * dt;
+                if (Q.inputs['right']) this.p.x += speed * dt;
+            },
+
+            draw: function (ctx) {
+                ctx.fillStyle = this.p.color;
+                ctx.beginPath();
+                ctx.arc(this.p.x, this.p.y, this.p.radius, 0, Math.PI * 2, true);
+                ctx.closePath();
+                ctx.fill();
+            }
+        });
+
+        // Create a new scene and add the player to it
+        Q.scene("main",function(stage) {
+            stage.insert(new Q.Sprite({ 
+                x: Q.width/2,
+                y: Q.height/2,
+                w: 700,
+                h: 900,
+                z:-99, 
+                   type:"static"
+                }))
+            var player = stage.insert(new Q.Player());
+
+            stage.add("viewport").follow(Q("Player").first());
+            });
+       
+        Q.stageScene("main");
+        })
+    </script>
+</body>
+</html>
