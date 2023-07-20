@@ -18,7 +18,7 @@
     <script>
 window.addEventListener("load",function() {
         var Q = Quintus()
-        .include("Sprites,Scenes,2D,SVG,Input")
+        .include("Sprites,Scenes,2D,SVG,Input,Touch,UI")
         .svgOnly()
         .setup('quintus',{ maximize: true });
         // Create a player sprite
@@ -70,7 +70,7 @@ window.addEventListener("load",function() {
 
             stage.add("viewport").follow(Q("Player").first());
             });
-       
+            console.log(Q.GetOS())
         Q.stageScene("main");
         })
     </script>
