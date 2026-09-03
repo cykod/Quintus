@@ -1,3 +1,5 @@
+**This engine is quite obsolete at this point - please see [Quintus2](https://github.com/cykod/quintus2) for a modern interpretation**
+
 Quintus Engine
 ==============
 
